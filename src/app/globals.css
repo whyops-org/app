@@ -1,26 +1,154 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.75rem;
+  --background: #f6f8f7;
+  --foreground: #0b1615;
+  --card: #ffffff;
+  --card-foreground: #0b1615;
+  --popover: #ffffff;
+  --popover-foreground: #0b1615;
+  --primary: #18c7a5;
+  --primary-foreground: #04110f;
+  --secondary: #e6efed;
+  --secondary-foreground: #0b1615;
+  --muted: #e8f0ee;
+  --muted-foreground: #607573;
+  --accent: #20ddba;
+  --accent-foreground: #04110f;
+  --destructive: #e5484d;
+  --border: #dbe4e2;
+  --input: #dbe4e2;
+  --ring: rgba(24, 199, 165, 0.4);
+  --surface: #ffffff;
+  --surface-2: #eef4f3;
+  --surface-3: #e2ecea;
+  --ink: #0b1615;
+  --ink-muted: #607573;
+  --accent-strong: #12b191;
+}
+
+.dark {
+  --background: #0b1716;
+  --foreground: #e6f3f1;
+  --card: #0f2322;
+  --card-foreground: #e6f3f1;
+  --popover: #0f2322;
+  --popover-foreground: #e6f3f1;
+  --primary: #2ee6c1;
+  --primary-foreground: #03201a;
+  --secondary: #102725;
+  --secondary-foreground: #d0e3df;
+  --muted: #0f2422;
+  --muted-foreground: #97b1ac;
+  --accent: #1f3b38;
+  --accent-foreground: #e6f3f1;
+  --destructive: #f06a6a;
+  --border: #1b3431;
+  --input: #1b3431;
+  --ring: rgba(46, 230, 193, 0.35);
+  --surface: #0f2322;
+  --surface-2: #122826;
+  --surface-3: #142e2b;
+  --ink: #e6f3f1;
+  --ink-muted: #97b1ac;
+  --accent-strong: #18c7a5;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    letter-spacing: -0.01em;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+  
+  /* Custom scrollbar styles */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    display: none;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: transparent;
+  }
+  
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  /* Firefox scrollbar */
+  .scrollbar-thin {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .bg-grid {
+    background-image:
+      radial-gradient(60vw 60vh at 8% -10%, rgba(46, 230, 193, 0.18), transparent 60%),
+      radial-gradient(50vw 50vh at 100% 10%, rgba(24, 199, 165, 0.12), transparent 55%),
+      linear-gradient(to right, rgba(37, 74, 69, 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(37, 74, 69, 0.35) 1px, transparent 1px);
+    background-size: auto, auto, 4vw 4vw, 4vw 4vw;
+    background-position: center, center, center, center;
+  }
+
+  .shadow-panel {
+    box-shadow: 0 2vw 5vw rgba(3, 12, 11, 0.7);
+  }
 }

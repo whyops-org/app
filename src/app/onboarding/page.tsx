@@ -1,0 +1,196 @@
+"use client";
+
+import {
+  Activity,
+  ArrowRight,
+  Key,
+  Link as LinkIcon
+} from "lucide-react";
+import * as React from "react";
+
+import { SiteHeader } from "@/components/layout/site-header";
+import { AgentPreview } from "@/components/onboarding/agent-preview";
+import { CompleteStep } from "@/components/onboarding/complete-step";
+import { ProviderCard } from "@/components/onboarding/provider-card";
+import { StepIndicator } from "@/components/onboarding/step-indicator";
+import { WorkspaceCard } from "@/components/onboarding/workspace-card";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const checklist = [
+  { icon: LinkIcon, text: "Connect your LLM Provider" },
+  { icon: Key, text: "Securely store API keys" },
+  { icon: Activity, text: "Capture your first trace" },
+];
+
+const stepDefinitions = [
+  { id: "welcome", label: "Welcome" },
+  { id: "provider", label: "Provider" },
+  { id: "workspace", label: "Workspace" },
+  { id: "complete", label: "Complete" },
+];
+
+export default function OnboardingPage() {
+  const [currentStep, setCurrentStep] = React.useState(0);
+  const [hasScroll, setHasScroll] = React.useState(false);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  React.useEffect(() => {
+    const checkScroll = () => {
+      if (contentRef.current) {
+        const hasScrollableContent = contentRef.current.scrollHeight > contentRef.current.clientHeight;
+        setHasScroll(hasScrollableContent);
+      }
+    };
+
+    // Use setTimeout to check after render is complete
+    const timeoutId = setTimeout(checkScroll, 0);
+    window.addEventListener('resize', checkScroll);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [currentStep]);
+
+  const steps = [
+    {
+      id: "welcome",
+      title: (
+        <>
+          Welcome to WhyOps, <span className="text-primary">Alex!</span>
+        </>
+      ),
+      subtitle:
+        "Let's get your AI agents observable in under 3 minutes. We'll guide you through the essentials to get you started.",
+      content: (
+        <div className="space-y-6">
+          <ul className="space-y-4">
+            {checklist.map((item) => (
+              <li key={item.text} className="flex items-center gap-3 text-muted-foreground/80">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted border border-border/50 text-primary">
+                  <item.icon className="h-5 w-5" />
+                </div>
+                <span className="font-medium text-foreground">{item.text}</span>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap items-center gap-4 pt-4">
+            <Button 
+              size="lg" 
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8" 
+              onClick={() => setCurrentStep(1)}
+            >
+              Let&apos;s Go
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </Button>
+            <button
+              className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-4"
+              onClick={() => setCurrentStep(1)}
+            >
+              Skip Tour
+            </button>
+          </div>
+        </div>
+      ),
+      preview: <AgentPreview direction="vertical" />,
+    },
+    {
+      id: "provider",
+      title: "Connect your LLM Provider",
+      subtitle:
+        "Choose the primary LLM used by your agent for decision making. Add secondary providers later.",
+      textAlign: 'center',
+      content: null,
+      preview: (
+        <ProviderCard
+          onBack={() => setCurrentStep(0)}
+          onContinue={() => setCurrentStep(2)}
+        />
+      ),
+    },
+    {
+      id: "workspace",
+      title: "Set up your workspace",
+      subtitle: "Create an API key to securely connect your AI agents to WhyOps.",
+      textAlign: 'center',
+      content: null,
+      preview: (
+        <WorkspaceCard
+          onBack={() => setCurrentStep(1)}
+          onContinue={() => setCurrentStep(3)}
+        />
+      ),
+    },
+    {
+      id: "complete",
+      title: "Connect your AI Agent",
+      subtitle: "Install the SDK and add the decorator to start observing your agent's decisions.",
+      textAlign: 'center',
+      content: null,
+      preview: <CompleteStep />,
+    },
+  ];
+
+  const activeStep = steps[currentStep];
+  const showSplitLayout = currentStep === 0;
+
+  return (
+    <div className="relative h-screen overflow-hidden bg-grid">
+      <div className="flex flex-col h-screen">
+        <SiteHeader actionLabel="Log out" />
+        
+        <main className="flex-1 overflow-y-auto px-12">
+          <div className="mx-auto max-w-7xl">
+            {/* Step Indicator */}
+            <StepIndicator 
+              steps={stepDefinitions} 
+              currentStep={currentStep}
+            />
+
+            {/* Content Area */}
+            <div 
+              ref={contentRef}
+              className={cn(
+                "pb-12 h-[calc(100dvh-10dvh-64px)] transition-all duration-200",
+                hasScroll && "pt-[8dvh]",
+                showSplitLayout ? "grid lg:grid-cols-2 items-center gap-[2vw]" : "flex flex-col items-center justify-center"
+              )}
+            >
+              {/* Left Column - Text Content */}
+              <div className={`flex flex-col gap-6 ${showSplitLayout ? '' : 'lg:max-w-2xl w-full'}`}>
+                {(activeStep.title || activeStep.subtitle) && (
+                  <div className="space-y-4">
+                    {activeStep.title && (
+                      <h2 className={cn("text-4xl font-semibold leading-tight text-foreground sm:text-5xl", activeStep.textAlign === 'center' && 'text-center')}>
+                        {activeStep.title}
+                      </h2>
+                    )}
+                    {activeStep.subtitle && (
+                      <p className={cn("text-lg leading-relaxed text-muted-foreground", activeStep.textAlign === 'center' && 'text-center')}>
+                        {activeStep.subtitle}
+                      </p>
+                    )}
+                  </div>
+                )}
+                {activeStep.content && (
+                  <div className="space-y-4 text-sm text-muted-foreground">
+                    {activeStep.content}
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column - Preview/Card */}
+              <div className={cn(
+                "flex items-start justify-center w-full",
+                !showSplitLayout && "max-w-2xl"
+              )}>
+                {activeStep.preview}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  );
+}

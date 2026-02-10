@@ -1,0 +1,60 @@
+import { cn } from "@/lib/utils";
+import { LucideIcon } from "lucide-react";
+import { ReactNode } from "react";
+
+interface SelectableCardProps {
+  icon: LucideIcon;
+  title: string;
+  description?: string;
+  isSelected: boolean;
+  onClick: () => void;
+  className?: string;
+  children?: ReactNode;
+}
+
+export function SelectableCard({
+  icon: Icon,
+  title,
+  description,
+  isSelected,
+  onClick,
+  className,
+  children
+}: SelectableCardProps) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "relative flex flex-col items-center gap-3 rounded-xl border px-4 py-5 text-center transition-all duration-200",
+        isSelected
+          ? "border-primary bg-card shadow-md"
+          : "border-border bg-card hover:bg-card hover:border-border/50",
+        className
+      )}
+      type="button"
+    >
+      <div 
+        className={cn(
+          "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+          isSelected ? "text-primary" : "text-muted-foreground"
+        )}
+      >
+        <Icon className="h-5 w-5" />
+      </div>
+      <div className="space-y-1">
+        <div className={cn(
+          "text-sm font-semibold",
+          isSelected ? "text-foreground" : "text-muted-foreground"
+        )}>
+          {title}
+        </div>
+        {description && (
+          <div className="text-xs leading-tight text-muted-foreground/60 font-medium">
+            {description}
+          </div>
+        )}
+      </div>
+      {children}
+    </button>
+  );
+}
