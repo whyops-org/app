@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { getTrace } from "@/constants/mock-data";
+import { getAgent, getTrace } from "@/constants/mock-data";
 import { cn } from "@/lib/utils";
 import {
   Bug,
@@ -25,6 +25,7 @@ export function TraceHeader({ view, onViewChange }: TraceHeaderProps) {
   const params = useParams();
   const agentId = (params.agentId as string) || "1";
   const traceId = (params.traceId as string) || "tr_abc123";
+  const agent = getAgent(agentId);
   const trace = getTrace(agentId, traceId);
 
   if (!trace) return null;
@@ -45,7 +46,7 @@ export function TraceHeader({ view, onViewChange }: TraceHeaderProps) {
             href={`/agents/${agentId}`}
             className="hover:text-foreground transition-colors"
           >
-            Agent {agentId}
+            {agent?.name || `Agent ${agentId}`}
           </Link>
           <span className="mx-2 text-border">/</span>
           <span className="text-foreground">{trace.id}</span>

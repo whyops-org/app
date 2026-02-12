@@ -9,33 +9,49 @@ import {
   PanelLeftClose,
   PlusCircle,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
-type SidebarProps = React.HTMLAttributes<HTMLDivElement>;
+interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
+  defaultCollapsed?: boolean;
+}
 
-export function Sidebar({ className, ...props }: SidebarProps) {
-  // Initialize from localStorage if available, default to false (expanded)
-  const [isCollapsed, setIsCollapsed] = React.useState(false);
-  const [isMobile, setIsMobile] = React.useState(false);
+export function Sidebar({ className, defaultCollapsed = false, ...props }: SidebarProps) {
+  const router = useRouter();
+  // Initialize from props
+  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed);
+  const [isMounted, setIsMounted] = React.useState(false);
 
-  // Handle persistence and hydration
+  // Handle hydration mismatch prevention
   React.useEffect(() => {
-    const savedState = localStorage.getItem("sidebar-collapsed");
-    if (savedState) {
-      setIsCollapsed(savedState === "true");
+    // Check client-side cookie to ensure state consistency
+    const match = document.cookie.match(new RegExp('(^| )sidebar:state=([^;]+)'));
+    if (match) {
+      const cookieValue = match[2] === 'true';
+      if (cookieValue !== isCollapsed) {
+        setIsCollapsed(cookieValue);
+      }
     }
+
+    // Enable transitions after a short delay to prevent initial animation
+    setTimeout(() => setIsMounted(true), 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const transitionDuration = isMounted ? "duration-300" : "duration-0";
 
   const toggleSidebar = () => {
     const newState = !isCollapsed;
     setIsCollapsed(newState);
-    localStorage.setItem("sidebar-collapsed", String(newState));
+    document.cookie = `sidebar:state=${newState}; path=/; max-age=31536000; SameSite=Lax`;
+    router.refresh();
   };
 
   return (
     <aside
       className={cn(
-        "group relative flex h-screen flex-col border-r border-border/30 bg-card transition-all duration-300 ease-in-out",
+        "group relative flex h-screen flex-col border-r border-border/30 bg-card transition-all ease-in-out",
+        transitionDuration,
         isCollapsed ? "w-[70px]" : "w-64",
         className
       )}
@@ -43,7 +59,8 @@ export function Sidebar({ className, ...props }: SidebarProps) {
     >
       {/* Header / Logo */}
       <div className={cn(
-        "flex h-14 items-center overflow-hidden transition-all duration-300",
+        "flex h-14 items-center overflow-hidden transition-all",
+        transitionDuration,
         isCollapsed ? "justify-center px-0" : "justify-between px-4"
       )}>
         <div className="flex items-center gap-3 min-w-0">
@@ -52,7 +69,8 @@ export function Sidebar({ className, ...props }: SidebarProps) {
           </div>
           <span
             className={cn(
-              "text-sm font-semibold text-foreground whitespace-nowrap transition-all duration-300 origin-left",
+              "text-sm font-semibold text-foreground whitespace-nowrap transition-all origin-left",
+              transitionDuration,
               isCollapsed ? "opacity-0 w-0 -translate-x-2.5 hidden" : "opacity-100 w-auto translate-x-0"
             )}
           >
@@ -78,7 +96,8 @@ export function Sidebar({ className, ...props }: SidebarProps) {
       <div className="flex-1 py-6 overflow-hidden">
         <div className="px-3">
           <p className={cn(
-            "mb-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50 whitespace-nowrap transition-all duration-300",
+            "mb-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50 whitespace-nowrap transition-all",
+            transitionDuration,
             isCollapsed ? "opacity-0 -translate-x-2.5 h-0 mb-0 overflow-hidden" : "opacity-100 translate-x-0 h-auto"
           )}>
             Platform
@@ -88,16 +107,19 @@ export function Sidebar({ className, ...props }: SidebarProps) {
               icon={<PlusCircle className="h-5 w-5" />}
               isCollapsed={isCollapsed}
               label="Add Provider"
+              transitionDuration={transitionDuration}
             />
             <SidebarItem
               icon={<BookOpen className="h-5 w-5" />}
               isCollapsed={isCollapsed}
               label="Documentation"
+              transitionDuration={transitionDuration}
             />
             <SidebarItem
               icon={<Key className="h-5 w-5" />}
               isCollapsed={isCollapsed}
               label="API Keys"
+              transitionDuration={transitionDuration}
             />
           </nav>
         </div>
@@ -116,7 +138,8 @@ export function Sidebar({ className, ...props }: SidebarProps) {
       {/* Footer / Status */}
       <div className="border-t border-border/30 p-3 overflow-hidden">
         <div className={cn(
-            "flex items-center gap-3 transition-all duration-300",
+            "flex items-center gap-3 transition-all",
+            transitionDuration,
             isCollapsed ? "justify-center" : ""
         )}>
           <div className="relative shrink-0 flex items-center justify-center">
@@ -125,7 +148,8 @@ export function Sidebar({ className, ...props }: SidebarProps) {
           </div>
           
           <div className={cn(
-            "flex flex-col whitespace-nowrap transition-all duration-300 overflow-hidden",
+            "flex flex-col whitespace-nowrap transition-all overflow-hidden",
+            transitionDuration,
             isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
           )}>
             <span className="text-xs font-medium text-foreground">System Online</span>
@@ -141,13 +165,15 @@ interface SidebarItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement>
   icon: React.ReactNode;
   label: string;
   isCollapsed: boolean;
+  transitionDuration: string;
 }
 
-function SidebarItem({ icon, label, isCollapsed, className, ...props }: SidebarItemProps) {
+function SidebarItem({ icon, label, isCollapsed, transitionDuration, className, ...props }: SidebarItemProps) {
   return (
     <button
       className={cn(
-        "group flex w-full items-center rounded-md py-2 text-sm text-muted-foreground transition-all duration-200 hover:bg-surface-2 hover:text-foreground",
+        "group flex w-full items-center rounded-md py-2 text-sm text-muted-foreground transition-all hover:bg-surface-2 hover:text-foreground",
+        transitionDuration,
         isCollapsed ? "justify-center px-0 w-10 mx-auto" : "px-2.5 gap-3",
         className
       )}
@@ -156,7 +182,8 @@ function SidebarItem({ icon, label, isCollapsed, className, ...props }: SidebarI
     >
       <span
         className={cn(
-          "shrink-0 flex items-center justify-center transition-colors duration-200 group-hover:text-foreground",
+          "shrink-0 flex items-center justify-center transition-colors group-hover:text-foreground",
+          transitionDuration,
           isCollapsed ? "text-foreground" : "text-muted-foreground"
         )}
       >
@@ -165,7 +192,8 @@ function SidebarItem({ icon, label, isCollapsed, className, ...props }: SidebarI
 
       <span
         className={cn(
-          "truncate whitespace-nowrap transition-all duration-300 origin-left",
+          "truncate whitespace-nowrap transition-all origin-left",
+          transitionDuration,
           isCollapsed
             ? "w-0 opacity-0 overflow-hidden"
             : "w-auto opacity-100"

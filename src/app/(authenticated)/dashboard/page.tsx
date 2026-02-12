@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/dashboard/empty-state";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -5,10 +6,6 @@ export const metadata: Metadata = {
   description: "WhyOps Dashboard - Monitor your AI agents",
 };
 
-export default function DashboardLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return <div className="dark">{children}</div>;
+export default function DashboardPage() {
+  return <EmptyState />;
 }
