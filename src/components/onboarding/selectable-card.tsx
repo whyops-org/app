@@ -10,6 +10,7 @@ interface SelectableCardProps {
   onClick: () => void;
   className?: string;
   children?: ReactNode;
+  disabled?: boolean;
 }
 
 export function SelectableCard({
@@ -19,21 +20,24 @@ export function SelectableCard({
   isSelected,
   onClick,
   className,
-  children
+  children,
+  disabled = false
 }: SelectableCardProps) {
   return (
     <button
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={cn(
         "relative flex flex-col items-center gap-3 rounded-xl border px-4 py-5 text-center transition-all duration-200",
         isSelected
           ? "border-primary bg-card shadow-md"
           : "border-border bg-card hover:bg-card hover:border-border/50",
+        disabled && "opacity-50 cursor-not-allowed",
         className
       )}
       type="button"
     >
-      <div 
+      <div
         className={cn(
           "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
           isSelected ? "text-primary" : "text-muted-foreground"

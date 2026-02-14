@@ -6,16 +6,16 @@ interface StepNavigationProps {
   onContinue?: () => void;
   continueLabel?: string;
   backLabel?: string;
-  continueDisabled?: boolean;
+  disabled?: boolean;
   showBack?: boolean;
 }
 
-export function StepNavigation({ 
-  onBack, 
-  onContinue, 
+export function StepNavigation({
+  onBack,
+  onContinue,
   continueLabel = "Continue",
   backLabel = "Back",
-  continueDisabled = false,
+  disabled = false,
   showBack = true
 }: StepNavigationProps) {
   return (
@@ -30,11 +30,11 @@ export function StepNavigation({
         </button>
       ) : <div />}
       
-      <Button 
-        size="lg" 
-        className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-6 h-12 text-sm" 
+      <Button
+        size="lg"
+        className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-6 h-12 text-sm"
         onClick={onContinue}
-        disabled={continueDisabled}
+        disabled={disabled}
         type="button"
       >
         {continueLabel}

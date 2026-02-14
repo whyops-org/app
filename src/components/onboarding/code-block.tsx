@@ -2,6 +2,8 @@
 
 import { Copy } from "lucide-react";
 import { useState } from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 import { cn } from "@/lib/utils";
 
@@ -12,7 +14,7 @@ interface CodeBlockProps {
   className?: string;
 }
 
-export function CodeBlock({ code, language, showCopy = true, className }: CodeBlockProps) {
+export function CodeBlock({ code, language = "python", showCopy = true, className }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -21,12 +23,23 @@ export function CodeBlock({ code, language, showCopy = true, className }: CodeBl
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Map language ids to syntax highlighter languages
+  const languageMap: Record<string, string> = {
+    python: "python",
+    javascript: "javascript",
+    typescript: "typescript",
+    js: "javascript",
+    ts: "typescript",
+  };
+
+  const hlLanguage = languageMap[language] || language;
+
   return (
     <div className={cn("group relative rounded-xl border border-border bg-card overflow-hidden", className)}>
       {showCopy && (
         <button
           onClick={handleCopy}
-          className="absolute top-3 right-3 z-10 rounded-md p-2 hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground min-w-17.5 flex items-center justify-center"
+          className="absolute top-3 right-3 z-10 rounded-md p-2 hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground min-w-[4.5rem] flex items-center justify-center"
           aria-label="Copy code"
         >
           {copied ? (
@@ -36,11 +49,23 @@ export function CodeBlock({ code, language, showCopy = true, className }: CodeBl
           )}
         </button>
       )}
-      <pre className="p-4 overflow-x-auto scrollbar-thin">
-        <code className={cn("text-sm font-mono text-foreground leading-relaxed whitespace-pre", language)}>
+      <div className="overflow-x-auto">
+        <SyntaxHighlighter
+          language={hlLanguage}
+          style={vscDarkPlus}
+          customStyle={{
+            margin: 0,
+            padding: "1rem",
+            background: "transparent",
+            fontSize: "0.875rem",
+            border: 'none',
+            fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+          }}
+          showLineNumbers={false}
+        >
           {code}
-        </code>
-      </pre>
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 }

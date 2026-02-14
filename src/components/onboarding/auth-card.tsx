@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
 
@@ -32,6 +33,13 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
   const canSubmit = email.trim().length > 0;
   const isResendDisabled = isLoading || cooldownMs > 0;
   const isSent = status === "sent" || submitted;
+
+  // Show error as toast notification
+  React.useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   React.useEffect(() => {
     if (!resendAvailableAt) {
@@ -79,7 +87,7 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
             isSent ? "pointer-events-none opacity-0 -translate-y-3" : ""
           )}
         >
-          <CardHeader className="space-y-3 pb-3">
+          <CardHeader className="space-y-3">
             <CardTitle>Create or log in</CardTitle>
             <p className="text-sm text-muted-foreground">
               Continue with SSO or use your work email for a magic link.
@@ -139,14 +147,6 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
                   Log in
                 </Button>
               </div>
-              <p
-                className={cn(
-                  "min-h-[16px] text-xs transition-opacity",
-                  error ? "text-destructive opacity-100" : "opacity-0"
-                )}
-              >
-                {error ?? ""}
-              </p>
             </div>
             <div className="flex items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
               <span>SOC 2 compliant</span>

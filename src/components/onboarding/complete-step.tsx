@@ -1,96 +1,65 @@
 "use client";
 
 import { ArrowRight, Info } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CodeBlock } from "./code-block";
-import { CommandBlock } from "./command-block";
 import { InfoBox } from "./info-box";
 import { StepContainer } from "./step-container";
 import { TabSelector } from "./tab-selector";
+import { useConfigStore } from "@/stores/configStore";
+import { useProjectStore } from "@/stores/projectStore";
+import { getCodeSnippet } from "@/lib/code-snippets";
 
-const languages = [
-  { id: "python", label: "Python", icon: "🐍" },
-  { id: "javascript", label: "JavaScript", icon: "⚡" },
-  { id: "typescript", label: "TypeScript", icon: "📘" },
-] as const;
+interface CompleteStepProps {
+  onFinish?: () => void;
+  isFinishing?: boolean;
+}
 
-const codeSnippets = {
-  python: {
-    install: "$ pip install whyops",
-    filename: "main_agent.py",
-    code: `import os
-import whyops
+export function CompleteStep({ onFinish, isFinishing }: CompleteStepProps) {
+  const { config, fetchConfig } = useConfigStore();
+  const { masterKeys, currentProject, currentEnvironments } = useProjectStore();
 
-# Initialize the SDK with your API key
-whyops.init(
-  api_key="sk_live_948d_xjf03_mxv201",
-  environment="production"
-)
+  const [selectedLang, setSelectedLang] = useState<string>("python");
 
-# Decorate your main agent function to trace decisions
-@whyops.trace(tags=["customer-service", "level-1"])
-def handle_customer_inquiry(query):
-  # Your agent logic here
-  context = retrieve_context(query)
-  decision = llm.predict(context)
-  
-  return decision`,
-  },
-  javascript: {
-    install: "$ npm install whyops",
-    filename: "main_agent.js",
-    code: `const whyops = require('whyops');
+  // Fetch config on mount
+  useEffect(() => {
+    fetchConfig();
+  }, [fetchConfig]);
 
-// Initialize the SDK with your API key
-whyops.init({
-  apiKey: "sk_live_948d_xjf03_mxv201",
-  environment: "production"
-});
+  // Get code snippet data from store
+  const snippetData = useMemo(() => {
+    const activeKey = masterKeys[0];
+    return {
+      apiKey: activeKey?.key || "YOUR_API_KEY",
+      apiKeyPrefix: activeKey?.prefix || "pk_live_",
+      projectId: currentProject?.id || "YOUR_PROJECT_ID",
+      environmentId: currentEnvironments?.[0]?.id || "YOUR_ENVIRONMENT_ID",
+    };
+  }, [masterKeys, currentProject, currentEnvironments]);
 
-// Decorate your main agent function to trace decisions
-const handleCustomerInquiry = whyops.trace(
-  async (query) => {
-    // Your agent logic here
-    const context = await retrieveContext(query);
-    const decision = await llm.predict(context);
-    
-    return decision;
-  },
-  { tags: ["customer-service", "level-1"] }
-);`,
-  },
-  typescript: {
-    install: "$ npm install whyops",
-    filename: "main_agent.ts",
-    code: `import whyops from 'whyops';
+  // Get languages from config
+  const languages = useMemo(() => config?.sdkLanguages || [], [config?.sdkLanguages]);
 
-// Initialize the SDK with your API key
-whyops.init({
-  apiKey: "sk_live_948d_xjf03_mxv201",
-  environment: "production"
-});
+  // Get current code snippet based on selected language
+  const currentSnippet = useMemo(() => {
+    const apiBaseUrl = config?.apiBaseUrl;
+    if (!apiBaseUrl) return null;
+    return getCodeSnippet(selectedLang, snippetData, apiBaseUrl);
+  }, [selectedLang, snippetData, config?.apiBaseUrl]);
 
-// Decorate your main agent function to trace decisions
-const handleCustomerInquiry = whyops.trace(
-  async (query: string): Promise<string> => {
-    // Your agent logic here
-    const context = await retrieveContext(query);
-    const decision = await llm.predict(context);
-    
-    return decision;
-  },
-  { tags: ["customer-service", "level-1"] }
-);`,
-  },
-};
-
-export function CompleteStep() {
-  const [selectedLang, setSelectedLang] = useState<keyof typeof codeSnippets>("python");
-
-  const snippet = codeSnippets[selectedLang];
+  // Show loading state while config is loading
+  if (!config || !currentSnippet) {
+    return (
+      <StepContainer>
+        <div className="flex items-center justify-center p-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </StepContainer>
+    );
+  }
 
   return (
     <>
@@ -99,46 +68,60 @@ export function CompleteStep() {
         <TabSelector
           tabs={languages}
           selectedTab={selectedLang}
-          onTabChange={(tabId) => setSelectedLang(tabId as keyof typeof codeSnippets)}
+          onTabChange={(tabId) => setSelectedLang(tabId as string)}
         />
-        
+
         {/* Content */}
         <div className="space-y-6">
-          {/* 1. Install the package */}
+          {/* Send Events */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-foreground">
-              <span className="text-muted-foreground">1</span> Install the package
+              Send Events to WhyOps
             </h3>
-            <CommandBlock command={snippet.install} />
-          </div>
 
-          {/* 2. Initialize & Trace */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">
-              <span className="text-muted-foreground">2</span> Initialize & Trace
-            </h3>
-            
             {/* File label with badge */}
             <div className="flex items-center gap-3">
-              <span className="text-sm font-medium text-muted-foreground">{snippet.filename}</span>
+              <span className="text-sm font-medium text-muted-foreground">
+                {currentSnippet.filename}
+              </span>
               <Badge className="bg-primary/10 border-primary/30 text-primary">
-                Generated API Key
+                {snippetData.apiKeyPrefix}...
               </Badge>
             </div>
 
-            {/* Code block */}
-            <CodeBlock code={snippet.code} language="typescript" />
+            {/* Code block with syntax highlighting */}
+            <CodeBlock code={currentSnippet.code} language={selectedLang} />
 
             {/* Info box */}
             <InfoBox variant="info" icon={Info} title="">
               <p className="text-sm">
-                The <code className="rounded bg-muted/50 font-mono text-xs">@whyops.trace</code> decorator automatically captures inputs, outputs, and intermediate reasoning steps.
+                Send events to WhyOps using the REST API. The{" "}
+                <code className="rounded bg-muted/50 font-mono text-xs">
+                  eventType
+                </code>{" "}
+                can be:{" "}
+                <code className="rounded bg-muted/50 font-mono text-xs">
+                  user_message
+                </code>
+                ,{" "}
+                <code className="rounded bg-muted/50 font-mono text-xs">
+                  llm_response
+                </code>
+                ,{" "}
+                <code className="rounded bg-muted/50 font-mono text-xs">
+                  tool_call
+                </code>
+                , or{" "}
+                <code className="rounded bg-muted/50 font-mono text-xs">
+                  error
+                </code>
+                .
               </p>
             </InfoBox>
           </div>
         </div>
       </StepContainer>
-      
+
       {/* Fixed Bottom Navigation */}
       <div className="fixed bottom-0 left-0 right-0 px-12 py-4 z-50">
         <div className="mx-auto max-w-7xl flex items-center justify-between">
@@ -148,20 +131,29 @@ export function CompleteStep() {
           >
             View Documentation
           </button>
-          
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
-              <span className="text-sm text-muted-foreground">Waiting for first event...</span>
+              <span className="text-sm text-muted-foreground">
+                Waiting for first event...
+              </span>
             </div>
-            
+
             <Button
               size="lg"
               className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-              onClick={() => window.location.href = "/dashboard"}
+              onClick={onFinish}
+              disabled={isFinishing}
             >
-              Go to Dashboard
-              <ArrowRight className="h-5 w-5 ml-2" />
+              {isFinishing ? (
+                "Finishing..."
+              ) : (
+                <>
+                  Go to Dashboard
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </>
+              )}
             </Button>
           </div>
         </div>

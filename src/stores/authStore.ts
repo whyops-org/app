@@ -1,10 +1,19 @@
 import { create } from "zustand";
 
-import { apiRequest, buildAuthUrl } from "@/lib/api";
+import { apiClient, apiRequest } from "@/lib/api-client";
 
 type AuthStatus = "idle" | "loading" | "sent" | "error";
 
 const RESEND_COOLDOWN_MS = 60_000;
+
+export type OnboardingStep = "welcome" | "provider" | "workspace" | "complete";
+
+export interface OnboardingProgress {
+  hasProvider: boolean;
+  hasProject: boolean;
+  onboardingComplete: boolean;
+  currentStep: OnboardingStep;
+}
 
 interface AuthUser {
   id: string;
@@ -16,6 +25,7 @@ interface AuthUser {
 
 interface AuthState {
   user: AuthUser | null;
+  onboardingProgress: OnboardingProgress | null;
   hasSession: boolean;
   sessionChecked: boolean;
   status: AuthStatus;
@@ -27,7 +37,9 @@ interface AuthState {
   sendMagicLink: (params?: { name?: string | null; callbackURL?: string; isResend?: boolean }) => Promise<void>;
   oauthLogin: (provider: "github" | "google") => void;
   loadSession: () => Promise<void>;
+  fetchOnboardingProgress: () => Promise<void>;
   signOut: () => Promise<void>;
+  completeOnboarding: () => Promise<void>;
 }
 
 interface MagicLinkResponse {
@@ -63,35 +75,36 @@ const defaultCallbacks = {
   errorCallbackURL: "/",
 };
 
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create<AuthState>((Set, Get) => ({
   user: null,
+  onboardingProgress: null,
   hasSession: false,
   sessionChecked: false,
   status: "idle",
   error: null,
   email: "",
   resendAvailableAt: null,
-  setEmail: (email) => set({ email, error: null }),
+  setEmail: (email) => Set({ email, error: null }),
   resetMagicLink: () =>
-    set({
+    Set({
       status: "idle",
       error: null,
       email: "",
     }),
   sendMagicLink: async ({ name, callbackURL } = {}) => {
-    const { email } = get();
+    const { email } = Get();
     if (!email.trim()) {
-      set({ error: "Enter a valid email address.", status: "error" });
+      Set({ error: "Enter a valid email address.", status: "error" });
       return;
     }
 
-    const { resendAvailableAt } = get();
+    const { resendAvailableAt } = Get();
     if (resendAvailableAt && Date.now() < resendAvailableAt) {
-      set({ error: "Please wait before resending.", status: "error" });
+      Set({ error: "Please wait before resending.", status: "error" });
       return;
     }
 
-    set({ status: "loading", error: null });
+    Set({ status: "loading", error: null });
 
     try {
       const origin = window.location.origin;
@@ -107,13 +120,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
 
       const nextAvailableAt = Date.now() + RESEND_COOLDOWN_MS;
-      set({
+      Set({
         status: "sent",
         resendAvailableAt: nextAvailableAt,
       });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to send magic link.";
-      set({ status: "error", error: message });
+      Set({ status: "error", error: message });
     }
   },
   oauthLogin: (provider) => {
@@ -131,12 +144,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         if (response.url) {
           window.location.href = response.url;
         } else {
-          set({ status: "error", error: "Failed to start OAuth login." });
+          Set({ status: "error", error: "Failed to start OAuth login." });
         }
       })
       .catch((error) => {
         const message = error instanceof Error ? error.message : "Failed to start OAuth login.";
-        set({ status: "error", error: message });
+        Set({ status: "error", error: message });
       });
   },
   loadSession: async () => {
@@ -150,7 +163,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           const currentUser = await apiRequest<CurrentUserResponse>("/api/users/me", {
             method: "GET",
           });
-          set({
+          Set({
             user: {
               ...user,
               onboardingComplete: Boolean(currentUser.onboardingComplete),
@@ -160,24 +173,51 @@ export const useAuthStore = create<AuthState>((set, get) => ({
           });
           return;
         } catch {
-          set({ user, hasSession: true, sessionChecked: true });
+          Set({ user, hasSession: true, sessionChecked: true });
           return;
         }
       }
 
-      set({ user: null, hasSession: false, sessionChecked: true });
+      Set({ user: null, hasSession: false, sessionChecked: true });
     } catch {
-      set({ user: null, hasSession: false, sessionChecked: true });
+      Set({ user: null, hasSession: false, sessionChecked: true });
+    }
+  },
+  fetchOnboardingProgress: async () => {
+    try {
+      const response = await apiRequest<OnboardingProgress>("/api/users/me/onboarding", {
+        method: "GET",
+      });
+      Set({ onboardingProgress: response });
+    } catch (error) {
+      console.error("Failed to fetch onboarding progress:", error);
     }
   },
   signOut: async () => {
-    set({ status: "loading", error: null });
+    Set({ status: "loading", error: null });
     try {
       await apiRequest("/api/auth/sign-out", { method: "POST" });
-      set({ user: null, hasSession: false, sessionChecked: true, status: "idle" });
+      Set({ user: null, hasSession: false, sessionChecked: true, status: "idle", onboardingProgress: null });
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to sign out.";
-      set({ status: "error", error: message });
+      Set({ status: "error", error: message });
+    }
+  },
+  completeOnboarding: async () => {
+    try {
+      await apiRequest("/api/users/me", {
+        method: "PUT",
+        body: { onboardingComplete: true },
+      });
+      Set((state) => ({
+        user: state.user ? { ...state.user, onboardingComplete: true } : null,
+        onboardingProgress: state.onboardingProgress
+          ? { ...state.onboardingProgress, onboardingComplete: true, currentStep: "complete" }
+          : null,
+      }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to complete onboarding.";
+      Set({ error: message });
     }
   },
 }));
