@@ -20,8 +20,6 @@ const PYTHON_TEMPLATE = `import requests
 # Your API credentials from WhyOps
 WHYOPS_API_KEY = "{{apiKey}}"
 WHYOPS_API_URL = "{{apiBaseUrl}}/api"
-PROJECT_ID = "{{projectId}}"
-ENVIRONMENT_ID = "{{environmentId}}"
 
 def send_event(event_type, trace_id, content, metadata=None):
     """Send an event to WhyOps"""
@@ -32,9 +30,6 @@ def send_event(event_type, trace_id, content, metadata=None):
     payload = {
         "eventType": event_type,
         "traceId": trace_id,
-        "userId": "user-123",
-        "projectId": PROJECT_ID,
-        "environmentId": ENVIRONMENT_ID,
         "content": content,
         "metadata": metadata or {}
     }
@@ -63,6 +58,16 @@ send_event(
     {"model": "gpt-4", "tokens": 150}
 )
 
+# Send tool call
+send_event(
+    "tool_call",
+    trace_id,
+    {
+        "name": "get_weather",
+        "arguments": {"location": "San Francisco"}
+    }
+)
+
 print("Events sent successfully!")`;
 
 const JAVASCRIPT_TEMPLATE = `const axios = require('axios');
@@ -70,16 +75,11 @@ const JAVASCRIPT_TEMPLATE = `const axios = require('axios');
 // Your API credentials from WhyOps
 const WHYOPS_API_KEY = "{{apiKey}}";
 const WHYOPS_API_URL = "{{apiBaseUrl}}/api";
-const PROJECT_ID = "{{projectId}}";
-const ENVIRONMENT_ID = "{{environmentId}}";
 
 async function sendEvent(eventType, traceId, content, metadata = {}) {
   const response = await axios.post(\`\${WHYOPS_API_URL}/events\`, {
     eventType,
     traceId,
-    userId: "user-123",
-    projectId: PROJECT_ID,
-    environmentId: ENVIRONMENT_ID,
     content,
     metadata
   }, {
@@ -109,6 +109,13 @@ await sendEvent(
   { model: "gpt-4", tokens: 150 }
 );
 
+// Send tool call
+await sendEvent(
+  "tool_call",
+  traceId,
+  { name: "get_weather", arguments: { location: "San Francisco" } }
+);
+
 console.log("Events sent successfully!");`;
 
 const TYPESCRIPT_TEMPLATE = `import axios from 'axios';
@@ -116,15 +123,10 @@ const TYPESCRIPT_TEMPLATE = `import axios from 'axios';
 // Your API credentials from WhyOps
 const WHYOPS_API_KEY = "{{apiKey}}";
 const WHYOPS_API_URL = "{{apiBaseUrl}}/api";
-const PROJECT_ID = "{{projectId}}";
-const ENVIRONMENT_ID = "{{environmentId}}";
 
 interface EventPayload {
   eventType: string;
   traceId: string;
-  userId: string;
-  projectId: string;
-  environmentId: string;
   content: Record<string, unknown>;
   metadata?: Record<string, unknown>;
 }
@@ -138,9 +140,6 @@ async function sendEvent(
   const payload: EventPayload = {
     eventType,
     traceId,
-    userId: "user-123",
-    projectId: PROJECT_ID,
-    environmentId: ENVIRONMENT_ID,
     content,
     metadata
   };
@@ -171,6 +170,13 @@ await sendEvent(
   { model: "gpt-4", tokens: 150 }
 );
 
+// Send tool call
+await sendEvent(
+  "tool_call",
+  traceId,
+  { name: "get_weather", arguments: { location: "San Francisco" } }
+);
+
 console.log("Events sent successfully!");`;
 
 export function getPythonSnippet(data: CodeSnippetData, apiBaseUrl: string): CodeSnippet {
@@ -178,9 +184,7 @@ export function getPythonSnippet(data: CodeSnippetData, apiBaseUrl: string): Cod
     filename: "main_agent.py",
     code: PYTHON_TEMPLATE
       .replace("{{apiKey}}", data.apiKey)
-      .replace("{{apiBaseUrl}}", apiBaseUrl)
-      .replace("{{projectId}}", data.projectId)
-      .replace("{{environmentId}}", data.environmentId),
+      .replace("{{apiBaseUrl}}", apiBaseUrl),
   };
 }
 
@@ -189,9 +193,7 @@ export function getJavaScriptSnippet(data: CodeSnippetData, apiBaseUrl: string):
     filename: "main_agent.js",
     code: JAVASCRIPT_TEMPLATE
       .replace("{{apiKey}}", data.apiKey)
-      .replace("{{apiBaseUrl}}", apiBaseUrl)
-      .replace("{{projectId}}", data.projectId)
-      .replace("{{environmentId}}", data.environmentId),
+      .replace("{{apiBaseUrl}}", apiBaseUrl),
   };
 }
 
@@ -200,9 +202,7 @@ export function getTypeScriptSnippet(data: CodeSnippetData, apiBaseUrl: string):
     filename: "main_agent.ts",
     code: TYPESCRIPT_TEMPLATE
       .replace("{{apiKey}}", data.apiKey)
-      .replace("{{apiBaseUrl}}", apiBaseUrl)
-      .replace("{{projectId}}", data.projectId)
-      .replace("{{environmentId}}", data.environmentId),
+      .replace("{{apiBaseUrl}}", apiBaseUrl),
   };
 }
 
