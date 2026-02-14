@@ -39,7 +39,7 @@ export function CodeBlock({ code, language = "python", showCopy = true, classNam
       {showCopy && (
         <button
           onClick={handleCopy}
-          className="absolute top-3 right-3 z-10 rounded-md p-2 hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground min-w-[4.5rem] flex items-center justify-center"
+          className="absolute top-3 right-3 z-10 rounded-md p-2 hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground min-w-18 flex items-center justify-center"
           aria-label="Copy code"
         >
           {copied ? (

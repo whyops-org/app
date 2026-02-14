@@ -1,19 +1,19 @@
 "use client";
 
-import { ArrowRight, Info, Zap, Send } from "lucide-react";
+import { ArrowRight, Info, Send, Zap } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getCodeSnippet, type SnippetType } from "@/lib/code-snippets";
+import { useConfigStore } from "@/stores/configStore";
+import { useProjectStore } from "@/stores/projectStore";
+import { useProviderStore } from "@/stores/providerStore";
 import { CodeBlock } from "./code-block";
 import { InfoBox } from "./info-box";
 import { StepContainer } from "./step-container";
 import { TabSelector } from "./tab-selector";
-import { useConfigStore } from "@/stores/configStore";
-import { useProjectStore } from "@/stores/projectStore";
-import { useProviderStore } from "@/stores/providerStore";
-import { getCodeSnippet, type SnippetType } from "@/lib/code-snippets";
 
 interface CompleteStepProps {
   onFinish?: () => void;
@@ -50,14 +50,18 @@ export function CompleteStep({ onFinish, isFinishing }: CompleteStepProps) {
   const languages = useMemo(() => config?.sdkLanguages || [], [config?.sdkLanguages]);
 
   // Get current code snippet based on selected language and type
-  const currentSnippet = useMemo(() => {
-    if (!config?.proxyBaseUrl || !config?.analyseBaseUrl) return null;
-    return getCodeSnippet(selectedLang, snippetData, {
-      proxyBaseUrl: config.proxyBaseUrl,
-      analyseBaseUrl: config.analyseBaseUrl,
-      authBaseUrl: config.authBaseUrl,
-    }, snippetType);
-  }, [selectedLang, snippetData, config?.proxyBaseUrl, config?.analyseBaseUrl, config?.authBaseUrl, snippetType]);
+  const currentSnippet = !config?.proxyBaseUrl || !config?.analyseBaseUrl
+    ? null
+    : getCodeSnippet(
+      selectedLang,
+      snippetData,
+      {
+        proxyBaseUrl: config.proxyBaseUrl,
+        analyseBaseUrl: config.analyseBaseUrl,
+        authBaseUrl: config.authBaseUrl,
+      },
+      snippetType
+    );
 
   // Show loading state while config is loading
   if (!config || !currentSnippet) {
