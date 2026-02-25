@@ -7,8 +7,7 @@ import { AgentUsagePieChart } from "@/components/agents/agent-usage-pie-chart";
 import { StatCard } from "@/components/agents/stat-card";
 import { SuccessRateChart } from "@/components/agents/success-rate-chart";
 import { EmptyState } from "@/components/dashboard/empty-state";
-import { Button } from "@/components/ui/button";
-import { Activity, Clock, Plus, Settings, TrendingUp, Users } from "lucide-react";
+import { Activity, Clock, TrendingUp, Users } from "lucide-react";
 
 import { useAgentsStore } from "@/stores/agentsStore";
 import { useAgentsContext } from "@/components/agents/agents-provider";
@@ -103,31 +102,21 @@ export default function AgentsPage() {
   }
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-5 p-6 lg:p-7">
       {/* Page Header */}
-      <div className="flex items-start justify-between">
+      <div className="border-b border-border/40 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            Active State Dashboard
+          <h1 className="text-2xl font-semibold text-foreground">
+            Agents Dashboard
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Real-time monitoring for deployed autonomous agents
+            Monitor performance and activity across deployed agents.
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" size="md" className="gap-2">
-            <Settings className="h-4 w-4" />
-            Configure View
-          </Button>
-          <Button variant="primary" size="md" className="gap-2">
-            <Plus className="h-4 w-4" />
-            Deploy Agent
-          </Button>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatCard
           title="Total Agents"
           value={stats?.totalAgents.toLocaleString() ?? "0"}
@@ -161,7 +150,7 @@ export default function AgentsPage() {
       </div>
 
       {/* Chart */}
-      <div className="flex flex-col gap-6 lg:flex-row">
+      <div className="flex flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-[320px] xl:w-[360px]">
           <AgentUsagePieChart
             data={agentUsage}

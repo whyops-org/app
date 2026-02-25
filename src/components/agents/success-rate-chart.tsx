@@ -28,16 +28,16 @@ const chartConfig = {
 export function SuccessRateChart({
   data,
   title = "Success Rate Over Time",
-  subtitle = "Weekly trend analysis across all active agents",
+  subtitle = "Weekly trend across active agents",
 }: SuccessRateChartProps) {
   const hasData = data && data.length > 0 && data.some(d => d.value > 0);
 
   return (
-    <Card className="border-border/30 bg-card p-6">
+    <Card className="gap-4 border-border/40 bg-card p-5">
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
+      <div className="mb-4 flex items-start justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">{title}</h2>
+          <h2 className="text-base font-semibold text-foreground">{title}</h2>
           <p className="mt-1 text-xs text-muted-foreground">{subtitle}</p>
         </div>
         <Button variant="ghost" size="sm" className="h-8 gap-2" disabled={!hasData}>
@@ -48,7 +48,7 @@ export function SuccessRateChart({
 
       {/* Chart */}
       {!hasData ? (
-        <div className="h-52 w-full flex items-center justify-center border border-dashed border-border/30 rounded-lg">
+        <div className="h-52 w-full flex items-center justify-center border border-dashed border-border/30">
           <EmptyStateSimple
             title="No chart data"
             description="Not enough data to display success trends yet."

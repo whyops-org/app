@@ -149,11 +149,11 @@ export function AgentsTable({
   };
 
   return (
-    <Card className="border-border/30 bg-card">
+    <Card className="gap-0 border-border/40 bg-card">
       {/* Header */}
       <div className="border-b border-border/30 px-6 py-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">
+          <h2 className="text-base font-semibold text-foreground">
             {AGENTS_TABLE_TEXT.title}
           </h2>
           <div className="flex items-center gap-3">
@@ -165,7 +165,7 @@ export function AgentsTable({
                 placeholder={AGENTS_TABLE_TEXT.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-64 pl-9 pr-4"
+                className="h-8 w-64 pl-9 pr-4"
                 disabled={isTableLoading}
               />
             </div>
@@ -209,7 +209,7 @@ export function AgentsTable({
       ) : (
         <Table>
           <TableHeader>
-            <TableRow className="bg-surface-2/50">
+            <TableRow className="bg-surface-2/30">
               {AGENTS_TABLE_TEXT.columns.map((column) => (
                 <TableHead
                   key={column}
@@ -242,7 +242,7 @@ export function AgentsTable({
                 >
                   <TableCell className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center overflow-hidden justify-center rounded-lg bg-surface-2">
+                      <div className="flex h-10 w-10 items-center overflow-hidden justify-center bg-surface-2">
                         <AgentIcon name={agent.name} />
                       </div>
                       <div>

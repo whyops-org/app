@@ -73,10 +73,10 @@ export function AgentUsagePieChart({
   };
 
   return (
-    <Card className="border-border/30 bg-card p-6">
-      <div className="mb-6 flex items-start justify-between gap-4">
+    <Card className="gap-4 border-border/40 bg-card p-5">
+      <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">
+          <h2 className="text-base font-semibold text-foreground">
             {AGENT_USAGE_CARD_TITLE}
           </h2>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -105,7 +105,7 @@ export function AgentUsagePieChart({
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
       ) : !hasData ? (
-        <div className="h-52 w-full flex items-center justify-center border border-dashed border-border/30 rounded-lg">
+        <div className="h-52 w-full flex items-center justify-center border border-dashed border-border/30">
           <EmptyStateSimple
             title={AGENT_USAGE_EMPTY_TITLE}
             description={AGENT_USAGE_EMPTY_DESCRIPTION}

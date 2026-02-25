@@ -2,6 +2,15 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { JsonViewer } from "@/components/ui/json-viewer";
 import type { TraceDetail } from "@/stores/traceDetailStore";
 import { formatDuration } from "@/lib/trace-format";
 import { getModelsUsed, getToolsUsed, getTraceEventStats } from "@/lib/trace-utils";
@@ -10,6 +19,7 @@ import {
   Bot,
   Calendar,
   Clock,
+  Eye,
   Hash,
   PanelLeftClose,
   PanelLeftOpen,
@@ -17,6 +27,7 @@ import {
   Terminal,
 } from "lucide-react";
 import * as React from "react";
+import { Streamdown } from "streamdown";
 
 interface TraceSidebarLeftProps {
   trace: TraceDetail;
@@ -24,14 +35,366 @@ interface TraceSidebarLeftProps {
   onToggle: () => void;
 }
 
+interface ToolInfo {
+  name: string;
+  inputSchema: unknown | null;
+  outputSchema: unknown | null;
+}
+
+type SectionKey = "agent" | "stats" | "models" | "tools" | "systemPrompt";
+
+const SECTION_CARD_CLASS = "rounded-lg border border-border/30 bg-surface-2/30 p-4";
+const SECTION_TRIGGER_CLASS =
+  "mb-3 flex w-full items-center justify-between text-xs font-medium uppercase tracking-widest text-muted-foreground hover:text-foreground";
+
+function buildPromptPreview(prompt: string): string {
+  const compact = prompt.replace(/\s+/g, " ").trim();
+  if (!compact) {
+    return "No system prompt content.";
+  }
+  return compact.length > 90 ? `${compact.slice(0, 90)}…` : compact;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function asText(value: unknown): string | null {
+  if (typeof value !== "string") {
+    return null;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function parseSchemaValue(value: unknown): unknown | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return null;
+    }
+    try {
+      return JSON.parse(trimmed);
+    } catch {
+      return trimmed;
+    }
+  }
+
+  return value;
+}
+
+function pickFirstSchema(...values: unknown[]): unknown | null {
+  for (const candidate of values) {
+    const parsed = parseSchemaValue(candidate);
+    if (parsed !== null) {
+      return parsed;
+    }
+  }
+  return null;
+}
+
+function getToolSchemas(tool: Record<string, unknown>): { inputSchema: unknown | null; outputSchema: unknown | null } {
+  const fn = isRecord(tool.function) ? tool.function : null;
+  const input = isRecord(tool.input) ? tool.input : null;
+  const output = isRecord(tool.output) ? tool.output : null;
+  const fnInput = fn && isRecord(fn.input) ? fn.input : null;
+  const fnOutput = fn && isRecord(fn.output) ? fn.output : null;
+
+  const inputSchema = pickFirstSchema(
+    tool.inputSchema,
+    tool.input_schema,
+    tool.parameters,
+    input?.schema,
+    fn?.parameters,
+    fnInput?.schema
+  );
+
+  const outputSchema = pickFirstSchema(
+    tool.outputSchema,
+    tool.output_schema,
+    tool.responseSchema,
+    tool.response_schema,
+    tool.returns,
+    output?.schema,
+    fn?.outputSchema,
+    fn?.output_schema,
+    fn?.returns,
+    fnOutput?.schema
+  );
+
+  return { inputSchema, outputSchema };
+}
+
+function extractConfiguredTools(tools: unknown[] | undefined): ToolInfo[] {
+  if (!Array.isArray(tools)) {
+    return [];
+  }
+
+  const toolMap = new Map<string, ToolInfo>();
+
+  tools.forEach((tool) => {
+    if (typeof tool === "string") {
+      const value = asText(tool);
+      if (value && !toolMap.has(value)) {
+        toolMap.set(value, {
+          name: value,
+          inputSchema: null,
+          outputSchema: null,
+        });
+      }
+      return;
+    }
+
+    if (!isRecord(tool)) {
+      return;
+    }
+
+    const directName = asText(tool.name);
+    if (directName) {
+      const schemas = getToolSchemas(tool);
+      const previous = toolMap.get(directName);
+      toolMap.set(directName, {
+        name: directName,
+        inputSchema: previous?.inputSchema ?? schemas.inputSchema,
+        outputSchema: previous?.outputSchema ?? schemas.outputSchema,
+      });
+      return;
+    }
+
+    const nestedFunction = tool.function;
+    if (isRecord(nestedFunction)) {
+      const functionName = asText(nestedFunction.name);
+      if (functionName) {
+        const schemas = getToolSchemas(tool);
+        const previous = toolMap.get(functionName);
+        toolMap.set(functionName, {
+          name: functionName,
+          inputSchema: previous?.inputSchema ?? schemas.inputSchema,
+          outputSchema: previous?.outputSchema ?? schemas.outputSchema,
+        });
+      }
+    }
+  });
+
+  return Array.from(toolMap.values());
+}
+
+function toJsonViewerValue(value: unknown): string {
+  if (typeof value === "string") {
+    return value;
+  }
+  const serialized = JSON.stringify(value, null, 2);
+  return typeof serialized === "string" ? serialized : "null";
+}
+
+function SchemaPanel({ title, value, emptyText }: { title: string; value: unknown | null; emptyText: string }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </p>
+      {value !== null ? (
+        <JsonViewer value={toJsonViewerValue(value)} />
+      ) : (
+        <div className="rounded-md border border-border/60 bg-surface-2/40 p-3 text-xs text-muted-foreground">
+          {emptyText}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ToolSchemaDialog({ tool }: { tool: ToolInfo }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0 hover:bg-surface-2"
+          aria-label={`View schemas for ${tool.name}`}
+        >
+          <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl border-border/70 bg-card p-0">
+        <DialogHeader className="border-b border-border/70 px-5 py-4">
+          <DialogTitle className="text-sm font-semibold text-foreground">
+            {tool.name}
+          </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Input and output schema for this tool.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 p-4 md:grid-cols-2">
+          <SchemaPanel title="Input Schema" value={tool.inputSchema} emptyText="No input schema available." />
+          <SchemaPanel title="Output Schema" value={tool.outputSchema} emptyText="No output schema available." />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function SystemPromptDialog({ prompt }: { prompt: string }) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0 hover:bg-surface-2"
+          aria-label="View system prompt"
+        >
+          <Eye className="h-3.5 w-3.5 text-muted-foreground" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl border-border/70 bg-card p-0">
+        <DialogHeader className="border-b border-border/70 px-5 py-4">
+          <DialogTitle className="text-sm font-semibold text-foreground">
+            System Prompt
+          </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Full system prompt configured for this trace.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="max-h-[70vh] overflow-auto p-4">
+          <div className="rounded-md border border-border/60 bg-surface-2/40 p-3">
+            <div className="text-xs text-foreground">
+              <Streamdown>{prompt}</Streamdown>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function CollapsedSidebarItem({ title, icon }: { title: string; icon: React.ReactNode }) {
+  return (
+    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-surface-2/50" title={title}>
+      {icon}
+    </div>
+  );
+}
+
+interface SidebarSectionProps {
+  id: SectionKey;
+  label: string;
+  icon: React.ReactNode;
+  openSections: SectionKey[];
+  onToggle: (section: SectionKey) => void;
+  count?: number;
+  children: React.ReactNode;
+}
+
+function SidebarSection({
+  id,
+  label,
+  icon,
+  openSections,
+  onToggle,
+  count,
+  children,
+}: SidebarSectionProps) {
+  const isOpen = openSections.includes(id);
+  const title = count !== undefined ? `${label} (${count})` : label;
+
+  return (
+    <div className={SECTION_CARD_CLASS}>
+      <button onClick={() => onToggle(id)} className={SECTION_TRIGGER_CLASS}>
+        <span className="flex items-center gap-2">
+          {icon}
+          {title}
+        </span>
+      </button>
+      {isOpen ? children : null}
+    </div>
+  );
+}
+
+interface InfoRowProps {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+  mono?: boolean;
+  title?: string;
+}
+
+function InfoRow({ label, value, icon, mono = false, title }: InfoRowProps) {
+  return (
+    <div>
+      <label className="flex items-center gap-1 text-xs text-muted-foreground">
+        {icon}
+        {label}
+      </label>
+      <p
+        className={cn(
+          "text-xs text-foreground",
+          mono ? "truncate font-mono" : "text-sm font-medium"
+        )}
+        title={title}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function StatItem({ label, value, isError = false }: { label: string; value: string; isError?: boolean }) {
+  return (
+    <div>
+      <label className="text-xs text-muted-foreground">{label}</label>
+      <p className={cn("text-lg font-semibold", isError ? "text-destructive" : "text-foreground")}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function ModelBadgeItem({ model }: { model: string }) {
+  return (
+    <Badge className="border-border bg-surface-2 font-mono text-xs text-foreground">
+      {model}
+    </Badge>
+  );
+}
+
+function ToolListItem({ tool }: { tool: ToolInfo }) {
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      <Terminal className="h-3 w-3 text-muted-foreground" />
+      <span className="min-w-0 flex-1 truncate font-mono text-foreground" title={tool.name}>
+        {tool.name}
+      </span>
+      <ToolSchemaDialog tool={tool} />
+    </div>
+  );
+}
+
+function SystemPromptPreviewRow({ prompt }: { prompt: string }) {
+  return (
+    <div className="flex items-center gap-2 text-xs">
+      <Sparkles className="h-3 w-3 text-muted-foreground" />
+      <span className="min-w-0 flex-1 truncate text-muted-foreground" title={prompt}>
+        {buildPromptPreview(prompt)}
+      </span>
+      <SystemPromptDialog prompt={prompt} />
+    </div>
+  );
+}
+
 export function TraceSidebarLeft({ trace, isCollapsed, onToggle }: TraceSidebarLeftProps) {
-  const [openSections, setOpenSections] = React.useState<string[]>([
+  const [openSections, setOpenSections] = React.useState<SectionKey[]>([
     "agent",
     "stats",
     "tools",
   ]);
 
-  const toggleSection = (section: string) => {
+  const toggleSection = (section: SectionKey) => {
     setOpenSections((prev) =>
       prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]
     );
@@ -40,9 +403,28 @@ export function TraceSidebarLeft({ trace, isCollapsed, onToggle }: TraceSidebarL
   // Calculate stats from events
   const stats = trace.events ? getTraceEventStats(trace.events) : null;
   const models = trace.events ? getModelsUsed(trace.events) : [];
-  const tools = trace.events ? getToolsUsed(trace.events) : [];
+  const tools = React.useMemo(() => {
+    const configuredTools = extractConfiguredTools(trace.tools);
+    const eventTools = trace.events ? getToolsUsed(trace.events) : [];
+    const toolMap = new Map<string, ToolInfo>();
 
-  // Format timestamp
+    configuredTools.forEach((tool) => {
+      toolMap.set(tool.name, tool);
+    });
+
+    eventTools.forEach((name) => {
+      if (!toolMap.has(name)) {
+        toolMap.set(name, {
+          name,
+          inputSchema: null,
+          outputSchema: null,
+        });
+      }
+    });
+
+    return Array.from(toolMap.values());
+  }, [trace.tools, trace.events]);
+
   const formatTimestamp = (timestamp: string) => {
     return new Date(timestamp).toLocaleString("en-US", {
       month: "short",
@@ -53,7 +435,57 @@ export function TraceSidebarLeft({ trace, isCollapsed, onToggle }: TraceSidebarL
     });
   };
 
+  const agentRows = [
+    {
+      key: "name",
+      label: "Name",
+      icon: <Sparkles className="h-3 w-3" />,
+      value: trace.entityName || "Unknown",
+      mono: false,
+    },
+    {
+      key: "traceId",
+      label: "Trace ID",
+      icon: <Hash className="h-3 w-3" />,
+      value: `${trace.threadId.substring(0, 16)}...`,
+      mono: true,
+      title: trace.threadId,
+    },
+    ...(trace.model
+      ? [{
+          key: "model",
+          label: "Model",
+          value: trace.model,
+          mono: true,
+        }]
+      : []),
+    {
+      key: "started",
+      label: "Started",
+      icon: <Calendar className="h-3 w-3" />,
+      value: trace.firstEventTimestamp ? formatTimestamp(trace.firstEventTimestamp) : "N/A",
+      mono: true,
+    },
+  ];
+
+  const statsItems = stats
+    ? [
+        { key: "events", label: "Events", value: String(stats.totalEvents) },
+        { key: "duration", label: "Duration", value: formatDuration(trace.duration) },
+        { key: "llmCalls", label: "LLM Calls", value: String(stats.llmCalls) },
+        { key: "toolCalls", label: "Tool Calls", value: String(stats.toolCalls) },
+        { key: "tokens", label: "Tokens", value: stats.totalTokens.toLocaleString() },
+        { key: "errors", label: "Errors", value: String(stats.errors), isError: stats.errors > 0 },
+      ]
+    : [];
+
   if (isCollapsed) {
+    const collapsedItems = [
+      { key: "agent", title: "Agent", icon: <Bot className="h-4 w-4 text-primary" /> },
+      { key: "stats", title: "Stats", icon: <Clock className="h-4 w-4 text-muted-foreground" /> },
+      { key: "tools", title: "Tools", icon: <Terminal className="h-4 w-4 text-muted-foreground" /> },
+    ];
+
     return (
       <div className="flex w-12 flex-col items-center border-r border-border/30 bg-background py-4 transition-all duration-300">
         <Button
@@ -65,15 +497,9 @@ export function TraceSidebarLeft({ trace, isCollapsed, onToggle }: TraceSidebarL
           <PanelLeftOpen className="h-4 w-4 text-muted-foreground" />
         </Button>
         <div className="flex flex-col gap-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-surface-2/50" title="Agent">
-            <Bot className="h-4 w-4 text-primary" />
-          </div>
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-surface-2/50" title="Stats">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-surface-2/50" title="Tools">
-            <Terminal className="h-4 w-4 text-muted-foreground" />
-          </div>
+          {collapsedItems.map((item) => (
+            <CollapsedSidebarItem key={item.key} title={item.title} icon={item.icon} />
+          ))}
         </div>
       </div>
     );
@@ -96,175 +522,92 @@ export function TraceSidebarLeft({ trace, isCollapsed, onToggle }: TraceSidebarL
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* Agent Info Section */}
-        <div className="rounded-lg bg-surface-2/30 p-4 border border-border/30">
-          <button
-            onClick={() => toggleSection("agent")}
-            className="flex w-full items-center justify-between text-xs font-medium uppercase tracking-widest text-muted-foreground mb-3 hover:text-foreground"
-          >
-            <span className="flex items-center gap-2">
-              <Bot className="h-3.5 w-3.5" />
-              Agent
-            </span>
-          </button>
+        <SidebarSection
+          id="agent"
+          label="Agent"
+          icon={<Bot className="h-3.5 w-3.5" />}
+          openSections={openSections}
+          onToggle={toggleSection}
+        >
+          <div className="space-y-3">
+            {agentRows.map((row) => (
+              <InfoRow
+                key={row.key}
+                label={row.label}
+                value={row.value}
+                icon={row.icon}
+                mono={row.mono}
+                title={row.title}
+              />
+            ))}
+          </div>
+        </SidebarSection>
 
-          {openSections.includes("agent") && (
-            <div className="space-y-3">
-              <div>
-                <label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" />
-                  Name
-                </label>
-                <p className="text-sm font-medium text-foreground">{trace.entityName || "Unknown"}</p>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Hash className="h-3 w-3" />
-                  Trace ID
-                </label>
-                <p className="text-xs font-mono text-foreground truncate" title={trace.threadId}>
-                  {trace.threadId.substring(0, 16)}...
-                </p>
-              </div>
-              {trace.model && (
-                <div>
-                  <label className="text-xs text-muted-foreground">Model</label>
-                  <p className="text-xs font-mono text-foreground">{trace.model}</p>
-                </div>
-              )}
-              <div>
-                <label className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  Started
-                </label>
-                <p className="text-xs text-foreground">
-                  {trace.firstEventTimestamp ? formatTimestamp(trace.firstEventTimestamp) : "N/A"}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Stats Section */}
         {stats && (
-          <div className="rounded-lg bg-surface-2/30 p-4 border border-border/30">
-            <button
-              onClick={() => toggleSection("stats")}
-              className="flex w-full items-center justify-between text-xs font-medium uppercase tracking-widest text-muted-foreground mb-3 hover:text-foreground"
-            >
-              <span className="flex items-center gap-2">
-                <Clock className="h-3.5 w-3.5" />
-                Stats
-              </span>
-            </button>
-
-            {openSections.includes("stats") && (
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground">Events</label>
-                  <p className="text-lg font-semibold text-foreground">{stats.totalEvents}</p>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Duration</label>
-                  <p className="text-lg font-semibold text-foreground">
-                    {formatDuration(trace.duration)}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">LLM Calls</label>
-                  <p className="text-lg font-semibold text-foreground">{stats.llmCalls}</p>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Tool Calls</label>
-                  <p className="text-lg font-semibold text-foreground">{stats.toolCalls}</p>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Tokens</label>
-                  <p className="text-lg font-semibold text-foreground">{stats.totalTokens.toLocaleString()}</p>
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground">Errors</label>
-                  <p className={cn("text-lg font-semibold", stats.errors > 0 ? "text-destructive" : "text-foreground")}>
-                    {stats.errors}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+          <SidebarSection
+            id="stats"
+            label="Stats"
+            icon={<Clock className="h-3.5 w-3.5" />}
+            openSections={openSections}
+            onToggle={toggleSection}
+          >
+            <div className="grid grid-cols-2 gap-3">
+              {statsItems.map((item) => (
+                <StatItem
+                  key={item.key}
+                  label={item.label}
+                  value={item.value}
+                  isError={item.isError}
+                />
+              ))}
+            </div>
+          </SidebarSection>
         )}
 
-        {/* Models Section */}
         {models.length > 0 && (
-          <div className="rounded-lg bg-surface-2/30 p-4 border border-border/30">
-            <button
-              onClick={() => toggleSection("models")}
-              className="flex w-full items-center justify-between text-xs font-medium uppercase tracking-widest text-muted-foreground mb-3 hover:text-foreground"
-            >
-              <span className="flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5" />
-                Models ({models.length})
-              </span>
-            </button>
-
-            {openSections.includes("models") && (
-              <div className="space-y-2">
-                {models.map((model, index) => (
-                  <Badge key={index} className="text-xs font-mono bg-surface-2 text-foreground border-border">
-                    {model}
-                  </Badge>
-                ))}
-              </div>
-            )}
-          </div>
+          <SidebarSection
+            id="models"
+            label="Models"
+            icon={<Sparkles className="h-3.5 w-3.5" />}
+            count={models.length}
+            openSections={openSections}
+            onToggle={toggleSection}
+          >
+            <div className="space-y-2">
+              {models.map((model) => (
+                <ModelBadgeItem key={model} model={model} />
+              ))}
+            </div>
+          </SidebarSection>
         )}
 
-        {/* Tools Section */}
         {tools.length > 0 && (
-          <div className="rounded-lg bg-surface-2/30 p-4 border border-border/30">
-            <button
-              onClick={() => toggleSection("tools")}
-              className="flex w-full items-center justify-between text-xs font-medium uppercase tracking-widest text-muted-foreground mb-3 hover:text-foreground"
-            >
-              <span className="flex items-center gap-2">
-                <Terminal className="h-3.5 w-3.5" />
-                Tools ({tools.length})
-              </span>
-            </button>
-
-            {openSections.includes("tools") && (
-              <div className="space-y-2">
-                {tools.map((tool, index) => (
-                  <div key={index} className="flex items-center gap-2 text-xs">
-                    <Terminal className="h-3 w-3 text-muted-foreground" />
-                    <span className="font-mono text-foreground">{tool}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <SidebarSection
+            id="tools"
+            label="Tools"
+            icon={<Terminal className="h-3.5 w-3.5" />}
+            count={tools.length}
+            openSections={openSections}
+            onToggle={toggleSection}
+          >
+            <div className="space-y-2">
+              {tools.map((tool) => (
+                <ToolListItem key={tool.name} tool={tool} />
+              ))}
+            </div>
+          </SidebarSection>
         )}
 
-        {/* System Prompt Section */}
         {trace.systemPrompt && (
-          <div className="rounded-lg bg-surface-2/30 p-4 border border-border/30">
-            <button
-              onClick={() => toggleSection("systemPrompt")}
-              className="flex w-full items-center justify-between text-xs font-medium uppercase tracking-widest text-muted-foreground mb-3 hover:text-foreground"
-            >
-              <span className="flex items-center gap-2">
-                <Sparkles className="h-3.5 w-3.5" />
-                System Prompt
-              </span>
-            </button>
-
-            {openSections.includes("systemPrompt") && (
-              <div className="max-h-40 overflow-y-auto">
-                <p className="text-xs text-muted-foreground whitespace-pre-wrap">
-                  {trace.systemPrompt}
-                </p>
-              </div>
-            )}
-          </div>
+          <SidebarSection
+            id="systemPrompt"
+            label="System Prompt"
+            icon={<Sparkles className="h-3.5 w-3.5" />}
+            openSections={openSections}
+            onToggle={toggleSection}
+          >
+            <SystemPromptPreviewRow prompt={trace.systemPrompt} />
+          </SidebarSection>
         )}
       </div>
     </div>
