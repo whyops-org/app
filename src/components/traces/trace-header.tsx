@@ -12,14 +12,15 @@ import {
   GitGraph,
   List,
   RefreshCw,
+  Scale,
 } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
 interface TraceHeaderProps {
   trace: TraceDetail;
-  view: "graph" | "timeline";
-  onViewChange: (view: "graph" | "timeline") => void;
+  view: "graph" | "timeline" | "judge";
+  onViewChange: (view: "graph" | "timeline" | "judge") => void;
   agentId?: string;
 }
 
@@ -90,6 +91,12 @@ export function TraceHeader({ trace, view, onViewChange, agentId }: TraceHeaderP
             onClick={() => onViewChange("timeline")}
             label="Timeline"
             icon={<List className="h-3.5 w-3.5" />}
+          />
+          <ViewToggleButton
+            active={view === "judge"}
+            onClick={() => onViewChange("judge")}
+            label="Judge"
+            icon={<Scale className="h-3.5 w-3.5" />}
           />
         </div>
 

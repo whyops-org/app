@@ -3,11 +3,13 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { JudgePanel } from "@/components/traces/judge-panel";
 import { TraceCanvas } from "@/components/traces/trace-canvas";
 import { TraceHeader } from "@/components/traces/trace-header";
 import { TraceSidebarLeft } from "@/components/traces/trace-sidebar-left";
 import { TraceSidebarRight } from "@/components/traces/trace-sidebar-right";
 import { TraceTimeline } from "@/components/traces/trace-timeline";
+import { cn } from "@/lib/utils";
 import { useConfigStore } from "@/stores/configStore";
 import { useTraceDetailStore } from "@/stores/traceDetailStore";
 import { ReactFlowProvider } from "reactflow";
@@ -19,7 +21,8 @@ export function TraceDetailsPageContent() {
 
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
-  const [view, setView] = useState<"graph" | "timeline">("graph");
+  const [view, setView] = useState<"graph" | "timeline" | "judge">("graph");
+  const isJudgeView = view === "judge";
 
   const config = useConfigStore((state) => state.config);
   const { trace, isLoading, fetchTrace } = useTraceDetailStore();
@@ -56,27 +59,38 @@ export function TraceDetailsPageContent() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        <TraceSidebarLeft
-          trace={trace}
-          isCollapsed={leftCollapsed}
-          onToggle={() => setLeftCollapsed(!leftCollapsed)}
-        />
+        {!isJudgeView ? (
+          <TraceSidebarLeft
+            trace={trace}
+            isCollapsed={leftCollapsed}
+            onToggle={() => setLeftCollapsed(!leftCollapsed)}
+          />
+        ) : null}
 
-        <div className="relative flex-1 overflow-hidden border-x border-border/50">
+        <div
+          className={cn(
+            "relative flex-1 overflow-hidden",
+            !isJudgeView && "border-x border-border/50"
+          )}
+        >
           {view === "graph" ? (
             <ReactFlowProvider>
               <TraceCanvas trace={trace} />
             </ReactFlowProvider>
-          ) : (
+          ) : view === "timeline" ? (
             <TraceTimeline trace={trace} />
+          ) : (
+            <JudgePanel traceId={traceId} />
           )}
         </div>
 
-        <TraceSidebarRight
-          trace={trace}
-          isCollapsed={rightCollapsed}
-          onToggle={() => setRightCollapsed(!rightCollapsed)}
-        />
+        {!isJudgeView ? (
+          <TraceSidebarRight
+            trace={trace}
+            isCollapsed={rightCollapsed}
+            onToggle={() => setRightCollapsed(!rightCollapsed)}
+          />
+        ) : null}
       </div>
     </div>
   );
