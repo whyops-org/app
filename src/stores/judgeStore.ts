@@ -82,6 +82,12 @@ export interface JudgeSummary {
   totalPatches: number;
   bySeverity: Record<string, number>;
   dimensionDetails: DimensionDetail[];
+  checkpoint?: {
+    key: string;
+    sequence: number;
+    at: string;
+    data?: Record<string, unknown>;
+  };
 }
 
 export interface JudgeResult {
@@ -113,6 +119,43 @@ export interface RunJudgeOptions {
   dimensions?: JudgeDimension[];
   judgeModel?: string;
   mode?: "quick" | "standard" | "deep";
+}
+
+interface JudgeRunStreamChunk {
+  success: boolean;
+  analysis?: JudgeResult;
+  error?: string;
+}
+
+async function parseNdjsonStream(
+  stream: ReadableStream<Uint8Array>,
+  onChunk: (chunk: JudgeRunStreamChunk) => void
+): Promise<void> {
+  const reader = stream.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      const parsed = JSON.parse(trimmed) as JudgeRunStreamChunk;
+      onChunk(parsed);
+    }
+  }
+
+  const tail = buffer.trim();
+  if (tail) {
+    const parsed = JSON.parse(tail) as JudgeRunStreamChunk;
+    onChunk(parsed);
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -148,25 +191,69 @@ export const useJudgeStore = create<JudgeState>()((set) => ({
       return null;
     }
 
-    set({ isRunning: true, error: null });
+    set({ isRunning: true, error: null, judgeResult: null });
 
     try {
-      const response = await apiClient.post<{ success: boolean; analysis: JudgeResult }>(
-        `${config.analyseBaseUrl}/analyses/judge`,
-        {
-          traceId,
-          dimensions: options?.dimensions,
-          judgeModel: options?.judgeModel,
-          mode: options?.mode,
-        },
-        {
-          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
-        }
-      );
+      const payload = {
+        traceId,
+        dimensions: options?.dimensions,
+        judgeModel: options?.judgeModel,
+        mode: options?.mode,
+      };
 
-      const result = response.data.analysis;
-      set({ judgeResult: result, isRunning: false });
-      return result;
+      const streamResponse = await fetch(`${config.analyseBaseUrl}/analyses/judge?stream=true`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/x-ndjson",
+          ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+
+      if (!streamResponse.ok) {
+        let message = "Failed to run LLM judge";
+        try {
+          const raw = await streamResponse.text();
+          if (raw) {
+            const parsed = JSON.parse(raw) as { error?: string; message?: string };
+            message = parsed.error || parsed.message || message;
+          }
+        } catch {
+          // Ignore parse errors and use default message.
+        }
+        throw new Error(message);
+      }
+
+      if (!streamResponse.body) {
+        throw new Error("Streaming response body missing");
+      }
+
+      let finalResult: JudgeResult | null = null;
+      await parseNdjsonStream(streamResponse.body, (chunk) => {
+        if (!chunk.success) {
+          const message = chunk.error || "Failed to run LLM judge";
+          set({ error: message });
+          return;
+        }
+
+        if (!chunk.analysis) return;
+
+        const status = chunk.analysis.status;
+        if (status === "completed") {
+          finalResult = chunk.analysis;
+        }
+
+        set({
+          judgeResult: chunk.analysis,
+          isRunning: status !== "completed" && status !== "failed",
+          error: null,
+        });
+      });
+
+      set({ isRunning: false });
+      return finalResult;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to run LLM judge";
       set({ error: message, isRunning: false });

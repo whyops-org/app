@@ -1,7 +1,7 @@
 import { Filter } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import {
@@ -20,9 +20,16 @@ import type { DimensionTab, FindingCategory } from "./types";
 interface FindingsWorkbenchProps {
   findings: JudgeFinding[];
   systemPrompt: string;
+  tools?: unknown[];
+  isStreaming?: boolean;
 }
 
-export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchProps) {
+export function FindingsWorkbench({
+  findings,
+  systemPrompt,
+  tools,
+  isStreaming = false,
+}: FindingsWorkbenchProps) {
   const [dimensionTab, setDimensionTab] = useState<DimensionTab>("all");
   const [category, setCategory] = useState<FindingCategory>("all");
   const [activeFindingId, setActiveFindingId] = useState<string | null>(findings[0]?.id ?? null);
@@ -89,17 +96,25 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
     filteredFindings.find((finding) => finding.id === resolvedActiveFindingId) ?? null;
 
   return (
-    <Card className="border-border/55 bg-card/95">
-      <CardHeader className="border-b border-border/50 pb-4">
+    <section className="rounded-sm border border-border/60 bg-surface-2/20">
+      <div className="space-y-1 border-b border-border/55 px-5 py-4">
         <div className="space-y-1">
-          <CardTitle className="text-lg">Findings</CardTitle>
+          <div className="flex flex-wrap items-center gap-2">
+            <CardTitle className="text-lg">Findings</CardTitle>
+            {isStreaming ? (
+              <span className="inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+                Live
+              </span>
+            ) : null}
+          </div>
           <p className="text-sm text-muted-foreground">
             Filter the list, open a finding, then review issues and patch diffs in separate tabs.
           </p>
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="space-y-4 pt-4">
+      <div className="space-y-4 px-5 py-4">
         <Tabs
           value={dimensionTab}
           onValueChange={(value) => {
@@ -107,6 +122,7 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
             setCategory("all");
             setActiveFindingId(null);
           }}
+          className="min-h-[40rem]"
         >
           <TabsList
             variant="line"
@@ -116,19 +132,19 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="h-8 flex-none rounded-sm border border-transparent px-2.5 text-xs font-medium data-[state=active]:border-border/70 data-[state=active]:bg-surface-2/65"
+                className="h-9 flex-none rounded-sm border border-transparent px-3 text-sm font-medium data-[state=active]:border-border/70 data-[state=active]:bg-background/90"
               >
                 {tab.label}
-                <span className="rounded-sm bg-surface-2 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                <span className="rounded-sm bg-surface-2 px-1.5 py-0.5 text-xs text-muted-foreground">
                   {tab.count}
                 </span>
               </TabsTrigger>
             ))}
           </TabsList>
 
-          <TabsContent value={dimensionTab} className="mt-4 space-y-4">
+          <TabsContent value={dimensionTab} className="mt-4 min-h-[35rem] space-y-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+              <span className="inline-flex items-center gap-1 text-sm text-muted-foreground">
                 <Filter className="h-3.5 w-3.5" />
                 Categories
               </span>
@@ -144,14 +160,14 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
                       setActiveFindingId(null);
                     }}
                     className={cn(
-                      "inline-flex h-7 items-center gap-1 rounded-sm border px-2.5 text-xs font-medium transition-colors",
+                      "inline-flex h-8 items-center gap-1 rounded-sm border px-2.5 text-sm font-medium transition-colors",
                       isActive
                         ? "border-primary/40 bg-primary/10 text-foreground"
-                        : "border-border/60 bg-surface-2/40 text-muted-foreground hover:text-foreground"
+                        : "border-border/60 bg-background/70 text-muted-foreground hover:text-foreground"
                     )}
                   >
                     {FINDING_CATEGORY_LABELS[categoryOption]}
-                    <span className="text-[10px] tabular-nums text-muted-foreground">
+                    <span className="text-xs tabular-nums text-muted-foreground">
                       {categoryCounts[categoryOption]}
                     </span>
                   </button>
@@ -160,7 +176,7 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
             </div>
 
             {filteredFindings.length === 0 ? (
-              <div className="rounded-sm border border-dashed border-border/70 bg-surface-2/35 px-4 py-10 text-center">
+              <div className="flex min-h-[28rem] items-center justify-center rounded-sm border border-dashed border-border/70 bg-surface-2/35 px-4 py-10 text-center">
                 <p className="text-base font-medium text-foreground">No findings in this view</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Try another category or dimension tab.
@@ -168,12 +184,12 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="space-y-2 rounded-sm border border-border/55 bg-surface-2/25 p-2.5">
+                <div className="space-y-2 rounded-sm border border-border/55 bg-background/75 p-3">
                   <div className="flex items-center justify-between px-0.5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <p className="text-sm font-semibold text-foreground">
                       Findings Strip
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                       {(resolvedActiveFindingId
                         ? filteredFindings.findIndex((finding) => finding.id === resolvedActiveFindingId) + 1
                         : 0)} of {filteredFindings.length}
@@ -183,7 +199,7 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
                   <div className="overflow-x-auto pb-1">
                     <div className="flex min-w-max gap-2">
                       {filteredFindings.map((finding) => (
-                        <div key={finding.id} className="w-[280px] shrink-0 lg:w-[300px]">
+                        <div key={finding.id} className="w-[320px] shrink-0">
                           <FindingListItem
                             finding={finding}
                             isActive={finding.id === resolvedActiveFindingId}
@@ -195,16 +211,12 @@ export function FindingsWorkbench({ findings, systemPrompt }: FindingsWorkbenchP
                   </div>
                 </div>
 
-                <FindingDetailPanel
-                  key={activeFinding?.id ?? "empty"}
-                  finding={activeFinding}
-                  systemPrompt={systemPrompt}
-                />
+                <FindingDetailPanel finding={activeFinding} systemPrompt={systemPrompt} tools={tools} />
               </div>
             )}
           </TabsContent>
         </Tabs>
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

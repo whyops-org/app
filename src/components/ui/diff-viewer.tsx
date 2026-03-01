@@ -4,10 +4,18 @@ import dynamic from "next/dynamic";
 
 import { cn } from "@/lib/utils";
 
+const DIFF_VIEWER_MIN_HEIGHT_CLASS = "min-h-[22rem]";
+
 const ReactDiffViewer = dynamic(() => import("react-diff-viewer-continued"), {
   ssr: false,
   loading: () => (
-    <div className="rounded-sm border border-border/60 bg-surface-2/40 px-4 py-10 text-center text-sm text-muted-foreground">
+    <div
+      className={cn(
+        "rounded-sm border border-border/60 bg-surface-2/40 px-4 py-10 text-center text-sm text-muted-foreground",
+        DIFF_VIEWER_MIN_HEIGHT_CLASS,
+        "flex items-center justify-center"
+      )}
+    >
       Loading diff viewer...
     </div>
   ),
@@ -85,7 +93,7 @@ export function DiffViewer({
   extraLinesSurroundingDiff = 6,
 }: DiffViewerProps) {
   return (
-    <div className={cn("rounded-sm border border-border/60 bg-card", className)}>
+    <div className={cn("rounded-sm border border-border/60 bg-card", DIFF_VIEWER_MIN_HEIGHT_CLASS, className)}>
       <div className="overflow-x-auto">
         <ReactDiffViewer
           oldValue={oldValue}

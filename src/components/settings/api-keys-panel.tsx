@@ -1,31 +1,124 @@
 "use client";
 
-import { Copy, KeyRound, ShieldAlert } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Copy, KeyRound, Loader2, Plus, RefreshCcw, ShieldAlert } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { InfoBox } from "@/components/onboarding/info-box";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { EmptyStateSimple } from "@/components/ui/empty-state-simple";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { SETTINGS_COPY } from "@/constants/settings";
+import { apiClient } from "@/lib/api-client";
 import { formatShortDate } from "@/lib/formatters";
 import { cn } from "@/lib/utils";
 import { useConfigStore } from "@/stores/configStore";
-import { useProjectStore, type MasterKey } from "@/stores/projectStore";
+import { toast } from "sonner";
 
 interface ApiKeysPanelProps {
   className?: string;
 }
 
+interface ApiKeyStageRow {
+  id: string;
+  name: string;
+  projectId: string;
+  projectName: string;
+  environmentId: string;
+  stage: string;
+  keyPrefix: string;
+  maskedKey: string;
+  canReveal: boolean;
+  isMaster: boolean;
+  isActive: boolean;
+  createdAt: string;
+  lastUsedAt?: string;
+  expiresAt?: string;
+}
+
+interface ProjectWithEnvironments {
+  id: string;
+  name: string;
+  environments?: Array<{
+    id: string;
+    name: string;
+    isActive: boolean;
+  }>;
+}
+
+interface EnvironmentOption {
+  projectId: string;
+  projectName: string;
+  environmentId: string;
+  environmentName: string;
+}
+
 export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
-  const { masterKeys, fetchProjects } = useProjectStore();
   const { config, fetchConfig } = useConfigStore();
+  const [apiKeys, setApiKeys] = useState<ApiKeyStageRow[]>([]);
+  const [isLoadingKeys, setIsLoadingKeys] = useState(false);
+  const [keysError, setKeysError] = useState<string | null>(null);
   const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
+  const [revealingKeyId, setRevealingKeyId] = useState<string | null>(null);
+  const [regeneratingKeyId, setRegeneratingKeyId] = useState<string | null>(null);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isCreatingKey, setIsCreatingKey] = useState(false);
+  const [newKeyName, setNewKeyName] = useState("");
+  const [newKeyEnvironmentId, setNewKeyEnvironmentId] = useState("");
+  const [environmentOptions, setEnvironmentOptions] = useState<EnvironmentOption[]>([]);
+  const [sessionPlainKeys, setSessionPlainKeys] = useState<Record<string, string>>({});
+
+  const loadApiKeys = useCallback(async () => {
+    setIsLoadingKeys(true);
+    setKeysError(null);
+    try {
+      const response = await apiClient.get<{ apiKeys: ApiKeyStageRow[] }>("/api/api-keys/stages");
+      setApiKeys(response.data.apiKeys || []);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to load API keys";
+      setKeysError(message);
+    } finally {
+      setIsLoadingKeys(false);
+    }
+  }, []);
+
+  const loadEnvironmentOptions = useCallback(async () => {
+    try {
+      const response = await apiClient.get<{ projects: ProjectWithEnvironments[] }>("/api/projects");
+      const projects = response.data.projects || [];
+      const options = projects.flatMap((project) =>
+        (project.environments || [])
+          .filter((environment) => environment.isActive)
+          .map((environment) => ({
+            projectId: project.id,
+            projectName: project.name,
+            environmentId: environment.id,
+            environmentName: environment.name,
+          }))
+      );
+      setEnvironmentOptions(options);
+      if (!newKeyEnvironmentId && options.length > 0) {
+        setNewKeyEnvironmentId(options[0].environmentId);
+      }
+    } catch {
+      toast.error("Failed to load environments");
+    }
+  }, [newKeyEnvironmentId]);
 
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    loadApiKeys();
+    loadEnvironmentOptions();
+  }, [loadApiKeys, loadEnvironmentOptions]);
 
   useEffect(() => {
     if (!config) {
@@ -40,21 +133,100 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
     };
   }, [config]);
 
-  const handleCopyKey = async (key: MasterKey) => {
-    if (!key.key) return;
+  const handleCopyKey = async (key: ApiKeyStageRow) => {
+    const sessionPlainKey = sessionPlainKeys[key.id];
+    if (sessionPlainKey) {
+      try {
+        await navigator.clipboard.writeText(sessionPlainKey);
+        setCopiedKeyId(key.id);
+        setTimeout(() => setCopiedKeyId(null), 2000);
+      } catch {
+        toast.error("Failed to copy API key");
+      }
+      return;
+    }
+
+    if (!key.canReveal) {
+      toast.error("This key cannot be revealed yet. Run DB migration and rotate/regenerate key.");
+      return;
+    }
+
     try {
-      await navigator.clipboard.writeText(key.key);
+      setRevealingKeyId(key.id);
+      const response = await apiClient.get<{ id: string; apiKey: string }>(
+        `/api/api-keys/${key.id}/unmasked`
+      );
+      await navigator.clipboard.writeText(response.data.apiKey);
       setCopiedKeyId(key.id);
       setTimeout(() => setCopiedKeyId(null), 2000);
-    } catch {
-      // Ignore clipboard errors
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to copy API key";
+      toast.error(message);
+    } finally {
+      setRevealingKeyId(null);
     }
   };
 
-  const renderKeyValue = (key: MasterKey) => {
-    if (!key.key) return `${key.prefix}****`;
-    const suffix = key.key.slice(-4);
-    return `${key.prefix}****${suffix}`;
+  const handleRegenerateKey = async (key: ApiKeyStageRow) => {
+    try {
+      setRegeneratingKeyId(key.id);
+      const response = await apiClient.post<{ id: string; apiKey: string }>(
+        `/api/api-keys/${key.id}/regenerate`
+      );
+      setSessionPlainKeys((prev) => ({ ...prev, [response.data.id]: response.data.apiKey }));
+      await navigator.clipboard.writeText(response.data.apiKey);
+      toast.success("API key regenerated and copied to clipboard.");
+      await loadApiKeys();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to regenerate API key";
+      toast.error(message);
+    } finally {
+      setRegeneratingKeyId(null);
+    }
+  };
+
+  const handleCreateKey = async () => {
+    const trimmedName = newKeyName.trim();
+    if (!trimmedName) {
+      toast.error("Enter an API key name.");
+      return;
+    }
+
+    const selectedEnvironment = environmentOptions.find(
+      (option) => option.environmentId === newKeyEnvironmentId
+    );
+    if (!selectedEnvironment) {
+      toast.error("Select an environment.");
+      return;
+    }
+
+    try {
+      setIsCreatingKey(true);
+      const response = await apiClient.post<{ id: string; apiKey: string; name: string }>(
+        "/api/api-keys",
+        {
+          projectId: selectedEnvironment.projectId,
+          environmentId: selectedEnvironment.environmentId,
+          name: trimmedName,
+        }
+      );
+
+      setSessionPlainKeys((prev) => ({ ...prev, [response.data.id]: response.data.apiKey }));
+      await navigator.clipboard.writeText(response.data.apiKey);
+      toast.success("API key created and copied to clipboard.");
+      setNewKeyName("");
+      setIsCreateDialogOpen(false);
+      await loadApiKeys();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to create API key";
+      toast.error(message);
+    } finally {
+      setIsCreatingKey(false);
+    }
+  };
+
+  const renderKeyValue = (key: ApiKeyStageRow) => {
+    return key.maskedKey || `${key.keyPrefix}****`;
   };
 
   return (
@@ -65,9 +237,17 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
             <h2 className="text-base font-semibold text-foreground">{SETTINGS_COPY.apiKeysTitle}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{SETTINGS_COPY.apiKeysSubtitle}</p>
           </div>
+          <Button variant="primary" size="sm" className="gap-2" onClick={() => setIsCreateDialogOpen(true)}>
+            <Plus className="h-4 w-4" />
+            New API Key
+          </Button>
         </div>
 
-        {masterKeys.length === 0 ? (
+        {isLoadingKeys ? (
+          <div className="py-10 text-center text-sm text-muted-foreground">Loading API keys...</div>
+        ) : keysError ? (
+          <div className="py-10 text-center text-sm text-destructive">{keysError}</div>
+        ) : apiKeys.length === 0 ? (
           <EmptyStateSimple
             title={SETTINGS_COPY.apiKeysEmptyTitle}
             description={SETTINGS_COPY.apiKeysEmptyDescription}
@@ -75,11 +255,12 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
             className="py-10"
           />
         ) : (
-          <div className="mt-5 overflow-hidden rounded-sm border border-border/50">
+          <div className="mt-5 overflow-hidden rounded-sm border px-4 border-border/50">
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
+                  <TableHead>Stage</TableHead>
                   <TableHead>Key</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead>Monthly Usage</TableHead>
@@ -87,10 +268,13 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {masterKeys.map((key) => (
+                {apiKeys.map((key) => (
                   <TableRow key={key.id}>
                     <TableCell className="py-4 text-sm font-semibold text-foreground">
                       {key.name}
+                    </TableCell>
+                    <TableCell className="py-4 text-sm text-muted-foreground">
+                      {key.stage}
                     </TableCell>
                     <TableCell className="py-4">
                       <code className="rounded-sm border border-border/40 bg-surface-2/50 px-2 py-1 text-xs font-mono text-foreground/80">
@@ -104,15 +288,41 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
                       {SETTINGS_COPY.apiKeysUsagePlaceholder}
                     </TableCell>
                     <TableCell className="py-4">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleCopyKey(key)}
-                        disabled={!key.key}
-                      >
-                        <Copy className="h-4 w-4" />
-                        {copiedKeyId === key.id ? "Copied" : "Copy"}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRegenerateKey(key)}
+                          disabled={regeneratingKeyId === key.id}
+                        >
+                          {regeneratingKeyId === key.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <RefreshCcw className="h-4 w-4" />
+                          )}
+                          {regeneratingKeyId === key.id ? "Regenerating..." : "Regenerate"}
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleCopyKey(key)}
+                          disabled={
+                            revealingKeyId === key.id ||
+                            (!(key.canReveal || Boolean(sessionPlainKeys[key.id]))) ||
+                            regeneratingKeyId === key.id
+                          }
+                        >
+                          <Copy className="h-4 w-4" />
+                          {copiedKeyId === key.id
+                            ? "Copied"
+                            : revealingKeyId === key.id
+                              ? "Revealing..."
+                              : key.canReveal || Boolean(sessionPlainKeys[key.id])
+                                ? "Copy"
+                                : "Unavailable"}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -145,6 +355,68 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
       <InfoBox variant="warning" icon={ShieldAlert} title={SETTINGS_COPY.securityNoticeTitle}>
         {SETTINGS_COPY.securityNoticeBody}
       </InfoBox>
+
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="max-w-lg border-border/60 bg-card">
+          <DialogHeader>
+            <DialogTitle>Create API Key</DialogTitle>
+            <DialogDescription>
+              Choose an environment and set a name. The new key is copied once after creation.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="api-key-name">Key Name</Label>
+              <Input
+                id="api-key-name"
+                placeholder="Production Read Key"
+                value={newKeyName}
+                onChange={(event) => setNewKeyName(event.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="api-key-environment">Environment</Label>
+              <Select value={newKeyEnvironmentId} onValueChange={setNewKeyEnvironmentId}>
+                <SelectTrigger id="api-key-environment">
+                  <SelectValue placeholder="Select environment" />
+                </SelectTrigger>
+                <SelectContent>
+                  {environmentOptions.map((option) => (
+                    <SelectItem key={option.environmentId} value={option.environmentId}>
+                      {option.projectName} • {option.environmentName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setIsCreateDialogOpen(false)}
+              disabled={isCreatingKey}
+            >
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleCreateKey} disabled={isCreatingKey}>
+              {isCreatingKey ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4" />
+                  Generate Key
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

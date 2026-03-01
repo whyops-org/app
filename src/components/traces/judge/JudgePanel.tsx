@@ -1,9 +1,9 @@
 "use client";
 
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { FileSearch } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
-import { Card, CardContent } from "@/components/ui/card";
 import {
   ALL_DIMENSIONS,
   useJudgeStore,
@@ -11,14 +11,18 @@ import {
   type RunJudgeOptions,
 } from "@/stores/judgeStore";
 import { useTraceDetailStore } from "@/stores/traceDetailStore";
+import { JudgeHistorySidebar } from "./JudgeHistorySidebar";
 import { JudgeResults } from "./JudgeResults";
-import { PastAnalysesList } from "./PastAnalysesList";
+import { JudgeResultsSkeleton } from "./JudgeResultsSkeleton";
 import { RunControls } from "./RunControls";
 import type { JudgeMode } from "./types";
+import { formatCheckpointToastCopy } from "./utils";
 
 interface JudgePanelProps {
   traceId: string;
 }
+
+const EMPTY_TOOLS: unknown[] = [];
 
 export function JudgePanel({ traceId }: JudgePanelProps) {
   const {
@@ -34,14 +38,91 @@ export function JudgePanel({ traceId }: JudgePanelProps) {
   } = useJudgeStore();
 
   const systemPrompt = useTraceDetailStore((state) => state.trace?.systemPrompt || "");
+  const traceTools = useTraceDetailStore((state) => state.trace?.tools);
+  const tools = traceTools ?? EMPTY_TOOLS;
 
   const [selectedDimensions, setSelectedDimensions] = useState<JudgeDimension[]>([...ALL_DIMENSIONS]);
   const [mode, setMode] = useState<JudgeMode>("standard");
+  const latestCheckpoint = judgeResult?.summary?.checkpoint;
+  const hasJudgeResult = Boolean(judgeResult);
+  const showStreamingSkeleton = isRunning && !hasJudgeResult;
+  const showRunArea = isRunning || hasJudgeResult;
+  const previousRunningRef = useRef(false);
+  const lastCheckpointRef = useRef<string | null>(null);
+  const lastErrorRef = useRef<string | null>(null);
 
   useEffect(() => {
     fetchPastAnalyses(traceId);
     return () => reset();
   }, [traceId, fetchPastAnalyses, reset]);
+
+  useEffect(() => {
+    return () => {
+      toast.dismiss("judge-run");
+    };
+  }, []);
+
+  useEffect(() => {
+    const checkpointId = latestCheckpoint
+      ? `${latestCheckpoint.key}:${latestCheckpoint.sequence}`
+      : null;
+    const status = judgeResult?.status?.toLowerCase();
+
+    if (isRunning && !previousRunningRef.current) {
+      toast.loading("Running judge analysis", {
+        id: "judge-run",
+        description: "Streaming checkpoints and partial findings.",
+      });
+    }
+
+    if (isRunning && latestCheckpoint && checkpointId && checkpointId !== lastCheckpointRef.current) {
+      const checkpointToast = formatCheckpointToastCopy(
+        latestCheckpoint.key,
+        latestCheckpoint.sequence
+      );
+
+      toast.loading(checkpointToast.title, {
+        id: "judge-run",
+        description: checkpointToast.description,
+      });
+      lastCheckpointRef.current = checkpointId;
+    }
+
+    if (!isRunning && previousRunningRef.current) {
+      if (status === "completed" && judgeResult) {
+        toast.success("Analysis complete", {
+          id: "judge-run",
+          description: `${judgeResult.summary.totalIssues} issues - ${judgeResult.summary.totalPatches} patches`,
+          duration: 4200,
+        });
+      } else if (status === "failed") {
+        toast.error("Analysis failed", {
+          id: "judge-run",
+          description: "Please retry with fewer dimensions or a different mode.",
+          duration: 4200,
+        });
+      } else {
+        toast.dismiss("judge-run");
+      }
+      lastCheckpointRef.current = null;
+    }
+
+    previousRunningRef.current = isRunning;
+  }, [isRunning, judgeResult, latestCheckpoint]);
+
+  useEffect(() => {
+    if (!error) {
+      lastErrorRef.current = null;
+      return;
+    }
+
+    if (lastErrorRef.current === error) {
+      return;
+    }
+
+    toast.error(error, { id: "judge-error", duration: 4500 });
+    lastErrorRef.current = error;
+  }, [error]);
 
   const handleRun = useCallback(() => {
     const options: RunJudgeOptions = {
@@ -70,37 +151,40 @@ export function JudgePanel({ traceId }: JudgePanelProps) {
           onToggleDimension={toggleDimension}
           onRun={handleRun}
           isRunning={isRunning}
+          historyAction={
+            <JudgeHistorySidebar
+              analyses={pastAnalyses}
+              currentId={judgeResult?.id}
+              onSelect={fetchAnalysisDetail}
+              isLoading={isLoading}
+              isRunning={isRunning}
+            />
+          }
         />
 
-        {error ? (
-          <div className="flex items-start gap-2 rounded-sm border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-            <span>{error}</span>
+        {showRunArea ? (
+          <div className="space-y-5">
+            {judgeResult ? (
+              <JudgeResults
+                result={judgeResult}
+                systemPrompt={systemPrompt}
+                tools={tools}
+                isStreaming={isRunning}
+              />
+            ) : null}
+
+            {showStreamingSkeleton ? <JudgeResultsSkeleton /> : null}
           </div>
-        ) : null}
+        ) : (
+          <section className="rounded-sm border border-dashed border-border/70 bg-surface-2/20 px-6 py-10 text-center">
+            <FileSearch className="mx-auto h-7 w-7 text-muted-foreground" />
+            <p className="mt-3 text-lg font-semibold text-foreground">No analysis selected yet</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Use Configure &amp; Run to start a judge pass for this trace.
+            </p>
+          </section>
+        )}
 
-        {isRunning ? (
-          <Card className="border-border/50">
-            <CardContent className="flex flex-col items-center justify-center gap-3 py-14">
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-              <p className="text-base font-semibold text-foreground">Running LLM Judge analysis</p>
-              <p className="text-sm text-muted-foreground">This usually takes 30 to 60 seconds.</p>
-            </CardContent>
-          </Card>
-        ) : null}
-
-        {judgeResult && !isRunning ? (
-          <JudgeResults result={judgeResult} systemPrompt={systemPrompt} />
-        ) : null}
-
-        {pastAnalyses.length > 0 && !isRunning ? (
-          <PastAnalysesList
-            analyses={pastAnalyses}
-            currentId={judgeResult?.id}
-            onSelect={fetchAnalysisDetail}
-            isLoading={isLoading}
-          />
-        ) : null}
       </div>
     </div>
   );

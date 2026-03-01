@@ -24,19 +24,13 @@ export const FINDING_CATEGORIES: FindingCategory[] = [
   "patches",
 ];
 
-export const REVIEW_FLOW_STEPS = [
-  {
-    title: "Run",
-    description: "Choose mode and dimensions, then execute analysis.",
-  },
-  {
-    title: "Review",
-    description: "Filter findings by dimension and severity.",
-  },
-  {
-    title: "Apply",
-    description: "Use prompt-context diffs to implement fixes safely.",
-  },
-] as const;
-
 export const ISSUES_PER_PAGE = 5;
+
+export const STREAMING_STATUS_LABELS: Record<string, string> = {
+  queued: "Queued",
+  running: "Streaming",
+  completed: "Complete",
+  failed: "Failed",
+};
+
+export const JUDGE_SKELETON_DIMENSION_CARD_COUNT = 3;

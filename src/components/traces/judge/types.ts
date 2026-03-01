@@ -12,3 +12,22 @@ export interface PromptAwareDiff {
   rightTitle: string;
   foundInPrompt: boolean;
 }
+
+export interface PatchSource {
+  id: string;
+  title: string;
+  text: string;
+  kind:
+    | "system_prompt"
+    | "tool_description"
+    | "tool_input_schema"
+    | "tool_output_schema"
+    | "tool_config"
+    | "generic";
+  toolName?: string;
+}
+
+export interface PatchSourceResolution {
+  source: PatchSource;
+  foundInSource: boolean;
+}
