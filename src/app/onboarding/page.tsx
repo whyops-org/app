@@ -109,10 +109,30 @@ export default function OnboardingPage() {
     setIsCompleting(true);
     try {
       await completeOnboarding();
-      router.push("/agents");
+
+      // Confirm persisted onboarding state before navigating,
+      // otherwise middleware may redirect back to onboarding.
+      let completionConfirmed = false;
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        await Promise.all([loadSession(), fetchOnboardingProgress()]);
+        const { user: latestUser, onboardingProgress: latestProgress } = useAuthStore.getState();
+        if (latestUser?.onboardingComplete || latestProgress?.onboardingComplete) {
+          completionConfirmed = true;
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+
+      if (!completionConfirmed) {
+        throw new Error("Could not confirm onboarding completion yet. Please try again.");
+      }
+
+      router.replace("/agents");
+      router.refresh();
     } catch (error) {
       console.error("Failed to complete onboarding:", error);
-      toast.error("Failed to complete onboarding. Please try again.");
+      const message = error instanceof Error ? error.message : "Failed to complete onboarding. Please try again.";
+      toast.error(message);
     } finally {
       setIsCompleting(false);
     }

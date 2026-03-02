@@ -218,6 +218,7 @@ export const useAuthStore = create<AuthState>((Set, Get) => ({
     } catch (error) {
       const message = error instanceof Error ? error.message : "Failed to complete onboarding.";
       Set({ error: message });
+      throw new Error(message);
     }
   },
 }));

@@ -106,8 +106,8 @@ export default function AgentsPage() {
     };
   }, [config?.analyseBaseUrl, startPolling, stopPolling]);
 
-  // Show empty state if no agents (and not loading)
-  if (displayAgents.length === 0 && !isLoading) {
+  // Keep empty state stable while polling when no agents exist.
+  if (displayAgents.length === 0) {
     return (
       <div className="min-h-screen">
         <EmptyState />
