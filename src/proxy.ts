@@ -1,13 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = ["/"];
+const PUBLIC_FILE_REGEX =
+  /\.(?:avif|bmp|gif|ico|jpe?g|png|svg|webp|css|js|map|txt|xml|json|webmanifest|woff2?|ttf|otf|eot)$/i;
+const PUBLIC_METADATA_ROUTES = new Set([
+  "/favicon.ico",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/manifest.json",
+  "/site.webmanifest",
+]);
 
 function isPublicRoute(pathname: string) {
   return PUBLIC_ROUTES.includes(pathname);
 }
 
+function isPublicAssetPath(pathname: string) {
+  return PUBLIC_METADATA_ROUTES.has(pathname) || PUBLIC_FILE_REGEX.test(pathname);
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Always allow static files from /public and metadata assets.
+  if (isPublicAssetPath(pathname)) {
+    return NextResponse.next();
+  }
+
   const authBaseUrl = process.env.NEXT_PUBLIC_AUTH_BASE_URL;
 
   if (!authBaseUrl) {
@@ -102,5 +121,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|api|favicon.ico).*)"],
+  matcher: ["/((?!_next|api).*)"],
 };
