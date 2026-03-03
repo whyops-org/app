@@ -1,4 +1,4 @@
-import { ArrowRight, Chrome, Github, MailCheck, RotateCcw } from "lucide-react";
+import { ArrowRight, Github, MailCheck, RotateCcw } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,9 @@ import { useAuthStore } from "@/stores/authStore";
 
 interface AuthCardProps {
   onGithubClick?: () => void;
-  onGoogleClick?: () => void;
 }
 
-export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
+export function AuthCard({ onGithubClick }: AuthCardProps) {
   const {
     email,
     setEmail,
@@ -23,6 +22,7 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
     resetMagicLink,
     oauthLogin,
     status,
+    oauthLoadingProvider,
     error,
     resendAvailableAt,
   } = useAuthStore();
@@ -30,8 +30,10 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
   const [cooldownMs, setCooldownMs] = React.useState(0);
 
   const isLoading = status === "loading";
+  const isGithubLoading = oauthLoadingProvider === "github";
+  const isBusy = isLoading || isGithubLoading;
   const canSubmit = email.trim().length > 0;
-  const isResendDisabled = isLoading || cooldownMs > 0;
+  const isResendDisabled = isBusy || cooldownMs > 0;
   const isSent = status === "sent" || submitted;
 
   // Show error as toast notification
@@ -64,12 +66,12 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
   }, [status]);
 
   const handleSubmit = async () => {
-    if (!canSubmit || isLoading) return;
+    if (!canSubmit || isBusy) return;
     await sendMagicLink();
   };
 
   const handleResend = async () => {
-    if (isLoading) return;
+    if (isBusy) return;
     await sendMagicLink();
   };
 
@@ -90,7 +92,7 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
           <CardHeader className="space-y-3">
             <CardTitle>Create or log in</CardTitle>
             <p className="text-sm text-muted-foreground">
-              Continue with SSO or use your work email for a magic link.
+              Continue with GitHub or use your work email for a magic link.
             </p>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -98,20 +100,12 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
               <Button
                 variant="muted"
                 className="w-full justify-center gap-2"
-                onClick={onGithubClick ?? (() => oauthLogin("github"))}
-                disabled={isLoading}
+                onClick={onGithubClick ?? (() => void oauthLogin("github"))}
+                loading={isGithubLoading}
+                disabled={isBusy}
               >
                 <Github className="h-4 w-4" />
                 Continue with GitHub
-              </Button>
-              <Button
-                variant="muted"
-                className="w-full justify-center gap-2"
-                onClick={onGoogleClick ?? (() => oauthLogin("google"))}
-                disabled={isLoading}
-              >
-                <Chrome className="h-4 w-4" />
-                Continue with Google
               </Button>
             </div>
             <div className="flex items-center gap-4">
@@ -133,7 +127,7 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
                 />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <Button size="lg" onClick={handleSubmit} disabled={!canSubmit} loading={isLoading}>
+                <Button size="lg" onClick={handleSubmit} disabled={!canSubmit || isBusy} loading={isLoading}>
                   Sign Up
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -141,7 +135,7 @@ export function AuthCard({ onGithubClick, onGoogleClick }: AuthCardProps) {
                   size="lg"
                   variant="outline"
                   onClick={handleSubmit}
-                  disabled={!canSubmit}
+                  disabled={!canSubmit || isBusy}
                   loading={isLoading}
                 >
                   Log in

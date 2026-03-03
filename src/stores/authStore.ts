@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { apiRequest } from "@/lib/api-client";
 
 type AuthStatus = "idle" | "loading" | "sent" | "error";
+type SocialProvider = "github" | "google";
 
 const RESEND_COOLDOWN_MS = 60_000;
 
@@ -29,13 +30,14 @@ interface AuthState {
   hasSession: boolean;
   sessionChecked: boolean;
   status: AuthStatus;
+  oauthLoadingProvider: SocialProvider | null;
   error: string | null;
   email: string;
   resendAvailableAt: number | null;
   setEmail: (email: string) => void;
   resetMagicLink: () => void;
   sendMagicLink: (params?: { name?: string | null; callbackURL?: string; isResend?: boolean }) => Promise<void>;
-  oauthLogin: (provider: "github" | "google") => void;
+  oauthLogin: (provider: SocialProvider) => Promise<void>;
   loadSession: () => Promise<void>;
   fetchOnboardingProgress: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -81,6 +83,7 @@ export const useAuthStore = create<AuthState>((Set, Get) => ({
   hasSession: false,
   sessionChecked: false,
   status: "idle",
+  oauthLoadingProvider: null,
   error: null,
   email: "",
   resendAvailableAt: null,
@@ -88,6 +91,7 @@ export const useAuthStore = create<AuthState>((Set, Get) => ({
   resetMagicLink: () =>
     Set({
       status: "idle",
+      oauthLoadingProvider: null,
       error: null,
       email: "",
     }),
@@ -129,28 +133,28 @@ export const useAuthStore = create<AuthState>((Set, Get) => ({
       Set({ status: "error", error: message });
     }
   },
-  oauthLogin: (provider) => {
+  oauthLogin: async (provider) => {
     const origin = window.location.origin;
-    apiRequest<SocialSignInResponse>("/api/auth/sign-in/social", {
-      method: "POST",
-      body: {
-        provider,
-        callbackURL: `${origin}/onboarding`,
-        errorCallbackURL: `${origin}/`,
-        disableRedirect: true,
-      },
-    })
-      .then((response) => {
-        if (response.url) {
-          window.location.href = response.url;
-        } else {
-          Set({ status: "error", error: "Failed to start OAuth login." });
-        }
-      })
-      .catch((error) => {
-        const message = error instanceof Error ? error.message : "Failed to start OAuth login.";
-        Set({ status: "error", error: message });
+    Set({ oauthLoadingProvider: provider, error: null });
+    try {
+      const response = await apiRequest<SocialSignInResponse>("/api/auth/sign-in/social", {
+        method: "POST",
+        body: {
+          provider,
+          callbackURL: `${origin}/onboarding`,
+          errorCallbackURL: `${origin}/`,
+          disableRedirect: true,
+        },
       });
+      if (response.url) {
+        window.location.href = response.url;
+        return;
+      }
+      Set({ status: "error", error: "Failed to start OAuth login.", oauthLoadingProvider: null });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to start OAuth login.";
+      Set({ status: "error", error: message, oauthLoadingProvider: null });
+    }
   },
   loadSession: async () => {
     try {
