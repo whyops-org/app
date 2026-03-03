@@ -19,11 +19,53 @@ function isPublicAssetPath(pathname: string) {
   return PUBLIC_METADATA_ROUTES.has(pathname) || PUBLIC_FILE_REGEX.test(pathname);
 }
 
+const PREFETCH_HEADERS = {
+  nextRouterPrefetch: "next-router-prefetch",
+  purpose: "purpose",
+  prefetchValue: "prefetch",
+} as const;
+
+function isPrefetchRequest(request: NextRequest) {
+  return (
+    request.headers.has(PREFETCH_HEADERS.nextRouterPrefetch) ||
+    request.headers.get(PREFETCH_HEADERS.purpose) === PREFETCH_HEADERS.prefetchValue
+  );
+}
+
+interface UserPayload {
+  data?: {
+    onboardingComplete?: boolean;
+    [key: string]: unknown;
+  };
+  onboardingComplete?: boolean;
+  [key: string]: unknown;
+}
+
+interface SessionPayload {
+  session?: unknown;
+  user?: unknown;
+  [key: string]: unknown;
+}
+
+async function fetchWithTimeout(url: string, cookie: string, timeoutMs = 1200) {
+  return fetch(url, {
+    method: "GET",
+    headers: { cookie },
+    cache: "no-store",
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+}
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Always allow static files from /public and metadata assets.
   if (isPublicAssetPath(pathname)) {
+    return NextResponse.next();
+  }
+
+  // Skip expensive auth checks for route prefetch requests.
+  if (isPrefetchRequest(request)) {
     return NextResponse.next();
   }
 
@@ -36,34 +78,43 @@ export async function proxy(request: NextRequest) {
   const cookie = request.headers.get("cookie") ?? "";
   const normalizedBaseUrl = authBaseUrl.replace(/\/$/, "");
 
-  let sessionResponse: Response | null = null;
-  interface SessionPayload {
-    session?: unknown;
-    user?: unknown;
-    [key: string]: unknown;
-  }
-  let sessionPayload: SessionPayload | null = null;
+  let hasSession = false;
+  let onboardingComplete = false;
 
   try {
-    sessionResponse = await fetch(`${normalizedBaseUrl}/api/auth/get-session`, {
-      method: "GET",
-      headers: {
-        cookie,
-      },
-      cache: "no-store",
-    });
+    // Fast path: one request returns both "has session" and onboarding status.
+    const userResponse = await fetchWithTimeout(`${normalizedBaseUrl}/api/users/me`, cookie);
 
-    if (sessionResponse.ok) {
-      sessionPayload = await sessionResponse.json();
+    if (userResponse.ok) {
+      hasSession = true;
+      const userPayload = (await userResponse.json()) as UserPayload;
+      onboardingComplete = Boolean(
+        userPayload?.data?.onboardingComplete ?? userPayload?.onboardingComplete
+      );
+    } else if (userResponse.status === 401 || userResponse.status === 403) {
+      hasSession = false;
+    } else {
+      // Fallback only when user endpoint has transient failures.
+      const sessionResponse = await fetchWithTimeout(
+        `${normalizedBaseUrl}/api/auth/get-session`,
+        cookie
+      );
+
+      if (sessionResponse.ok) {
+        const sessionPayload = (await sessionResponse.json()) as SessionPayload;
+        hasSession = Boolean(sessionPayload?.session || sessionPayload?.user);
+      }
+
+      // If auth backend is degraded but session exists, don't block navigation.
+      if (hasSession) {
+        return NextResponse.next();
+      }
     }
   } catch (err) {
-    console.error("proxy: failed to fetch session from auth service", err);
-    // If the auth service is unreachable, allow the request to continue instead of throwing.
-    // Treat as no session so that public routes still work and private routes won't crash the app.
-    sessionResponse = null;
-    sessionPayload = null;
+    console.error("proxy: auth check failed", err);
+    // Prefer availability and fast navigation if auth backend is slow/unreachable.
+    return NextResponse.next();
   }
-  const hasSession = Boolean(sessionPayload?.session || sessionPayload?.user);
 
   if (!hasSession && !isPublicRoute(pathname)) {
     const redirectUrl = request.nextUrl.clone();
@@ -74,36 +125,6 @@ export async function proxy(request: NextRequest) {
   if (!hasSession) {
     return NextResponse.next();
   }
-
-  let userResponse: Response | null = null;
-  interface UserPayload {
-    data?: {
-      onboardingComplete?: boolean;
-      [key: string]: unknown;
-    };
-    onboardingComplete?: boolean;
-    [key: string]: unknown;
-  }
-  let userPayload: UserPayload | null = null;
-
-  try {
-    userResponse = await fetch(`${normalizedBaseUrl}/api/users/me`, {
-      method: "GET",
-      headers: {
-        cookie,
-      },
-      cache: "no-store",
-    });
-
-    if (userResponse.ok) {
-      userPayload = await userResponse.json();
-    }
-  } catch (err) {
-    console.error("proxy: failed to fetch user from auth service", err);
-    userResponse = null;
-    userPayload = null;
-  }
-  const onboardingComplete = Boolean(userPayload?.data?.onboardingComplete ?? userPayload?.onboardingComplete);
 
   if (!onboardingComplete && pathname !== "/onboarding") {
     const redirectUrl = request.nextUrl.clone();
@@ -121,5 +142,41 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|api).*)"],
+  matcher: [
+    {
+      source: "/",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+    {
+      source: "/onboarding",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+    {
+      source: "/agents/:path*",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+    {
+      source: "/traces/:path*",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+    {
+      source: "/settings/:path*",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
 };
