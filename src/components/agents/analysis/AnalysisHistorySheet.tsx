@@ -108,7 +108,7 @@ export function AnalysisHistorySheet({
         </div>
 
         <div className="border-t border-border/50 px-4 py-3">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-xs text-muted-foreground">
               Page {pagination.page} of {pagination.totalPages || 1}
             </p>

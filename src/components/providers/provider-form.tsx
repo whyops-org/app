@@ -266,14 +266,14 @@ export function ProviderForm({
         }
       />
 
-      <div className="flex flex-col gap-2.5 sm:flex-row">
+      <div className="flex shrink-0 flex-col gap-2.5 sm:flex-row sm:items-stretch">
         <Button
           type="button"
           variant="outline"
           size="sm"
           onClick={handleTestConnection}
           disabled={!canTest || testStatus === "testing"}
-          className="flex-1"
+          className="h-10 min-h-10 flex-1 shrink-0 whitespace-nowrap px-4"
         >
           {testStatus === "testing" ? (
             <>
@@ -293,7 +293,7 @@ export function ProviderForm({
           size="sm"
           onClick={handleAddProvider}
           disabled={!canCreate || isCreating}
-          className="flex-1"
+          className="h-10 min-h-10 flex-1 shrink-0 whitespace-nowrap px-4"
         >
           {isCreating ? (
             <>

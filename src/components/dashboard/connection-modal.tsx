@@ -174,7 +174,7 @@ export function ConnectionModal({ open, onOpenChange }: ConnectionModalProps) {
         </div>
 
         <DialogFooter className="border-t border-border/50 bg-surface-2/30 px-6 py-4">
-          <div className="flex w-full items-center justify-between">
+          <div className="flex w-full flex-wrap items-center justify-between gap-2">
             <Button
               variant="ghost"
               size="sm"
