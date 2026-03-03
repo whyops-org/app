@@ -27,7 +27,7 @@ interface AgentsState {
 
   setApiKey: (key: string) => void;
   setInitialAgents: (agents: Agent[]) => void;
-  fetchAgents: (page?: number, count?: number) => Promise<void>;
+  fetchAgents: (page?: number, count?: number, isRefetch?: boolean) => Promise<void>;
   fetchAgentById: (
     agentId: string,
     successRatePeriod?: number,
@@ -64,7 +64,7 @@ export const useAgentsStore = create<AgentsState>()(
         pagination: paginationData || get().pagination
       }),
 
-      fetchAgents: async (page = 1, count = 20) => {
+      fetchAgents: async (page = 1, count = 20, isRefetch = false) => {
         const config = useConfigStore.getState().config;
         const { apiKey } = get();
 
@@ -73,7 +73,12 @@ export const useAgentsStore = create<AgentsState>()(
           return;
         }
 
-        set({ isLoading: true, error: null });
+        const shouldRefetch = isRefetch || get().agents.length > 0;
+        set(
+          shouldRefetch
+            ? { isRefetching: true, error: null }
+            : { isLoading: true, isRefetching: false, error: null }
+        );
 
         try {
           const response = await apiClient.get<AgentsResponse>(
@@ -86,11 +91,12 @@ export const useAgentsStore = create<AgentsState>()(
           set({
             agents: response.data.agents || [],
             pagination: response.data.pagination || get().pagination,
-            isLoading: false
+            isLoading: false,
+            isRefetching: false,
           });
         } catch (error) {
           const message = error instanceof Error ? error.message : "Failed to fetch agents";
-          set({ error: message, isLoading: false });
+          set({ error: message, isLoading: false, isRefetching: false });
         }
       },
 
@@ -199,10 +205,10 @@ export const useAgentsStore = create<AgentsState>()(
           clearInterval(pollingInterval);
         }
 
-        fetchAgents(pagination.page, pagination.count);
+        void fetchAgents(pagination.page, pagination.count);
 
         const interval = setInterval(() => {
-          fetchAgents(pagination.page, pagination.count);
+          void fetchAgents(pagination.page, pagination.count, true);
         }, intervalMs);
 
         set({ pollingInterval: interval });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 
 import { AgentsTable } from "@/components/agents/agents-table";
 import { AgentUsagePieChart } from "@/components/agents/agent-usage-pie-chart";
@@ -32,6 +32,7 @@ export default function AgentsPage() {
   const {
     agents,
     isLoading,
+    isRefetching,
     pagination,
     startPolling,
     stopPolling,
@@ -51,6 +52,7 @@ export default function AgentsPage() {
     setApiKey: setDashboardApiKey,
   } = useDashboardStore();
   const config = useConfigStore((state) => state.config);
+  const [hasResolvedInitialLoad, setHasResolvedInitialLoad] = useState(false);
 
   // Use initial agents from server, then fall back to store
   const displayAgents = agents.length > 0 ? agents : initialAgents;
@@ -79,10 +81,13 @@ export default function AgentsPage() {
   }, [setApiKey, setDashboardApiKey]);
 
   useEffect(() => {
-    if (config?.analyseBaseUrl) {
-      fetchDashboardStats();
+    if (config?.analyseBaseUrl && hasResolvedInitialLoad) {
+      const frameId = window.requestAnimationFrame(() => {
+        void fetchDashboardStats();
+      });
+      return () => window.cancelAnimationFrame(frameId);
     }
-  }, [config?.analyseBaseUrl, fetchDashboardStats, agentUsageCount]);
+  }, [config?.analyseBaseUrl, fetchDashboardStats, agentUsageCount, hasResolvedInitialLoad]);
 
   const handlePageChange = useCallback((page: number) => {
     fetchAgents(page, pagination.count);
@@ -105,6 +110,30 @@ export default function AgentsPage() {
       stopPolling();
     };
   }, [config?.analyseBaseUrl, startPolling, stopPolling]);
+
+  useEffect(() => {
+    if (hasResolvedInitialLoad) return;
+    if (!config?.analyseBaseUrl) return;
+    if (isLoading || isRefetching) return;
+
+    const frameId = window.requestAnimationFrame(() => {
+      setHasResolvedInitialLoad(true);
+    });
+    return () => window.cancelAnimationFrame(frameId);
+  }, [config?.analyseBaseUrl, hasResolvedInitialLoad, isLoading, isRefetching]);
+
+  const shouldShowInitialLoader =
+    displayAgents.length === 0 &&
+    !isRefetching &&
+    (!config || (Boolean(config.analyseBaseUrl) && !hasResolvedInitialLoad));
+
+  if (shouldShowInitialLoader) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   // Keep empty state stable while polling when no agents exist.
   if (displayAgents.length === 0) {
