@@ -43,6 +43,13 @@ export interface SdkConfig {
   initParams: Record<string, string>;
 }
 
+export interface RuntimeLimitsConfig {
+  defaultSamplingRate?: number;
+  defaultTraceSamplingRate?: number;
+  maxAgents?: number;
+  maxAgentsPerProject?: number;
+}
+
 export interface AppConfig {
   authBaseUrl: string;
   proxyBaseUrl: string;
@@ -55,6 +62,11 @@ export interface AppConfig {
   onboardingSteps: OnboardingStep[];
   onboardingChecklist: OnboardingChecklistItem[];
   sdkConfig: Record<string, SdkConfig>;
+  limits?: RuntimeLimitsConfig;
+  defaultSamplingRate?: number;
+  defaultTraceSamplingRate?: number;
+  maxAgents?: number;
+  maxAgentsPerProject?: number;
 }
 
 interface ConfigState {

@@ -3,6 +3,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { EmptyStateSimple } from "@/components/ui/empty-state-simple";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,11 +34,16 @@ import {
   ChevronRight,
   Inbox,
   MoreHorizontal,
-  Search
+  Search,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
+
+import { useConfirmAction } from "@/components/ui/confirmation-dialog-provider";
+import { useAgentsStore } from "@/stores/agentsStore";
 
 interface AgentsTableProps {
   agents?: Agent[];
@@ -124,6 +135,7 @@ export function AgentsTable({
   onCountChange
 }: AgentsTableProps) {
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [deletingAgentId, setDeletingAgentId] = React.useState<string | null>(null);
   const isTableLoading = Boolean(isLoading);
   // TODO: Enable sort functionality when API supports it
   // const [sortBy, setSortBy] = React.useState(
@@ -131,6 +143,11 @@ export function AgentsTable({
   // );
 
   const router = useRouter();
+  const confirmAction = useConfirmAction();
+  const { deleteAgent, fetchAgents } = useAgentsStore((state) => ({
+    deleteAgent: state.deleteAgent,
+    fetchAgents: state.fetchAgents,
+  }));
 
   const filteredAgents = agents.filter((agent: Agent) =>
     agent.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -146,6 +163,40 @@ export function AgentsTable({
     if (pagination && pagination.hasMore && onPageChange) {
       onPageChange(pagination.page + 1);
     }
+  };
+
+  const handleDeleteAgent = async (agent: Agent) => {
+    await confirmAction(
+      async () => {
+        setDeletingAgentId(agent.id);
+        try {
+          const deleted = await deleteAgent(agent.id);
+          if (!deleted) {
+            toast.error("Failed to delete agent");
+            return null;
+          }
+
+          toast.success(`Deleted agent \"${agent.name}\"`);
+
+          const nextPage =
+            pagination && pagination.page > 1 && agents.length === 1
+              ? pagination.page - 1
+              : (pagination?.page ?? 1);
+
+          await fetchAgents(nextPage, pagination?.count ?? 20, true);
+          return true;
+        } finally {
+          setDeletingAgentId(null);
+        }
+      },
+      {
+        title: "Delete agent",
+        description:
+          "This permanently deletes the agent and all linked traces, events, and API keys. This action cannot be undone.",
+        cancelText: "Cancel",
+        confirmText: "Delete",
+      }
+    );
   };
 
   return (
@@ -291,7 +342,36 @@ export function AgentsTable({
                   <TableCell className="px-6 py-4 text-sm text-muted-foreground">
                     {formatLastActive(agent.lastActive)}
                   </TableCell>
-                  
+                  <TableCell className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                          aria-label={`${AGENTS_TABLE_TEXT.actionLabel} for ${agent.name}`}
+                          disabled={isTableLoading || deletingAgentId === agent.id}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <MoreIcon />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenuItem
+                          variant="destructive"
+                          disabled={isTableLoading || deletingAgentId === agent.id}
+                          onSelect={(e) => {
+                            e.stopPropagation();
+                            void handleDeleteAgent(agent);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          {deletingAgentId === agent.id ? "Deleting..." : "Delete"}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               );
             })}

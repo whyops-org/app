@@ -20,6 +20,8 @@ export interface Agent {
   projectId: string;
   environmentId: string;
   name: string;
+  maxTraces?: number;
+  maxSpans?: number;
   traceCount: number;
   successPercentage: number | Record<string, number>;
   successRatePeriod?: number;
@@ -53,6 +55,8 @@ export interface SingleAgentResponse {
   projectId: string;
   environmentId: string;
   name: string;
+  maxTraces?: number;
+  maxSpans?: number;
   traceCount: number;
   successPercentage: Record<string, number>;
   successRatePeriod: number;
@@ -72,6 +76,18 @@ export interface Config {
   proxyBaseUrl: string;
   analyseBaseUrl: string;
   apiBaseUrl?: string;
+}
+
+export interface AgentSettings {
+  agentId: string;
+  samplingRate: number;
+  maxTraces: number;
+  maxSpans: number;
+  updatedAt: string;
+}
+
+export interface AgentGlobalLimits {
+  maxAgents: number;
 }
 
 // ============ Dashboard Types ============

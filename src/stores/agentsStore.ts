@@ -15,6 +15,11 @@ interface UpdateSamplingRateResponse {
   updatedAt: string;
 }
 
+interface DeleteAgentResponse {
+  success: boolean;
+  agentId: string;
+}
+
 interface AgentsState {
   agents: Agent[];
   currentAgent: Agent | null;
@@ -35,6 +40,7 @@ interface AgentsState {
     isRefetch?: boolean
   ) => Promise<Agent | null>;
   updateAgentSamplingRate: (agentId: string, samplingRate: number) => Promise<number | null>;
+  deleteAgent: (agentId: string) => Promise<boolean>;
   startPolling: (intervalMs: number) => void;
   stopPolling: () => void;
 }
@@ -195,6 +201,43 @@ export const useAgentsStore = create<AgentsState>()(
           const message = error instanceof Error ? error.message : "Failed to update sampling rate";
           set({ error: message });
           return null;
+        }
+      },
+
+      deleteAgent: async (agentId: string) => {
+        const config = useConfigStore.getState().config;
+        const { apiKey } = get();
+
+        if (!config?.analyseBaseUrl) {
+          set({ error: "Analyse base URL not configured" });
+          return false;
+        }
+
+        try {
+          await apiClient.delete<DeleteAgentResponse>(
+            `${config.analyseBaseUrl}/entities/${agentId}`,
+            {
+              headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {},
+            }
+          );
+
+          set((state) => ({
+            agents: state.agents.filter((agent) => agent.id !== agentId),
+            currentAgent:
+              state.currentAgent && state.currentAgent.id === agentId
+                ? null
+                : state.currentAgent,
+            pagination: {
+              ...state.pagination,
+              total: Math.max(0, state.pagination.total - 1),
+            },
+          }));
+
+          return true;
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Failed to delete agent";
+          set({ error: message });
+          return false;
         }
       },
 

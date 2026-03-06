@@ -1,6 +1,7 @@
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { ConfigProvider } from "@/components/providers/config-provider";
+import { ConfirmationDialogProvider } from "@/components/ui/confirmation-dialog-provider";
 import { cookies } from "next/headers";
 
 export default async function AuthenticatedLayout({
@@ -18,7 +19,7 @@ export default async function AuthenticatedLayout({
         <DashboardHeader />
         <main className="flex-1 overflow-auto bg-background">
           <ConfigProvider>
-            {children}
+            <ConfirmationDialogProvider>{children}</ConfirmationDialogProvider>
           </ConfigProvider>
         </main>
       </div>

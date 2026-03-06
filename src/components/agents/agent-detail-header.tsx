@@ -7,7 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
-import { useAgentsStore } from "@/stores/agentsStore";
+import { Input } from "@/components/ui/input";
+import { useAgentSettingsStore } from "@/stores/agentSettingsStore";
+import { useConfigStore } from "@/stores/configStore";
 import type { Agent } from "@/types/global";
 import { Fingerprint, Gauge, Play, Settings } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +17,25 @@ import { toast } from "sonner";
 
 interface AgentDetailHeaderProps {
   agent: Agent;
+}
+
+function firstDefinedNumber(...values: Array<number | undefined>): number | null {
+  for (const value of values) {
+    if (typeof value === "number" && Number.isFinite(value)) {
+      return value;
+    }
+  }
+  return null;
+}
+
+function formatCount(value: number | null): string {
+  if (value === null) return "-";
+  return value.toLocaleString();
+}
+
+function formatPercent(value: number | null): string {
+  if (value === null) return "-";
+  return `${Math.round(value * 100)}%`;
 }
 
 function deriveStatus(lastActive: string): "active" | "inactive" {
@@ -27,10 +48,30 @@ function deriveStatus(lastActive: string): "active" | "inactive" {
 
 export function AgentDetailHeader({ agent }: AgentDetailHeaderProps) {
   const status = deriveStatus(agent.lastActive);
-  const updateAgentSamplingRate = useAgentsStore((state) => state.updateAgentSamplingRate);
+  const config = useConfigStore((state) => state.config);
+  const {
+    settingsByAgentId,
+    globalLimits,
+    fetchAgentSettings,
+    fetchGlobalLimits,
+    updateAgentSettings,
+    resetAgentSettings,
+    isSaving,
+  } = useAgentSettingsStore((state) => ({
+    settingsByAgentId: state.settingsByAgentId,
+    globalLimits: state.globalLimits,
+    fetchAgentSettings: state.fetchAgentSettings,
+    fetchGlobalLimits: state.fetchGlobalLimits,
+    updateAgentSettings: state.updateAgentSettings,
+    resetAgentSettings: state.resetAgentSettings,
+    isSaving: state.isSaving,
+  }));
+  const agentSettings = settingsByAgentId[agent.id];
   const currentSamplingRate = Math.max(0, Math.min(1, Number(agent.latestVersion?.samplingRate ?? 1)));
   const currentSamplingPercent = Math.round(currentSamplingRate * 100);
   const [samplingPercent, setSamplingPercent] = useState(Math.round(currentSamplingRate * 100));
+  const [maxTracesInput, setMaxTracesInput] = useState<string>(String(agent.maxTraces ?? ""));
+  const [maxSpansInput, setMaxSpansInput] = useState<string>(String(agent.maxSpans ?? ""));
   const [isSavingSampling, setIsSavingSampling] = useState(false);
   const [isSamplingPopoverOpen, setIsSamplingPopoverOpen] = useState(false);
 
@@ -38,9 +79,34 @@ export function AgentDetailHeader({ agent }: AgentDetailHeaderProps) {
     setSamplingPercent(Math.round(currentSamplingRate * 100));
   }, [currentSamplingRate]);
 
+  useEffect(() => {
+    if (!agentSettings) {
+      return;
+    }
+    setSamplingPercent(Math.round(agentSettings.samplingRate * 100));
+    setMaxTracesInput(String(agentSettings.maxTraces));
+    setMaxSpansInput(String(agentSettings.maxSpans));
+  }, [agentSettings]);
+
+  useEffect(() => {
+    void fetchAgentSettings(agent.id);
+    if (!globalLimits) {
+      void fetchGlobalLimits();
+    }
+  }, [agent.id, fetchAgentSettings, fetchGlobalLimits, globalLimits]);
+
   const hasSamplingChanges = useMemo(() => {
-    return Math.abs(samplingPercent / 100 - currentSamplingRate) >= 0.001;
-  }, [samplingPercent, currentSamplingRate]);
+    if (!agentSettings) {
+      return Math.abs(samplingPercent / 100 - currentSamplingRate) >= 0.001;
+    }
+
+    const nextTraces = Number(maxTracesInput);
+    const nextSpans = Number(maxSpansInput);
+    const tracesChanged = Number.isFinite(nextTraces) && Math.floor(nextTraces) !== agentSettings.maxTraces;
+    const spansChanged = Number.isFinite(nextSpans) && Math.floor(nextSpans) !== agentSettings.maxSpans;
+    const samplingChanged = Math.abs(samplingPercent / 100 - agentSettings.samplingRate) >= 0.001;
+    return tracesChanged || spansChanged || samplingChanged;
+  }, [agentSettings, currentSamplingRate, maxSpansInput, maxTracesInput, samplingPercent]);
 
   const getSamplingModeLabel = (value: number) => {
     if (value === 100) return "Full Capture";
@@ -54,20 +120,59 @@ export function AgentDetailHeader({ agent }: AgentDetailHeaderProps) {
     [currentSamplingPercent]
   );
 
+  const defaultSamplingRate = firstDefinedNumber(config?.limits?.defaultSamplingRate, config?.limits?.defaultTraceSamplingRate);
+  const maxAgents = firstDefinedNumber(
+    globalLimits?.maxAgents,
+    config?.limits?.maxAgents,
+    config?.limits?.maxAgentsPerProject
+  );
+  const maxTraces = firstDefinedNumber(agentSettings?.maxTraces, agent.maxTraces);
+  const maxSpans = firstDefinedNumber(agentSettings?.maxSpans, agent.maxSpans);
+
   const handleSaveSampling = async () => {
     setIsSavingSampling(true);
     const nextRate = Number((samplingPercent / 100).toFixed(2));
-    const savedRate = await updateAgentSamplingRate(agent.id, nextRate);
+    const nextMaxTraces = Number(maxTracesInput);
+    const nextMaxSpans = Number(maxSpansInput);
+    const payload: { samplingRate?: number; maxTraces?: number; maxSpans?: number } = {
+      samplingRate: nextRate,
+    };
 
-    if (savedRate === null) {
-      toast.error("Failed to update sampling rate");
+    if (Number.isFinite(nextMaxTraces)) {
+      payload.maxTraces = Math.max(1, Math.floor(nextMaxTraces));
+    }
+
+    if (Number.isFinite(nextMaxSpans)) {
+      payload.maxSpans = Math.max(1, Math.floor(nextMaxSpans));
+    }
+
+    const updatedSettings = await updateAgentSettings(agent.id, payload);
+
+    if (updatedSettings === null) {
+      toast.error("Failed to update agent settings");
       setIsSavingSampling(false);
       return;
     }
 
-    toast.success(`Sampling rate updated to ${Math.round(savedRate * 100)}%`);
+    toast.success("Agent settings updated");
     setIsSavingSampling(false);
     setIsSamplingPopoverOpen(false);
+  };
+
+  const handleResetToDefaults = async () => {
+    setIsSavingSampling(true);
+    const resetResult = await resetAgentSettings(agent.id);
+    if (!resetResult) {
+      toast.error("Failed to reset agent settings");
+      setIsSavingSampling(false);
+      return;
+    }
+
+    setSamplingPercent(Math.round(resetResult.samplingRate * 100));
+    setMaxTracesInput(String(resetResult.maxTraces));
+    setMaxSpansInput(String(resetResult.maxSpans));
+    toast.success("Agent settings reset to defaults");
+    setIsSavingSampling(false);
   };
 
   return (
@@ -132,24 +237,59 @@ export function AgentDetailHeader({ agent }: AgentDetailHeaderProps) {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Max Traces (Agent)</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={maxTracesInput}
+                    onChange={(event) => setMaxTracesInput(event.target.value)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs text-muted-foreground">Max Spans (Agent)</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={maxSpansInput}
+                    onChange={(event) => setMaxSpansInput(event.target.value)}
+                  />
+                </div>
+              </div>
+
               <div className="flex items-center justify-between gap-2">
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={() => setSamplingPercent(100)}
-                  disabled={isSavingSampling || samplingPercent === 100}
+                  onClick={handleResetToDefaults}
+                  disabled={isSavingSampling || isSaving}
                 >
-                  Reset to 100%
+                  Reset to Defaults
                 </Button>
                 <Button
                   type="button"
                   size="sm"
                   onClick={handleSaveSampling}
-                  disabled={!hasSamplingChanges || isSavingSampling}
+                  disabled={!hasSamplingChanges || isSavingSampling || isSaving}
                 >
-                  {isSavingSampling ? "Saving..." : "Save"}
+                  {isSavingSampling || isSaving ? "Saving..." : "Save"}
                 </Button>
+              </div>
+
+              <div className="rounded-sm border border-border/60 bg-surface-2/25 px-3 py-2.5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Runtime limits</p>
+                <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
+                  <span className="text-muted-foreground">Default sampling</span>
+                  <span className="text-right font-medium text-foreground">{formatPercent(defaultSamplingRate)}</span>
+                  <span className="text-muted-foreground">Max traces</span>
+                  <span className="text-right font-medium text-foreground">{formatCount(maxTraces)}</span>
+                  <span className="text-muted-foreground">Max agents</span>
+                  <span className="text-right font-medium text-foreground">{formatCount(maxAgents)}</span>
+                  <span className="text-muted-foreground">Max spans</span>
+                  <span className="text-right font-medium text-foreground">{formatCount(maxSpans)}</span>
+                </div>
               </div>
             </PopoverContent>
           </Popover>
