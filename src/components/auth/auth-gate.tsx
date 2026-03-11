@@ -21,17 +21,24 @@ export function AuthGate({ children }: PropsWithChildren) {
     if (pathname === "/") {
       if (!hasSession) return;
 
-      if (user?.onboardingComplete === false) {
-        router.replace("/onboarding");
-        return;
-      }
-
-      router.replace("/agents");
+      router.replace(user?.onboardingComplete === true ? "/agents" : "/onboarding");
       return;
     }
 
     if (!hasSession) {
       router.replace("/");
+      return;
+    }
+
+    if (pathname === "/onboarding") {
+      if (user?.onboardingComplete === true) {
+        router.replace("/agents");
+      }
+      return;
+    }
+
+    if (user?.onboardingComplete !== true) {
+      router.replace("/onboarding");
     }
   }, [hasSession, pathname, router, sessionChecked, user?.onboardingComplete]);
 
