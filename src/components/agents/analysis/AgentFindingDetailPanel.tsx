@@ -12,17 +12,17 @@ interface AgentFindingDetailPanelProps {
 export function AgentFindingDetailPanel({ finding }: AgentFindingDetailPanelProps) {
   if (!finding) {
     return (
-      <section className="rounded-sm border border-dashed border-border/70 bg-surface-2/20 px-4 py-8 text-center">
-        <p className="text-sm text-muted-foreground">Select a finding to inspect evidence, recommendation, and patches.</p>
+      <section className="rounded-sm border border-dashed border-border/70 bg-surface-2/20 px-5 py-10 text-center">
+        <p className="text-base leading-relaxed text-muted-foreground">Select a finding to inspect evidence, recommendation, and patches.</p>
       </section>
     );
   }
 
   return (
-    <section className="rounded-sm border border-border/60 bg-card px-4 py-4">
-      <div className="space-y-1 border-b border-border/55 pb-3">
-        <p className="text-base font-semibold text-foreground">{finding.title}</p>
-        <p className="text-sm text-muted-foreground">{finding.detail}</p>
+    <section className="rounded-sm border border-border/60 bg-card px-5 py-5">
+      <div className="space-y-2 border-b border-border/55 pb-4">
+        <p className="text-lg font-semibold text-foreground">{finding.title}</p>
+        <p className="text-base leading-relaxed text-muted-foreground">{finding.detail}</p>
       </div>
 
       <Tabs defaultValue="evidence" className="mt-4 space-y-4">
@@ -37,25 +37,25 @@ export function AgentFindingDetailPanel({ finding }: AgentFindingDetailPanelProp
             <p className="text-sm text-muted-foreground">No evidence snippets available.</p>
           ) : (
             (finding.evidence || []).map((evidence, index) => (
-              <div key={`${finding.code}-evidence-${index}`} className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-                <p className="text-xs text-muted-foreground">
+              <div key={`${finding.code}-evidence-${index}`} className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+                <p className="text-sm text-muted-foreground">
                   <Search className="mr-1 inline h-3.5 w-3.5" />
                   {evidence.signalType} {evidence.traceId ? `• ${evidence.traceId.slice(0, 8)}` : ""}
                 </p>
-                <p className="mt-1 text-sm text-foreground">{evidence.snippet}</p>
+                <p className="mt-2 text-base leading-relaxed text-foreground">{evidence.snippet}</p>
               </div>
             ))
           )}
         </TabsContent>
 
         <TabsContent value="recommendation" className="space-y-3">
-          <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-            <p className="text-xs text-muted-foreground">
+          <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+            <p className="text-sm text-muted-foreground">
               <Lightbulb className="mr-1 inline h-3.5 w-3.5" />
               {finding.recommendation?.action || "No action"}
             </p>
-            <p className="mt-1 text-sm text-foreground">{finding.recommendation?.detail || "No recommendation detail provided."}</p>
-            <p className="mt-2 text-xs text-muted-foreground">
+            <p className="mt-2 text-base leading-relaxed text-foreground">{finding.recommendation?.detail || "No recommendation detail provided."}</p>
+            <p className="mt-3 text-sm text-muted-foreground">
               Owner: {finding.recommendation?.ownerType || "unknown"} • Fix type: {finding.recommendation?.fixType || "other"}
             </p>
           </div>
@@ -66,12 +66,12 @@ export function AgentFindingDetailPanel({ finding }: AgentFindingDetailPanelProp
             <p className="text-sm text-muted-foreground">No patch-ready suggestions for this finding.</p>
           ) : (
             (finding.patches || []).map((patch, index) => (
-              <div key={`${finding.code}-patch-${index}`} className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-                <p className="text-xs text-muted-foreground">
+              <div key={`${finding.code}-patch-${index}`} className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+                <p className="text-sm text-muted-foreground">
                   <Wrench className="mr-1 inline h-3.5 w-3.5" />
                   {String((patch as { target?: string }).target || "patch")}
                 </p>
-                <pre className="mt-1 max-h-48 overflow-auto rounded-sm border border-border/50 bg-background/80 p-2 text-xs text-foreground">
+                <pre className="mt-2 max-h-56 overflow-auto rounded-sm border border-border/50 bg-background/80 p-3 text-sm leading-relaxed text-foreground">
 {JSON.stringify(patch, null, 2)}
                 </pre>
               </div>

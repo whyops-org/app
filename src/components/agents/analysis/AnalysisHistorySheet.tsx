@@ -58,7 +58,7 @@ export function AnalysisHistorySheet({
           History
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-md">
+      <SheetContent side="right" className="w-full sm:max-w-xl">
         <SheetHeader className="border-b border-border/50">
           <SheetTitle>Agent Analysis History</SheetTitle>
           <SheetDescription>
@@ -66,7 +66,7 @@ export function AnalysisHistorySheet({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-5">
           {isLoading ? (
             <div className="rounded-sm border border-border/60 bg-surface-2/20 p-4 text-sm text-muted-foreground">
               Loading analysis runs...
@@ -81,25 +81,25 @@ export function AnalysisHistorySheet({
                 key={run.id}
                 type="button"
                 onClick={() => onSelect(run.id)}
-                className={`w-full rounded-sm border px-3 py-3 text-left transition-colors ${
+                className={`w-full rounded-sm border px-4 py-4 text-left transition-colors ${
                   currentRunId === run.id
                     ? "border-primary/40 bg-primary/10"
                     : "border-border/60 bg-background hover:bg-surface-2/30"
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <p className="truncate text-sm font-medium text-foreground">
+                  <p className="truncate text-base font-semibold text-foreground">
                     Run {run.id.slice(0, 8)}
                   </p>
-                  <span className={`text-xs font-semibold uppercase ${statusClass(run.status)}`}>
+                  <span className={`text-sm font-semibold uppercase tracking-[0.12em] ${statusClass(run.status)}`}>
                     {run.status}
                   </span>
                 </div>
-                <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground">
                   <Clock3 className="h-3.5 w-3.5" />
                   {formatRelativeTime(run.createdAt)}
                 </div>
-                <p className="mt-2 text-xs text-muted-foreground">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {run.traceCount} traces • {run.eventCount} events
                 </p>
               </button>
@@ -109,14 +109,14 @@ export function AnalysisHistorySheet({
 
         <div className="border-t border-border/50 px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Page {pagination.page} of {pagination.totalPages || 1}
             </p>
             <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 px-3"
+                className="h-9 px-3.5"
                 disabled={pagination.page <= 1 || isLoading}
                 onClick={() => onPageChange(Math.max(1, pagination.page - 1))}
               >
@@ -125,7 +125,7 @@ export function AnalysisHistorySheet({
               <Button
                 variant="outline"
                 size="sm"
-                className="h-8 px-3"
+                className="h-9 px-3.5"
                 disabled={!pagination.hasMore || isLoading}
                 onClick={() => onPageChange(pagination.page + 1)}
               >
@@ -134,7 +134,7 @@ export function AnalysisHistorySheet({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-2"
+                className="h-9 px-3"
                 onClick={onOpen}
                 disabled={isLoading || isRunning}
               >

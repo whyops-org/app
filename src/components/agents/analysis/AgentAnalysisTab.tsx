@@ -310,7 +310,7 @@ export function AgentAnalysisTab({ agentId }: AgentAnalysisTabProps) {
   );
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <AnalysisRunControls
         mode={mode}
         lookbackDays={lookbackDays}
@@ -334,19 +334,19 @@ export function AgentAnalysisTab({ agentId }: AgentAnalysisTabProps) {
       {currentRun ? <AnalysisResults run={currentRun} isStreaming={isRunning} /> : null}
 
       {showStreamingSkeleton ? (
-        <Card className="border-border/60 bg-card px-5 py-8 text-center">
+        <Card className="border-border/60 bg-card px-6 py-10 text-center">
           <Spinner className="mx-auto h-7 w-7 border-2 border-border border-t-foreground" />
-          <p className="mt-3 text-sm text-muted-foreground">
+          <p className="mt-4 text-base leading-relaxed text-muted-foreground">
             Preparing overview sections. Results will stream in this panel.
           </p>
         </Card>
       ) : null}
 
       {showEmptyState ? (
-        <section className="rounded-sm border border-dashed border-border/70 bg-surface-2/20 px-6 py-10 text-center">
-          <FileSearch className="mx-auto h-7 w-7 text-muted-foreground" />
-          <p className="mt-3 text-lg font-semibold text-foreground">No agent analysis yet</p>
-          <p className="mt-1 text-sm text-muted-foreground">
+        <section className="rounded-sm border border-dashed border-border/70 bg-surface-2/20 px-6 py-12 text-center">
+          <FileSearch className="mx-auto h-8 w-8 text-muted-foreground" />
+          <p className="mt-4 text-xl font-semibold text-foreground">No agent analysis yet</p>
+          <p className="mt-2 text-base leading-relaxed text-muted-foreground">
             Use Configure &amp; Run to generate a full overview for this agent.
           </p>
         </section>

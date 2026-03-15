@@ -232,11 +232,11 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
 
   return (
     <div className={cn("space-y-6", className)}>
-      <div className="rounded-sm border border-border/50 bg-card p-5">
+      <div className="rounded-sm border border-border/50 bg-card p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-base font-semibold text-foreground">{SETTINGS_COPY.apiKeysTitle}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{SETTINGS_COPY.apiKeysSubtitle}</p>
+            <h2 className="text-lg font-semibold text-foreground">{SETTINGS_COPY.apiKeysTitle}</h2>
+            <p className="mt-1 text-base leading-relaxed text-muted-foreground">{SETTINGS_COPY.apiKeysSubtitle}</p>
           </div>
           <Button variant="primary" size="sm" className="gap-2" onClick={() => setIsCreateDialogOpen(true)}>
             <Plus className="h-4 w-4" />
@@ -256,7 +256,7 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
             className="py-10"
           />
         ) : (
-          <div className="mt-5 overflow-hidden rounded-sm border px-4 border-border/50">
+          <div className="mt-5 overflow-hidden rounded-sm border border-border/50 px-4">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -278,7 +278,7 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
                       {key.stage}
                     </TableCell>
                     <TableCell className="py-4">
-                      <code className="rounded-sm border border-border/40 bg-surface-2/50 px-2 py-1 text-xs font-mono text-foreground/80">
+                      <code className="rounded-sm border border-border/40 bg-surface-2/50 px-2.5 py-1.5 text-sm font-mono text-foreground/80">
                         {renderKeyValue(key)}
                       </code>
                     </TableCell>
@@ -335,10 +335,10 @@ export function ApiKeysPanel({ className }: ApiKeysPanelProps) {
         )}
       </div>
 
-      <div className="rounded-sm border border-border/50 bg-card p-5">
+      <div className="rounded-sm border border-border/50 bg-card p-6">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">{SETTINGS_COPY.endpointsTitle}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{SETTINGS_COPY.endpointsSubtitle}</p>
+          <h3 className="text-lg font-semibold text-foreground">{SETTINGS_COPY.endpointsTitle}</h3>
+          <p className="mt-1 text-base leading-relaxed text-muted-foreground">{SETTINGS_COPY.endpointsSubtitle}</p>
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
@@ -445,11 +445,11 @@ function EndpointCard({ label, description, value }: EndpointCardProps) {
   };
 
   return (
-    <div className="rounded-sm border border-border/50 bg-surface-2/30 p-4">
+    <div className="rounded-sm border border-border/50 bg-surface-2/30 p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-medium text-foreground">{label}</p>
-          <p className="text-xs text-muted-foreground">{description}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
         </div>
         <Button
           variant="outline"
@@ -463,7 +463,7 @@ function EndpointCard({ label, description, value }: EndpointCardProps) {
         </Button>
       </div>
       <div className="mt-3">
-        <Input value={value} readOnly aria-readonly className="font-mono text-xs" />
+        <Input value={value} readOnly aria-readonly className="h-12 font-mono text-sm" />
       </div>
     </div>
   );

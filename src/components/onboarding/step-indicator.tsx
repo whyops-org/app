@@ -16,15 +16,15 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
   const progress = ((currentStep + 1) / steps.length) * 100;
   
   return (
-    <div className={cn("sticky top-0 z-10 w-full space-y-4 h-[10dvh] ", className)}>
+    <div className={cn("sticky top-0 z-10 w-full space-y-4 py-2", className)}>
       {/* Step Labels */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           {steps.map((step, index) => (
             <div 
               key={step.id}
               className={cn(
-                "flex items-center gap-2 text-xs font-semibold uppercase tracking-wider transition-colors",
+                "flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] transition-colors",
                 index === currentStep 
                   ? "text-foreground" 
                   : index < currentStep 
@@ -37,7 +37,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
             </div>
           ))}
         </div>
-        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <span className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {Math.round(progress)}% Complete
         </span>
       </div>

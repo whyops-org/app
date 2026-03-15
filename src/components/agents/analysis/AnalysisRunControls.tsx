@@ -126,27 +126,27 @@ export function AnalysisRunControls({
   };
 
   return (
-    <section className="rounded-sm border border-border/60 bg-surface-2/20 p-4">
+    <section className="rounded-sm border border-border/60 bg-surface-2/20 p-5 lg:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div className="space-y-2">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        <div className="space-y-3">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <CalendarClock className="h-3.5 w-3.5" />
             Agent Analysis
           </p>
-          <p className="text-lg font-semibold text-foreground">
+          <p className="text-2xl font-semibold text-foreground">
             Analyze overall agent behavior from traces and judge signals.
           </p>
           <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-            <span className="rounded-sm border border-border/60 bg-background/80 px-2 py-1">
+            <span className="rounded-sm border border-border/60 bg-background/80 px-3 py-1.5">
               Mode: <span className="font-medium text-foreground">{AGENT_ANALYSIS_MODE_LABELS[mode]}</span>
             </span>
-            <span className="rounded-sm border border-border/60 bg-background/80 px-2 py-1">
+            <span className="rounded-sm border border-border/60 bg-background/80 px-3 py-1.5">
               Window: <span className="font-medium text-foreground">{lookbackLabel}</span>
             </span>
-            <span className="rounded-sm border border-border/60 bg-background/80 px-2 py-1">
+            <span className="rounded-sm border border-border/60 bg-background/80 px-3 py-1.5">
               Dimensions: <span className="font-medium text-foreground">{selectedDimensions.length}</span>
             </span>
-            <span className="rounded-sm border border-border/60 bg-background/80 px-2 py-1">
+            <span className="rounded-sm border border-border/60 bg-background/80 px-3 py-1.5">
               Cron: <span className="font-medium text-foreground">{scheduleDraft.enabled ? "Enabled" : "Disabled"}</span>
             </span>
           </div>
@@ -157,7 +157,7 @@ export function AnalysisRunControls({
 
           <Dialog open={isCronDialogOpen} onOpenChange={setIsCronDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" variant="outline" className="h-10 gap-2 px-4">
+              <Button size="sm" variant="outline" className="h-11 gap-2 px-4.5">
                 <CalendarClock className="h-4 w-4" />
                 Cron Setup
               </Button>
@@ -171,11 +171,11 @@ export function AnalysisRunControls({
               </DialogHeader>
 
               <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-5 py-4">
-                <section className="space-y-3 rounded-sm border border-border/60 bg-surface-2/25 p-4">
+                <section className="space-y-4 rounded-sm border border-border/60 bg-surface-2/25 p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Schedule State</p>
-                      <p className="mt-1 text-sm text-muted-foreground">Enable or disable scheduled runs.</p>
+                      <p className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Schedule State</p>
+                      <p className="mt-1 text-base leading-relaxed text-muted-foreground">Enable or disable scheduled runs.</p>
                     </div>
                     <Button
                       type="button"
@@ -194,7 +194,7 @@ export function AnalysisRunControls({
 
                   <div className="grid gap-3 md:grid-cols-2">
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Preset</Label>
+                      <Label className="text-sm text-muted-foreground">Preset</Label>
                       <Select
                         value={scheduleDraft.preset}
                         onValueChange={(value) => handlePresetChange(value as AgentAnalysisSchedulePreset)}
@@ -212,7 +212,7 @@ export function AnalysisRunControls({
                       </Select>
                     </div>
                     <div className="space-y-1.5">
-                      <Label className="text-xs text-muted-foreground">Timezone</Label>
+                      <Label className="text-sm text-muted-foreground">Timezone</Label>
                       <Input
                         value={scheduleDraft.timezone}
                         onChange={(event) =>
@@ -225,7 +225,7 @@ export function AnalysisRunControls({
                       />
                     </div>
                     <div className="space-y-1.5 md:col-span-2">
-                      <Label className="text-xs text-muted-foreground">Cron Expression</Label>
+                      <Label className="text-sm text-muted-foreground">Cron Expression</Label>
                       <Input
                         value={scheduleDraft.cronExpr}
                         onChange={(event) =>
@@ -241,10 +241,10 @@ export function AnalysisRunControls({
                   </div>
                 </section>
 
-                <section className="rounded-sm border border-border/60 bg-surface-2/25 p-4">
-                  <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Config Snapshot</p>
-                  <p className="mt-2 text-xs text-muted-foreground">This cron config will use your current run settings:</p>
-                  <div className="mt-2 rounded-sm border border-border/60 bg-background/80 px-3 py-2 text-xs text-muted-foreground">
+                <section className="rounded-sm border border-border/60 bg-surface-2/25 p-5">
+                  <p className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Config Snapshot</p>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">This cron config will use your current run settings:</p>
+                  <div className="mt-3 rounded-sm border border-border/60 bg-background/80 px-4 py-3 text-sm text-muted-foreground">
                     <p>
                       Mode: <span className="font-medium text-foreground">{AGENT_ANALYSIS_MODE_LABELS[mode]}</span>
                     </p>
@@ -276,7 +276,7 @@ export function AnalysisRunControls({
                   size="sm"
                   variant="outline"
                   onClick={() => setIsCronDialogOpen(false)}
-                  className="h-9 px-4"
+                  className="h-10 px-4"
                 >
                   Cancel
                 </Button>
@@ -295,7 +295,7 @@ export function AnalysisRunControls({
 
           <Dialog open={isManualDialogOpen} onOpenChange={setIsManualDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="sm" variant="primary" disabled={isRunning} className="h-10 gap-2 px-4">
+              <Button size="sm" variant="primary" disabled={isRunning} className="h-11 gap-2 px-4.5">
                 <Settings2 className="h-4 w-4" />
                 Manual Run
               </Button>
@@ -312,8 +312,8 @@ export function AnalysisRunControls({
               </DialogHeader>
 
               <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
-                <section className="space-y-2.5">
-                  <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Analysis Mode</p>
+                <section className="space-y-3">
+                  <p className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Analysis Mode</p>
                   <div className="inline-flex items-center rounded-sm border border-border/70 bg-surface-2/50 p-0.5">
                     {(Object.keys(AGENT_ANALYSIS_MODE_LABELS) as AgentAnalysisMode[]).map((modeOption) => {
                       const isActive = modeOption === mode;
@@ -323,7 +323,7 @@ export function AnalysisRunControls({
                           type="button"
                           onClick={() => onModeChange(modeOption)}
                           className={cn(
-                            "h-9 rounded-sm px-4 text-sm font-semibold uppercase tracking-wide transition-colors",
+                            "h-10 rounded-sm px-4.5 text-sm font-semibold uppercase tracking-[0.14em] transition-colors",
                             isActive ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"
                           )}
                         >
@@ -334,8 +334,8 @@ export function AnalysisRunControls({
                   </div>
                 </section>
 
-                <section className="space-y-2.5">
-                  <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Lookback Window</Label>
+                <section className="space-y-3">
+                  <Label className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Lookback Window</Label>
                   <Select value={String(lookbackDays)} onValueChange={(value) => onLookbackDaysChange(Number(value))}>
                     <SelectTrigger className="w-full sm:w-72">
                       <SelectValue placeholder="Select lookback window" />
@@ -350,25 +350,25 @@ export function AnalysisRunControls({
                   </Select>
                 </section>
 
-                <section className="space-y-2.5">
-                  <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Judge Model Override</Label>
+                <section className="space-y-3">
+                  <Label className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Judge Model Override</Label>
                   <Input
                     value={judgeModel}
                     onChange={(event) => onJudgeModelChange(event.target.value)}
                     placeholder="default (server configured)"
                     className="w-full sm:w-96"
                   />
-                  <p className="text-xs text-muted-foreground">Leave empty to use server default judge model.</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">Leave empty to use server default judge model.</p>
                 </section>
 
-                <section className="space-y-2.5">
+                <section className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Deep Analysis Dimensions</Label>
-                    <span className="text-xs text-muted-foreground">
+                    <Label className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Deep Analysis Dimensions</Label>
+                    <span className="text-sm text-muted-foreground">
                       {selectedDimensions.length} / {AGENT_ANALYSIS_ALL_DIMENSIONS.length} selected
                     </span>
                   </div>
-                  <div className="grid gap-2 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-2">
                     {AGENT_ANALYSIS_ALL_DIMENSIONS.map((dimension) => {
                       const selected = selectedDimensions.includes(dimension);
                       return (
@@ -377,14 +377,14 @@ export function AnalysisRunControls({
                           type="button"
                           onClick={() => toggleDimension(dimension)}
                           className={cn(
-                            "rounded-sm border px-3 py-2 text-left transition-colors",
+                            "rounded-sm border px-4 py-3 text-left transition-colors",
                             selected
                               ? "border-primary/40 bg-primary/10"
                               : "border-border/60 bg-surface-2/20 hover:bg-surface-2/35"
                           )}
                         >
-                          <p className="text-sm font-medium text-foreground">{AGENT_ANALYSIS_DIMENSION_LABELS[dimension]}</p>
-                          <p className="mt-1 text-xs text-muted-foreground">{AGENT_ANALYSIS_DIMENSION_DESCRIPTIONS[dimension]}</p>
+                          <p className="text-base font-medium text-foreground">{AGENT_ANALYSIS_DIMENSION_LABELS[dimension]}</p>
+                          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{AGENT_ANALYSIS_DIMENSION_DESCRIPTIONS[dimension]}</p>
                         </button>
                       );
                     })}
@@ -393,7 +393,7 @@ export function AnalysisRunControls({
               </div>
 
               <DialogFooter className="border-t border-border/55 bg-surface-2/25 px-5 py-4">
-                <Button size="sm" variant="outline" onClick={() => setIsManualDialogOpen(false)} className="h-9 px-4">
+                <Button size="sm" variant="outline" onClick={() => setIsManualDialogOpen(false)} className="h-10 px-4">
                   Cancel
                 </Button>
                 <Button
@@ -402,7 +402,7 @@ export function AnalysisRunControls({
                   onClick={handleRun}
                   disabled={isRunning || selectedDimensions.length === 0}
                   loading={isRunning}
-                  className="h-9 gap-2 px-4"
+                  className="h-10 gap-2 px-4.5"
                 >
                   <Play className="h-3.5 w-3.5" />
                   Run Analysis

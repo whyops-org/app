@@ -41,7 +41,7 @@ export function TraceHeader({ trace, view, onViewChange, agentId }: TraceHeaderP
       : "/agents";
 
   return (
-    <div className="flex h-14 items-center justify-between border-b border-border/50 bg-background px-4">
+    <div className="flex h-16 items-center justify-between border-b border-border/50 bg-background px-4 lg:px-5">
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex min-w-0 items-center text-sm font-medium text-muted-foreground">
           <Link
@@ -63,7 +63,7 @@ export function TraceHeader({ trace, view, onViewChange, agentId }: TraceHeaderP
 
         <Badge
           className={cn(
-            "h-5 px-1.5 text-[10px] uppercase tracking-wide",
+            "h-6 px-2 text-xs uppercase tracking-[0.14em]",
             hasErrors
               ? "border-destructive/30 bg-destructive/10 text-destructive"
               : "border-border/70 bg-surface-2/50 text-foreground"
@@ -105,7 +105,7 @@ export function TraceHeader({ trace, view, onViewChange, agentId }: TraceHeaderP
         <Button
           variant="outline"
           size="sm"
-          className="h-8 gap-2"
+          className="h-9 gap-2"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           Replay
@@ -123,7 +123,7 @@ interface MetricPillProps {
 
 function MetricPill({ label, value, icon }: MetricPillProps) {
   return (
-    <div className="inline-flex h-7 items-center gap-1.5 rounded-sm border border-border/60 bg-surface-2/30 px-2.5 text-xs">
+    <div className="inline-flex h-8 items-center gap-1.5 rounded-sm border border-border/60 bg-surface-2/30 px-3 text-sm">
       {icon ? <span className="text-muted-foreground">{icon}</span> : null}
       <span className="text-muted-foreground">{label}</span>
       <span className="max-w-[9rem] truncate font-medium text-foreground">{value}</span>
@@ -143,7 +143,7 @@ function ViewToggleButton({ active, onClick, label, icon }: ViewToggleButtonProp
     <button
       onClick={onClick}
       className={cn(
-        "flex h-7 items-center gap-1.5 rounded-sm px-2.5 text-xs font-medium transition-colors",
+        "flex h-8 items-center gap-1.5 rounded-sm px-3 text-sm font-medium transition-colors",
         active
           ? "bg-background text-foreground"
           : "text-muted-foreground hover:text-foreground"

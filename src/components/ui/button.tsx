@@ -18,9 +18,9 @@ const buttonVariants = cva(
           "bg-surface-2 text-foreground/80 hover:bg-surface-3 hover:text-foreground",
       },
       size: {
-        sm: "h-8 px-3",
-        md: "h-10 px-4",
-        lg: "h-11 px-5 text-base",
+        sm: "h-9 px-3.5",
+        md: "h-11 px-5",
+        lg: "h-12 px-6 text-base",
       },
     },
     defaultVariants: {

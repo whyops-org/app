@@ -23,7 +23,7 @@ export function DashboardHeader({ className, ...props }: DashboardHeaderProps) {
   return (
     <header
       className={cn(
-        "flex h-14 items-center justify-between border-b border-border/50 bg-background px-6",
+        "flex h-16 items-center justify-between border-b border-border/50 bg-background px-6 lg:px-7",
         className
       )}
       {...props}
@@ -38,7 +38,7 @@ export function DashboardHeader({ className, ...props }: DashboardHeaderProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "rounded-sm border px-3 py-1.5 text-sm font-medium transition-colors",
+                "rounded-sm border px-3.5 py-2 text-sm font-medium transition-colors",
                 isActive
                   ? "border-border bg-card text-foreground"
                   : "border-transparent text-muted-foreground hover:border-border/60 hover:bg-surface-2/50 hover:text-foreground"

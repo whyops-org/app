@@ -4,7 +4,6 @@ import { useState } from "react";
 
 import {
   EVAL_CATEGORY_LABELS,
-  EVAL_DIFFICULTY_LABELS,
   type EvalCategory,
 } from "@/constants/agent-evals";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import type { EvalCase, EvalRun } from "@/stores/agentEvalsStore";
+import type { EvalRun } from "@/stores/agentEvalsStore";
 import { EvalCaseCard } from "./EvalCaseCard";
 
 interface EvalsResultsProps {

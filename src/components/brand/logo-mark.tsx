@@ -1,4 +1,5 @@
 import * as React from "react";
+import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
@@ -21,9 +22,10 @@ export function LogoMark({ className, size = "md", ...props }: LogoMarkProps) {
       )}
       {...props}
     >
-      <img
+      <Image
         src="/assets/WhyOpsLogo.svg"
         alt="WhyOps"
+        fill
         sizes={size === "sm" ? "24px" : "32px"}
         className="object-contain"
       />

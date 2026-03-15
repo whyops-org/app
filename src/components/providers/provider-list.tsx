@@ -40,7 +40,7 @@ export function ProviderList({ providers, variant = "compact", className }: Prov
           <div
             key={provider.id}
             className={cn(
-              "flex flex-col gap-4 rounded-sm border border-border/50 bg-card p-4",
+              "flex flex-col gap-4 rounded-sm border border-border/50 bg-card p-5",
               variant === "compact" ? "sm:flex-row sm:items-center sm:justify-between" : ""
             )}
           >
@@ -49,19 +49,19 @@ export function ProviderList({ providers, variant = "compact", className }: Prov
                 <Icon className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-sm font-medium text-foreground">{provider.name}</p>
-                <p className="text-xs text-muted-foreground">{meta.label}</p>
+                <p className="text-base font-semibold text-foreground">{provider.name}</p>
+                <p className="text-sm text-muted-foreground">{meta.label}</p>
               </div>
             </div>
 
             {variant === "detailed" && (
-              <div className="grid gap-2 text-xs text-muted-foreground">
+              <div className="grid gap-3 text-sm text-muted-foreground">
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">Base URL</p>
-                  <p className="font-mono text-[11px] text-foreground/80">{provider.baseUrl}</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Base URL</p>
+                  <p className="font-mono text-sm text-foreground/80">{provider.baseUrl}</p>
                 </div>
                 <div>
-                  <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground/70">Last Updated</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Last Updated</p>
                   <p className="text-foreground/80">{formatShortDate(provider.updatedAt)}</p>
                 </div>
               </div>

@@ -28,7 +28,7 @@ export function SelectableCard({
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={cn(
-        "relative flex flex-col items-center gap-3 rounded-xl border px-4 py-5 text-center transition-all duration-200",
+        "relative flex flex-col items-center gap-3.5 rounded-xl border px-5 py-5 text-center transition-all duration-200",
         isSelected
           ? "border-primary bg-card shadow-md"
           : "border-border bg-card hover:bg-card hover:border-border/50",
@@ -47,13 +47,13 @@ export function SelectableCard({
       </div>
       <div className="space-y-1">
         <div className={cn(
-          "text-sm font-semibold",
+          "text-base font-semibold",
           isSelected ? "text-foreground" : "text-muted-foreground"
         )}>
           {title}
         </div>
         {description && (
-          <div className="text-xs leading-tight text-muted-foreground/60 font-medium">
+          <div className="text-sm leading-relaxed text-muted-foreground/75">
             {description}
           </div>
         )}

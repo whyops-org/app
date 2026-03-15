@@ -202,12 +202,12 @@ export function AgentsTable({
   return (
     <Card className="gap-0 border-border/40 bg-card">
       {/* Header */}
-      <div className="border-b border-border/30 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-foreground">
+      <div className="border-b border-border/30 px-6 py-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <h2 className="text-lg font-semibold text-foreground">
             {AGENTS_TABLE_TEXT.title}
           </h2>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -216,7 +216,7 @@ export function AgentsTable({
                 placeholder={AGENTS_TABLE_TEXT.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 w-64 pl-9 pr-4"
+                className="h-10 w-full min-w-0 pl-9 pr-4 sm:w-72"
                 disabled={isTableLoading}
               />
             </div>
@@ -300,7 +300,7 @@ export function AgentsTable({
                         <p className="text-sm font-medium text-foreground">
                           {agent.name}
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-muted-foreground">
                           {agent.latestVersion?.hash?.substring(0, 8) || "v1.0.0"}
                         </p>
                       </div>

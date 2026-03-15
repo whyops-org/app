@@ -24,10 +24,10 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-[1280px] space-y-7 p-6 lg:p-7">
+      <div className="mx-auto w-full max-w-[1280px] space-y-7 p-6 lg:p-8">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">{SETTINGS_COPY.title}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{SETTINGS_COPY.subtitle}</p>
+          <h1 className="text-3xl font-semibold text-foreground">{SETTINGS_COPY.title}</h1>
+          <p className="mt-2 max-w-2xl text-base leading-relaxed text-muted-foreground">{SETTINGS_COPY.subtitle}</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-5">

@@ -120,7 +120,7 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
 
         {/* Environment Selection */}
         <div className="space-y-3">
-          <label className="text-xs font-semibold tracking-wider text-muted-foreground uppercase ml-1">
+          <label className="ml-1 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Environment
           </label>
           <div className="grid grid-cols-3 gap-3">
@@ -175,11 +175,11 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
 
             {/* Key for selected environment */}
             <div className="space-y-3">
-              <p className="text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest">
+              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                 {masterKeys[selectedEnvIndex]?.name}
               </p>
               <div
-                className="flex items-center gap-3 rounded-lg border border-border/40 bg-background px-4 py-3"
+                className="flex items-center gap-3 rounded-lg border border-border/40 bg-background px-4 py-3.5"
               >
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse shrink-0" />
                 <div className="flex-1 min-w-0">
@@ -189,7 +189,7 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
                 </div>
                 <button
                   onClick={() => handleCopyKey(masterKeys[selectedEnvIndex])}
-                  className="flex items-center gap-2 rounded-md hover:bg-muted/50 py-2 px-3 transition-colors text-xs font-semibold text-muted-foreground hover:text-foreground border border-border/50 shrink-0"
+                  className="flex shrink-0 items-center gap-2 rounded-md border border-border/50 px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
                 >
                   {copiedKeyId === masterKeys[selectedEnvIndex]?.id ? (
                     <>

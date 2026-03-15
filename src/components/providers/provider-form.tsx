@@ -220,7 +220,7 @@ export function ProviderForm({
         readOnly
         iconRight={
           formData.slug ? (
-            <span className="text-xs text-muted-foreground">{PROVIDER_FORM_COPY.slugHint}</span>
+            <span className="text-sm text-muted-foreground">{PROVIDER_FORM_COPY.slugHint}</span>
           ) : null
         }
       />

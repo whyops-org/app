@@ -5,7 +5,8 @@ import { ReactNode } from "react";
 interface InfoBoxProps {
   variant?: "info" | "success" | "warning" | "error";
   icon?: LucideIcon;
-  title: string;  children: ReactNode;
+  title: string;
+  children: ReactNode;
   className?: string;
 }
 
@@ -51,7 +52,7 @@ export function InfoBox({
   
   return (
     <div className={cn(
-      "flex items-start gap-4 rounded-xl border p-4",
+      "flex items-start gap-4 rounded-xl border p-5",
       styles.container,
       className
     )}>
@@ -61,9 +62,9 @@ export function InfoBox({
       )}>
         <Icon className={cn("h-5 w-5", styles.iconColor)} />
       </div>}
-      <div className="space-y-2 flex-1">
-        {title && <p className={cn("text-xs font-bold uppercase tracking-widest", styles.titleColor)}>{title}</p>}
-        <div className={cn("text-xs leading-relaxed", styles.contentColor)}>
+      <div className="flex-1 space-y-2.5">
+        {title && <p className={cn("text-sm font-semibold tracking-[0.12em] uppercase", styles.titleColor)}>{title}</p>}
+        <div className={cn("text-sm leading-relaxed", styles.contentColor)}>
           {children}
         </div>
       </div>

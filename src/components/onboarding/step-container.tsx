@@ -11,12 +11,12 @@ export function StepContainer({ children, className, maxHeight = "70vh" }: StepC
   return (
     <div 
       className={cn(
-        "w-full rounded-3xl  overflow-hidden flex flex-col",
+        "flex w-full flex-col overflow-hidden rounded-3xl",
         className
       )}
       style={{ maxHeight }}
     >
-      <div className="flex-1 overflow-y-auto p-8 pb-24 space-y-6 scrollbar-thin scrollbar-thumb-border/50 scrollbar-track-transparent">
+      <div className="flex-1 space-y-7 overflow-y-auto p-8 pb-28 lg:p-10 lg:pb-32 scrollbar-thin scrollbar-thumb-border/50 scrollbar-track-transparent">
         {children}
       </div>
     </div>

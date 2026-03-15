@@ -80,13 +80,16 @@ export function TracesPageContent() {
   const currentLoading = shouldShowInitialLoader || localIsLoading;
 
   return (
-    <div className="space-y-6 p-8">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Traces</h1>
+    <div className="space-y-6 p-6 lg:p-8">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-3xl font-semibold text-foreground">Traces</h1>
+        <p className="max-w-2xl text-base leading-relaxed text-muted-foreground">
+          Inspect recent execution timelines, agent activity, and trace-level outcomes without drilling into raw logs first.
+        </p>
       </div>
       <Card className="border-border/30 bg-card">
-        <div className="flex items-center justify-between border-b border-border/30 px-6 py-4">
-          <div className="flex items-center gap-3">
+        <div className="border-b border-border/30 px-6 py-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -94,14 +97,14 @@ export function TracesPageContent() {
                   placeholder="Search trace ID or agent..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-64 pl-9 pr-4"
+                  className="h-10 w-full min-w-0 pl-9 pr-4 sm:w-72"
                 />
               </div>
               <Select
                 value={pagination.count.toString()}
                 onValueChange={(value) => handleCountChange(parseInt(value, 10))}
               >
-                <SelectTrigger className="h-9 w-32">
+                <SelectTrigger className="h-10 w-36">
                   <SelectValue placeholder="Per page" />
                 </SelectTrigger>
                 <SelectContent>
@@ -196,7 +199,7 @@ export function TracesPageContent() {
               {/* Pagination */}
               <div className="flex items-center justify-between border-t border-border/30 px-6 py-4">
                 <div className="flex items-center gap-4">
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground">
                     Showing {filteredThreads.length} of {pagination.total} traces
                   </p>
                 </div>

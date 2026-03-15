@@ -81,14 +81,14 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
       className={cn(
         "relative flex h-screen flex-col border-r border-border/50 bg-card transition-all ease-in-out",
         transitionDuration,
-        isCollapsed ? "w-[72px]" : "w-60",
+        isCollapsed ? "w-[76px]" : "w-64",
         className
       )}
       {...props}
     >
       <div
         className={cn(
-          "flex h-14 items-center border-b border-border/40 transition-all",
+          "flex h-16 items-center border-b border-border/40 transition-all",
           transitionDuration,
           isCollapsed ? "justify-center px-0" : "justify-between px-4"
         )}
@@ -97,7 +97,7 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
           <LogoMark size="sm" />
           <span
             className={cn(
-              "origin-left whitespace-nowrap text-sm font-semibold text-foreground transition-all",
+              "origin-left whitespace-nowrap text-base font-semibold text-foreground transition-all",
               transitionDuration,
               isCollapsed ? "hidden w-0 -translate-x-2 opacity-0" : "w-auto translate-x-0 opacity-100"
             )}
@@ -118,11 +118,11 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
         </button>
       </div>
 
-      <div className="flex-1 overflow-hidden px-3 py-5">
-        <div className="mb-2">
+      <div className="flex-1 overflow-hidden px-3 py-6">
+        <div className="mb-3">
           <p
             className={cn(
-              "px-2 text-[11px] font-medium text-muted-foreground transition-all",
+              "px-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-all",
               transitionDuration,
               isCollapsed ? "h-0 -translate-x-2 overflow-hidden opacity-0" : "h-auto translate-x-0 opacity-100"
             )}
@@ -148,13 +148,13 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
         {isCollapsed ? (
           <button
             onClick={toggleSidebar}
-            className="mx-auto grid h-8 w-8 place-items-center rounded-sm text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
+            className="mx-auto grid h-9 w-9 place-items-center rounded-sm text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
             aria-label="Expand sidebar"
           >
             <PanelLeft className="h-4 w-4" />
           </button>
         ) : (
-          <div className="flex items-center justify-between rounded-sm border border-border/50 bg-surface-2/30 px-2.5 py-2 text-xs">
+          <div className="flex items-center justify-between rounded-sm border border-border/50 bg-surface-2/30 px-3 py-2.5 text-sm">
             <span className="font-medium text-foreground">System online</span>
             <span className="text-muted-foreground">v{WEB_VERSION}</span>
           </div>
@@ -182,9 +182,9 @@ function SidebarItem({
   return (
     <button
       className={cn(
-        "group flex w-full items-center rounded-sm text-sm text-muted-foreground transition-all hover:bg-surface-2 hover:text-foreground",
+        "group flex w-full items-center rounded-sm text-sm font-medium text-muted-foreground transition-all hover:bg-surface-2 hover:text-foreground",
         transitionDuration,
-        isCollapsed ? "mx-auto h-9 w-9 justify-center px-0" : "h-9 gap-2.5 px-2.5",
+        isCollapsed ? "mx-auto h-10 w-10 justify-center px-0" : "h-10 gap-3 px-3",
         className
       )}
       title={isCollapsed ? label : undefined}

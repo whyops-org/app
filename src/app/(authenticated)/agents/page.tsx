@@ -162,14 +162,14 @@ export default function AgentsPage() {
       : undefined;
 
   return (
-    <div className="space-y-5 p-6 lg:p-7">
+    <div className="space-y-6 p-6 lg:p-8">
       {/* Page Header */}
-      <div className="border-b border-border/40 pb-4">
+      <div className="border-b border-border/40 pb-5">
         <div>
-          <h1 className="text-2xl font-semibold text-foreground">
+          <h1 className="text-3xl font-semibold text-foreground">
             Agents Dashboard
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-2 max-w-2xl text-base leading-relaxed text-muted-foreground">
             Monitor performance and activity across deployed agents.
           </p>
         </div>

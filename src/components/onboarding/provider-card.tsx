@@ -33,7 +33,7 @@ export function ProviderCard({ onBack, onContinue }: ProviderCardProps) {
         {/* Existing Providers List */}
         {providers.length > 0 && (
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Your Providers
             </h3>
             <ProviderList providers={providers} variant="compact" />
@@ -42,7 +42,7 @@ export function ProviderCard({ onBack, onContinue }: ProviderCardProps) {
 
         {/* Add New Provider Section */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             {providers.length > 0
               ? PROVIDER_FORM_COPY.addAnotherTitle
               : PROVIDER_FORM_COPY.sectionTitle}

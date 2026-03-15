@@ -70,7 +70,7 @@ function JsonSection({ label, value }: JsonSectionProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <label className="text-xs font-medium text-muted-foreground">{label}</label>
+        <label className="text-sm font-medium text-muted-foreground">{label}</label>
         <Button
           variant="ghost"
           size="sm"
@@ -86,7 +86,7 @@ function JsonSection({ label, value }: JsonSectionProps) {
           <Copy className="h-3.5 w-3.5" />
         </Button>
       </div>
-      <div className="max-h-44 overflow-auto rounded-sm border border-border/50 bg-surface-2/30 p-2">
+      <div className="max-h-52 overflow-auto rounded-sm border border-border/50 bg-surface-2/30 p-3">
         <JsonViewer value={json} variant="compact" />
       </div>
     </div>
@@ -112,12 +112,12 @@ function EventMetaSummary({ metadata }: EventMetaSummaryProps) {
 
   return (
     <div className="flex flex-wrap gap-1.5">
-      {tool ? <Badge className="h-5 px-1.5 font-mono text-[10px]">{tool}</Badge> : null}
-      {model ? <Badge className="h-5 px-1.5 font-mono text-[10px]">{model}</Badge> : null}
-      {provider ? <Badge className="h-5 px-1.5 text-[10px]">{provider}</Badge> : null}
-      {totalTokens !== null ? <Badge className="h-5 px-1.5 text-[10px]">{totalTokens.toLocaleString()} tokens</Badge> : null}
-      {latencyMs !== null ? <Badge className="h-5 px-1.5 text-[10px]">{latencyMs}ms</Badge> : null}
-      {totalRecords !== null ? <Badge className="h-5 px-1.5 text-[10px]">{totalRecords} records</Badge> : null}
+      {tool ? <Badge className="font-mono">{tool}</Badge> : null}
+      {model ? <Badge className="font-mono">{model}</Badge> : null}
+      {provider ? <Badge>{provider}</Badge> : null}
+      {totalTokens !== null ? <Badge>{totalTokens.toLocaleString()} tokens</Badge> : null}
+      {latencyMs !== null ? <Badge>{latencyMs}ms</Badge> : null}
+      {totalRecords !== null ? <Badge>{totalRecords} records</Badge> : null}
     </div>
   );
 }
@@ -136,22 +136,22 @@ function EventCard({ event, index, expanded, onToggle }: EventCardProps) {
     <div className="overflow-hidden rounded-sm border border-border/50 bg-card">
       <button
         onClick={onToggle}
-        className="flex w-full items-center gap-2 px-3 py-2 text-left transition-colors hover:bg-surface-2/40"
+        className="flex w-full items-center gap-2 px-4 py-3 text-left transition-colors hover:bg-surface-2/40"
       >
         {expanded ? (
           <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
         ) : (
           <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
         )}
-        <Badge className={cn("h-5 px-1.5 font-mono text-[10px]", getEventTypeBadgeClass(event.eventType))}>
+        <Badge className={cn("font-mono", getEventTypeBadgeClass(event.eventType))}>
           {event.eventType}
         </Badge>
-        <span className="text-xs text-muted-foreground">#{index + 1}</span>
-        <span className="ml-auto text-xs text-muted-foreground">{event.timeSinceStart ?? 0}ms</span>
+        <span className="text-sm text-muted-foreground">#{index + 1}</span>
+        <span className="ml-auto text-sm text-muted-foreground">{event.timeSinceStart ?? 0}ms</span>
       </button>
 
       {expanded ? (
-        <div className="space-y-3 border-t border-border/50 px-3 py-3">
+        <div className="space-y-3 border-t border-border/50 px-4 py-4">
           {event.content !== null && event.content !== undefined ? (
             <JsonSection label="Content" value={event.content} />
           ) : null}
@@ -163,7 +163,7 @@ function EventCard({ event, index, expanded, onToggle }: EventCardProps) {
             </>
           ) : null}
 
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <div className="inline-flex items-center gap-1">
               <Clock className="h-3.5 w-3.5" />
               {formatTimestamp(event.timestamp)}
@@ -210,9 +210,9 @@ export function TraceSidebarRight({ trace, isCollapsed, onToggle }: TraceSidebar
   }
 
   return (
-    <div className="flex w-[340px] flex-col border-l border-border/50 bg-background transition-all duration-300">
-      <div className="flex h-11 items-center justify-between border-b border-border/50 px-4">
-        <h3 className="text-xs font-medium text-muted-foreground">Events</h3>
+      <div className="flex w-[380px] flex-col border-l border-border/50 bg-background transition-all duration-300 xl:w-[400px]">
+      <div className="flex h-12 items-center justify-between border-b border-border/50 px-4">
+        <h3 className="text-sm font-medium text-muted-foreground">Events</h3>
         <Button
           variant="ghost"
           size="sm"
@@ -223,7 +223,7 @@ export function TraceSidebarRight({ trace, isCollapsed, onToggle }: TraceSidebar
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3">
+      <div className="flex-1 overflow-y-auto p-4">
         {trace.events.length > 0 ? (
           <div className="space-y-2.5">
             {trace.events.map((event, index) => (

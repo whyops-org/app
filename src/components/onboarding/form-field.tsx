@@ -24,8 +24,8 @@ export function FormField({
   ...inputProps
 }: FormFieldProps) {
   return (
-    <div className={cn("space-y-2", containerClassName)}>
-      <Label htmlFor={id} className="text-xs font-semibold tracking-wider text-muted-foreground uppercase ml-1">
+    <div className={cn("space-y-2.5", containerClassName)}>
+      <Label htmlFor={id} className="ml-1 text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">
         {label}
       </Label>
       <div className="relative group">
@@ -51,7 +51,7 @@ export function FormField({
         )}
       </div>
       {hint && (
-        <p className="text-xs text-muted-foreground ml-1">{hint}</p>
+        <p className="ml-1 text-sm leading-relaxed text-muted-foreground">{hint}</p>
       )}
     </div>
   );

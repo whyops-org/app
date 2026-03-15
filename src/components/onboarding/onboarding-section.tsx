@@ -33,13 +33,13 @@ export function OnboardingSection({
     >
       <div className="flex flex-col gap-6">
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
+          <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
             <span>{step}</span>
             <span>{progressLabel}</span>
           </div>
           <Progress value={progress} />
         </div>
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h2 className="text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
             {title}
           </h2>
@@ -47,7 +47,7 @@ export function OnboardingSection({
             {subtitle}
           </p>
         </div>
-        <div className="space-y-4 text-sm text-muted-foreground">{children}</div>
+        <div className="space-y-5 text-base leading-relaxed text-muted-foreground">{children}</div>
       </div>
       <div className="flex items-center justify-center lg:justify-end">{aside}</div>
     </section>

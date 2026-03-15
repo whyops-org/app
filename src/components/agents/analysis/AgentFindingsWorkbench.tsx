@@ -97,18 +97,18 @@ export function AgentFindingsWorkbench({ findings, isStreaming = false }: AgentF
     <section className="rounded-sm border border-border/60 bg-surface-2/20">
       <div className="space-y-1 border-b border-border/55 px-5 py-4">
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-lg font-semibold text-foreground">Findings Workbench</p>
+          <p className="text-xl font-semibold text-foreground">Findings Workbench</p>
           {isStreaming ? (
-            <span className="inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+            <span className="inline-flex items-center gap-1.5 rounded-sm border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
               Live
             </span>
           ) : null}
         </div>
-        <p className="text-sm text-muted-foreground">Filter findings by dimension and severity, then inspect details and patches.</p>
+        <p className="text-base leading-relaxed text-muted-foreground">Filter findings by dimension and severity, then inspect details and patches.</p>
       </div>
 
-      <div className="space-y-4 px-5 py-4">
+      <div className="space-y-5 px-5 py-5">
         <Tabs
           value={dimensionTab}
           onValueChange={(value) => {
@@ -123,10 +123,10 @@ export function AgentFindingsWorkbench({ findings, isStreaming = false }: AgentF
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="h-9 flex-none rounded-sm border border-transparent px-3 text-sm font-medium data-[state=active]:border-border/70 data-[state=active]:bg-background/90"
+                className="h-10 flex-none rounded-sm border border-transparent px-3.5 text-sm font-medium data-[state=active]:border-border/70 data-[state=active]:bg-background/90"
               >
                 {tab.label}
-                <span className="rounded-sm bg-surface-2 px-1.5 py-0.5 text-xs text-muted-foreground">{tab.count}</span>
+                <span className="rounded-sm bg-surface-2 px-2 py-0.5 text-sm text-muted-foreground">{tab.count}</span>
               </TabsTrigger>
             ))}
           </TabsList>
@@ -149,14 +149,14 @@ export function AgentFindingsWorkbench({ findings, isStreaming = false }: AgentF
                       setActiveId(null);
                     }}
                     className={cn(
-                      "inline-flex h-8 items-center gap-1 rounded-sm border px-2.5 text-sm font-medium transition-colors",
+                      "inline-flex h-9 items-center gap-1.5 rounded-sm border px-3 text-sm font-medium transition-colors",
                       active
                         ? "border-primary/40 bg-primary/10 text-foreground"
                         : "border-border/60 bg-background/70 text-muted-foreground hover:text-foreground"
                     )}
                   >
                     {CATEGORY_LABELS[categoryKey]}
-                    <span className="text-xs tabular-nums text-muted-foreground">{categoryCounts[categoryKey]}</span>
+                    <span className="text-sm tabular-nums text-muted-foreground">{categoryCounts[categoryKey]}</span>
                   </button>
                 );
               })}
@@ -168,7 +168,7 @@ export function AgentFindingsWorkbench({ findings, isStreaming = false }: AgentF
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="space-y-2 rounded-sm border border-border/55 bg-background/75 p-3">
+                <div className="space-y-3 rounded-sm border border-border/55 bg-background/75 p-4">
                   <div className="flex items-center justify-between px-0.5">
                     <p className="text-sm font-semibold text-foreground">Findings Strip</p>
                     <p className="text-sm text-muted-foreground">
@@ -186,15 +186,15 @@ export function AgentFindingsWorkbench({ findings, isStreaming = false }: AgentF
                           type="button"
                           onClick={() => setActiveId(id)}
                           className={cn(
-                            "w-[320px] rounded-sm border px-3 py-3 text-left transition-colors",
+                            "w-[360px] rounded-sm border px-4 py-4 text-left transition-colors",
                             id === resolvedActiveId
                               ? "border-primary/45 bg-primary/10"
                               : "border-border/60 bg-background hover:bg-surface-2/30"
                           )}
                         >
-                          <p className="truncate text-sm font-semibold text-foreground">{finding.title}</p>
-                          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{finding.detail}</p>
-                          <p className="mt-2 text-xs text-muted-foreground">
+                          <p className="truncate text-base font-semibold text-foreground">{finding.title}</p>
+                          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{finding.detail}</p>
+                          <p className="mt-3 text-sm text-muted-foreground">
                             {AGENT_ANALYSIS_DIMENSION_LABELS[finding.dimension as AgentAnalysisDimension] || finding.dimension} • {finding.severity}
                           </p>
                         </button>

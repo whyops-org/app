@@ -224,7 +224,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
 
   return (
     <div className="space-y-5">
-      <Card className="border-border/60 bg-card px-5 py-5">
+      <Card className="border-border/60 bg-card px-6 py-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div className="space-y-3">
             <div className="flex items-center gap-2">
@@ -235,7 +235,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                     ? "Agent Analysis Failed"
                     : "Deep Agent Analysis Running"}
               </p>
-              <Badge className={cn("h-5 px-1.5 text-[10px] uppercase", getStatusClass(run.status))}>
+              <Badge className={cn("h-6 px-2 text-xs uppercase tracking-[0.14em]", getStatusClass(run.status))}>
                 {run.status}
               </Badge>
             </div>
@@ -246,11 +246,11 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
               <MetaField label="Traces" value={String(run.traceCount)} />
               <MetaField label="Findings" value={String(run.summary?.findingCount || findings.length)} />
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Window: {formatDateTime(run.windowStart)} - {formatDateTime(run.windowEnd)}
             </p>
           </div>
-          <div className="space-y-2 text-right text-xs text-muted-foreground">
+          <div className="space-y-2 text-right text-sm text-muted-foreground">
             <p>Started: {formatDateTime(run.startedAt)}</p>
             <p>Finished: {formatDateTime(run.finishedAt)}</p>
             <p>
@@ -265,7 +265,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
         </div>
 
         {checkpoint && (isStreaming || run.status === "running") ? (
-          <div className="mt-4 rounded-sm border border-border/60 bg-surface-2/30 px-3 py-2 text-sm text-muted-foreground">
+          <div className="mt-4 rounded-sm border border-border/60 bg-surface-2/30 px-4 py-3 text-base text-muted-foreground">
             <span className="font-medium text-foreground">Checkpoint:</span> {checkpoint.key} (#{checkpoint.sequence})
           </div>
         ) : null}
@@ -312,13 +312,13 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                   variant="line"
                   className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border/50 bg-transparent p-0 pb-2"
                 >
-                  <TabsTrigger value="signals" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="signals" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Signals
                   </TabsTrigger>
-                  <TabsTrigger value="intent-outcomes" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="intent-outcomes" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Intent Outcomes
                   </TabsTrigger>
-                  <TabsTrigger value="llm-analysis" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="llm-analysis" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     LLM Analysis
                   </TabsTrigger>
                 </TabsList>
@@ -347,8 +347,8 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                 </TabsContent>
 
                 <TabsContent value="intent-outcomes" className="space-y-3">
-                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+                    <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       First-Query Intent Outcomes
                     </p>
                     {(firstQueryIntentOutcomes || []).length === 0 ? (
@@ -358,23 +358,23 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                         {firstQueryIntentOutcomes.map((item) => (
                           <div
                             key={item.intent}
-                            className="rounded-sm border border-border/50 bg-background/60 px-2.5 py-2"
+                            className="rounded-sm border border-border/50 bg-background/60 px-3 py-3"
                           >
                             <div className="flex items-center justify-between gap-2">
                               <p className="text-sm font-medium text-foreground">{item.intent.replace(/_/g, " ")}</p>
-                              <span className="text-xs text-muted-foreground">{item.traceCount} traces</span>
+                              <span className="text-sm text-muted-foreground">{item.traceCount} traces</span>
                             </div>
                             <div className="mt-1 flex flex-wrap gap-1.5">
-                              <Badge className="border-border/60 bg-surface-2/40 text-[10px] text-foreground">
+                              <Badge className="border-border/60 bg-surface-2/40 text-foreground">
                                 Resolve {item.likelyResolvedRate.toFixed(1)}%
                               </Badge>
-                              <Badge className="border-border/60 bg-surface-2/40 text-[10px] text-foreground">
+                              <Badge className="border-border/60 bg-surface-2/40 text-foreground">
                                 Error {item.errorRate.toFixed(1)}%
                               </Badge>
-                              <Badge className="border-border/60 bg-surface-2/40 text-[10px] text-foreground">
+                              <Badge className="border-border/60 bg-surface-2/40 text-foreground">
                                 Follow-up {item.followupRate.toFixed(1)}%
                               </Badge>
-                              <Badge className="border-border/60 bg-surface-2/40 text-[10px] text-foreground">
+                              <Badge className="border-border/60 bg-surface-2/40 text-foreground">
                                 Tool Miss {item.expectedToolMissRate.toFixed(1)}%
                               </Badge>
                             </div>
@@ -384,8 +384,8 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                     )}
                   </div>
 
-                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+                    <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       Intents Needing Development
                     </p>
                     {(topIntentsNeedingDevelopment || []).length === 0 ? (
@@ -395,11 +395,11 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                         {topIntentsNeedingDevelopment.map((item) => (
                           <div
                             key={`${item.intent}-${item.traceCount}`}
-                            className="rounded-sm border border-border/50 bg-background/60 px-2.5 py-2"
+                            className="rounded-sm border border-border/50 bg-background/60 px-3 py-3"
                           >
                             <div className="flex items-center justify-between gap-2">
                               <p className="text-sm font-medium text-foreground">{item.intent.replace(/_/g, " ")}</p>
-                              <span className="text-xs text-warning">
+                              <span className="text-sm text-warning">
                                 Need {item.developmentNeedScore.toFixed(1)}
                               </span>
                             </div>
@@ -407,7 +407,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                               {(item.reasons || []).slice(0, 4).map((reason) => (
                                 <Badge
                                   key={`${item.intent}-${reason}`}
-                                  className="border-border/60 bg-surface-2/40 text-[10px] text-foreground"
+                                  className="border-border/60 bg-surface-2/40 text-foreground"
                                 >
                                   {truncateText(reason, 40)}
                                 </Badge>
@@ -443,13 +443,13 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                   variant="line"
                   className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border/50 bg-transparent p-0 pb-2"
                 >
-                  <TabsTrigger value="signals" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="signals" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Signals
                   </TabsTrigger>
-                  <TabsTrigger value="intent-map" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="intent-map" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Intent Map
                   </TabsTrigger>
-                  <TabsTrigger value="llm-analysis" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="llm-analysis" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     LLM Analysis
                   </TabsTrigger>
                 </TabsList>
@@ -478,8 +478,8 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                 </TabsContent>
 
                 <TabsContent value="intent-map" className="space-y-3">
-                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+                    <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                       Top Intent Clusters
                     </p>
                     {(intent?.topIntentClusters || []).length === 0 ? (
@@ -489,15 +489,15 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                         {(intent?.topIntentClusters || []).slice(0, 8).map((cluster) => (
                           <div
                             key={`${cluster.clusterKey}-${cluster.sampleQuery}`}
-                            className="rounded-sm border border-border/50 bg-background/60 px-2.5 py-2"
+                            className="rounded-sm border border-border/50 bg-background/60 px-3 py-3"
                           >
                             <div className="flex items-center justify-between gap-2">
                               <p className="text-sm font-medium text-foreground">
                                 {cluster.clusterKey.replace(/_/g, " ")}
                               </p>
-                              <span className="text-xs text-muted-foreground">{cluster.count} traces</span>
+                              <span className="text-sm text-muted-foreground">{cluster.count} traces</span>
                             </div>
-                            <p className="mt-1 text-xs text-muted-foreground">
+                            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                               {truncateText(cluster.sampleQuery, 120)}
                             </p>
                           </div>
@@ -507,15 +507,15 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                   </div>
 
                   {Object.keys(intent?.intentDistribution || {}).length > 0 ? (
-                    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+                      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                         Intent Distribution
                       </p>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {Object.entries(intent?.intentDistribution || {})
                           .slice(0, 10)
                           .map(([key, value]) => (
-                            <Badge key={key} className="border-border/60 bg-surface-2/35 text-[10px] text-foreground">
+                            <Badge key={key} className="border-border/60 bg-surface-2/35 text-foreground">
                               {key.replace(/_/g, " ")}: {value.toFixed(1)}%
                             </Badge>
                           ))}
@@ -582,8 +582,8 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
 
               <div className="mt-4 grid gap-2 sm:grid-cols-4">
                 {(["critical", "high", "medium", "low"] as const).map((severity) => (
-                  <div key={severity} className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-2">
-                    <p className="text-xs uppercase tracking-wide text-muted-foreground">{severity}</p>
+                  <div key={severity} className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-3">
+                    <p className="text-sm uppercase tracking-[0.14em] text-muted-foreground">{severity}</p>
                     <p className={cn("mt-1 text-base font-semibold", severityClass(severity))}>
                       {dimensionScores.bySeverity?.[severity] || 0}
                     </p>
@@ -599,16 +599,16 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                   >
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-semibold text-foreground">{formatDimensionLabel(dimension.dimension)}</p>
-                      <Badge className={cn("text-[10px]", dimensionScoreBadgeClass(dimension.score))}>
+                      <Badge className={cn("", dimensionScoreBadgeClass(dimension.score))}>
                         {Math.round(dimension.score * 100)}%
                       </Badge>
                     </div>
 
-                    <p className="mt-2 text-xs text-muted-foreground">{firstPoint(dimension.summary)}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{firstPoint(dimension.summary)}</p>
 
                     <div className="mt-3 space-y-1.5">
                       <Progress value={Math.max(0, Math.min(100, dimension.score * 100))} />
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between text-sm text-muted-foreground">
                         <span>Issues: {dimension.issueCount}</span>
                         <span className={severityClass(dimension.severity)}>{dimension.severity}</span>
                       </div>
@@ -629,12 +629,12 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                 <p className="text-sm text-muted-foreground">No failure taxonomy patterns generated.</p>
               ) : (
                 failureTaxonomy?.patterns.slice(0, 10).map((pattern) => (
-                  <div key={pattern.code} className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-2">
+                  <div key={pattern.code} className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-3">
                     <div className="flex items-center justify-between gap-2">
                       <p className="text-sm font-medium text-foreground">{pattern.title}</p>
-                      <span className={cn("text-xs font-semibold uppercase", severityClass(pattern.severity))}>{pattern.severity}</span>
+                      <span className={cn("text-sm font-semibold uppercase tracking-[0.12em]", severityClass(pattern.severity))}>{pattern.severity}</span>
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">{truncateText(pattern.summary, 180)}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{truncateText(pattern.summary, 180)}</p>
                   </div>
                 ))
               )}
@@ -664,13 +664,13 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                   variant="line"
                   className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border/50 bg-transparent p-0 pb-2"
                 >
-                  <TabsTrigger value="routing" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="routing" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Routing
                   </TabsTrigger>
-                  <TabsTrigger value="effectiveness" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="effectiveness" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Effectiveness
                   </TabsTrigger>
-                  <TabsTrigger value="catalog" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="catalog" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Tool Catalog
                   </TabsTrigger>
                 </TabsList>
@@ -690,7 +690,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                       value={formatPercent(tools?.routingAssessment?.arbitraryCallRate)}
                     />
                   </div>
-                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-2 text-xs text-muted-foreground">
+                  <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-3 text-sm text-muted-foreground">
                     Expected Tool Traces:{" "}
                     <span className="font-medium text-foreground">{tools?.routingAssessment?.expectedToolTraces ?? 0}</span>{" "}
                     | Called:{" "}
@@ -720,12 +720,12 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                     <p className="text-sm text-muted-foreground">No tool call data in this run.</p>
                   ) : (
                     tools?.tools.slice(0, 8).map((tool) => (
-                      <div key={tool.toolName} className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-2">
+                      <div key={tool.toolName} className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-3">
                         <div className="flex items-center justify-between gap-2">
                           <p className="truncate text-sm font-medium text-foreground">{tool.toolName}</p>
-                          <p className="text-xs text-muted-foreground">{tool.calls} calls</p>
+                          <p className="text-sm text-muted-foreground">{tool.calls} calls</p>
                         </div>
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-2 text-sm text-muted-foreground">
                           Success {formatPercent(tool.likelySuccessRate)} | Retries {tool.retries} | Avg latency{" "}
                           {formatMetricNumber(tool.avgLatencyMs, " ms")}
                         </p>
@@ -733,9 +733,9 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                     ))
                   )}
                   {(toolDiagnostics?.systemicIssues || []).slice(0, 3).map((issue) => (
-                    <div key={issue.title} className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-2">
-                      <p className="text-xs font-semibold text-foreground">{issue.title}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">{truncateText(issue.detail, 180)}</p>
+                    <div key={issue.title} className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-3">
+                      <p className="text-sm font-semibold text-foreground">{issue.title}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{truncateText(issue.detail, 180)}</p>
                     </div>
                   ))}
                 </TabsContent>
@@ -749,13 +749,13 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                   variant="line"
                   className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border/50 bg-transparent p-0 pb-2"
                 >
-                  <TabsTrigger value="signals" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="signals" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Signals
                   </TabsTrigger>
-                  <TabsTrigger value="trends" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="trends" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     Trends
                   </TabsTrigger>
-                  <TabsTrigger value="llm-analysis" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                  <TabsTrigger value="llm-analysis" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                     LLM Analysis
                   </TabsTrigger>
                 </TabsList>
@@ -789,12 +789,12 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                     .map(([dimension, score]) => {
                       const delta = quality?.dimensionTrendVsPreviousRun?.[dimension] ?? null;
                       return (
-                        <div key={dimension} className="space-y-1.5 rounded-sm border border-border/55 bg-surface-2/20 px-2.5 py-2">
-                          <div className="flex items-center justify-between gap-2 text-xs">
+                        <div key={dimension} className="space-y-2 rounded-sm border border-border/55 bg-surface-2/20 px-3.5 py-3">
+                          <div className="flex items-center justify-between gap-2 text-sm">
                             <span className="text-muted-foreground">{dimension.replace(/_/g, " ")}</span>
                             <div className="flex items-center gap-1.5">
                               <span className="font-medium text-foreground">{formatPercent(toPercent(score))}</span>
-                              <Badge className={cn("h-5 px-1.5 text-[10px]", trendClass(delta))}>{trendLabel(delta)}</Badge>
+                              <Badge className={cn("", trendClass(delta))}>{trendLabel(delta)}</Badge>
                             </div>
                           </div>
                           <Progress value={toPercent(score)} />
@@ -836,13 +836,13 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                 variant="line"
                 className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border/50 bg-transparent p-0 pb-2"
               >
-                <TabsTrigger value="actions" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                <TabsTrigger value="actions" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                   Action Plan
                 </TabsTrigger>
-                <TabsTrigger value="experiments" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                <TabsTrigger value="experiments" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                   Experiments
                 </TabsTrigger>
-                <TabsTrigger value="recommendations" className="h-8 flex-none rounded-sm px-3 text-xs font-medium">
+                <TabsTrigger value="recommendations" className="h-9 flex-none rounded-sm px-3.5 text-sm font-medium">
                   Recommendations
                 </TabsTrigger>
               </TabsList>
@@ -857,7 +857,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                         <p className="text-sm font-semibold text-foreground">
                           P{item.priority} - {item.title}
                         </p>
-                        <span className={cn("text-xs font-semibold uppercase", severityClass(item.severity))}>
+                        <span className={cn("text-sm font-semibold uppercase tracking-[0.12em]", severityClass(item.severity))}>
                           {item.severity}
                         </span>
                       </div>
@@ -875,7 +875,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                     <div key={experiment.name} className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
                       <p className="text-sm font-semibold text-foreground">{experiment.name}</p>
                       <p className="mt-1 text-sm text-muted-foreground">{experiment.hypothesis}</p>
-                      <p className="mt-1 text-xs text-muted-foreground">
+                      <p className="mt-2 text-sm text-muted-foreground">
                         Metric: {experiment.metric} | Risk: {experiment.risk} | Effort: {experiment.effort}
                       </p>
                     </div>
@@ -896,7 +896,7 @@ export function AnalysisResults({ run, isStreaming = false }: AnalysisResultsPro
                         <p className="text-sm font-semibold text-foreground">
                           P{item.priority} - {item.title}
                         </p>
-                        <span className={cn("text-xs font-semibold uppercase", severityClass(item.severity))}>
+                        <span className={cn("text-sm font-semibold uppercase tracking-[0.12em]", severityClass(item.severity))}>
                           {item.severity}
                         </span>
                       </div>
@@ -924,7 +924,7 @@ function SectionTitle({ icon, title }: { icon: ReactNode; title: string }) {
 
 function MetaField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="inline-flex items-center gap-2 rounded-sm border border-border/55 bg-surface-2/30 px-2.5 py-1.5">
+    <div className="inline-flex items-center gap-2 rounded-sm border border-border/55 bg-surface-2/30 px-3 py-2 text-sm">
       <span className="text-muted-foreground">{label}</span>
       <span className="truncate font-medium text-foreground">{value}</span>
     </div>
@@ -933,18 +933,18 @@ function MetaField({ label, value }: { label: string; value: string }) {
 
 function MetricCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="mt-1 text-base font-semibold text-foreground">{value}</p>
+    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="mt-2 text-lg font-semibold text-foreground">{value}</p>
     </div>
   );
 }
 
 function MetricChip({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-2.5 py-2">
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-sm font-semibold text-foreground">{value}</p>
+    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3.5 py-3">
+      <p className="text-sm uppercase tracking-[0.14em] text-muted-foreground">{label}</p>
+      <p className="mt-2 text-base font-semibold text-foreground">{value}</p>
     </div>
   );
 }
@@ -959,9 +959,9 @@ function InsightHeader({
   fallback: string;
 }) {
   return (
-    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
-      <p className="mt-1 text-sm text-foreground">{headline ? truncateText(headline, 180) : fallback}</p>
+    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{title}</p>
+      <p className="mt-2 text-base leading-relaxed text-foreground">{headline ? truncateText(headline, 180) : fallback}</p>
     </div>
   );
 }
@@ -987,25 +987,25 @@ function InsightTabsPanel({
 
   if (normalized.length === 0) {
     return (
-      <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">{emptyText}</p>
+      <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{title}</p>
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">{emptyText}</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
-      <Tabs defaultValue={normalized[0].key} className="mt-2 space-y-2">
+    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{title}</p>
+      <Tabs defaultValue={normalized[0].key} className="mt-3 space-y-3">
         <TabsList
           variant="line"
-          className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border/50 bg-transparent p-0 pb-1"
+          className="h-auto w-full justify-start gap-1 overflow-x-auto border-b border-border/50 bg-transparent p-0 pb-2"
         >
           {normalized.map((bucket) => (
-            <TabsTrigger key={bucket.key} value={bucket.key} className="h-7 flex-none rounded-sm px-2.5 text-[11px] font-medium">
+            <TabsTrigger key={bucket.key} value={bucket.key} className="h-9 flex-none rounded-sm px-3 text-sm font-medium">
               {bucket.label}
-              <span className="ml-1 rounded-sm border border-border/60 bg-surface-2/40 px-1.5 py-0.5 text-[10px] leading-none">
+              <span className="ml-1 rounded-sm border border-border/60 bg-surface-2/40 px-1.5 py-0.5 text-xs leading-none">
                 {bucket.items.length}
               </span>
             </TabsTrigger>
@@ -1018,9 +1018,9 @@ function InsightTabsPanel({
               {bucket.items.map((item, index) => (
                 <div
                   key={`${bucket.key}-${item}`}
-                  className="flex items-start gap-2 rounded-sm border border-border/50 bg-background/60 px-2.5 py-2"
+                  className="flex items-start gap-3 rounded-sm border border-border/50 bg-background/60 px-3 py-3"
                 >
-                  <span className="mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full border border-border/60 bg-surface-2/40 text-[10px] font-semibold text-muted-foreground">
+                  <span className="mt-0.5 inline-flex h-6 w-6 flex-none items-center justify-center rounded-full border border-border/60 bg-surface-2/40 text-xs font-semibold text-muted-foreground">
                     {index + 1}
                   </span>
                   <p className="text-sm leading-relaxed text-muted-foreground">{item}</p>
@@ -1047,17 +1047,17 @@ function CompactPoints({
 
   return (
     <div className="mt-3 space-y-1">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{title}</p>
       {cleaned.length === 0 ? (
-        <p className="text-xs text-muted-foreground">{emptyLabel}</p>
+        <p className="text-sm text-muted-foreground">{emptyLabel}</p>
       ) : (
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           {cleaned.map((item, index) => (
-            <div key={item} className="flex items-start gap-2 rounded-sm border border-border/50 bg-background/50 px-2 py-1.5">
-              <span className="mt-0.5 inline-flex h-4 w-4 flex-none items-center justify-center rounded-full border border-border/60 bg-surface-2/40 text-[10px] font-semibold text-muted-foreground">
+            <div key={item} className="flex items-start gap-2.5 rounded-sm border border-border/50 bg-background/50 px-3 py-2.5">
+              <span className="mt-0.5 inline-flex h-5 w-5 flex-none items-center justify-center rounded-full border border-border/60 bg-surface-2/40 text-xs font-semibold text-muted-foreground">
                 {index + 1}
               </span>
-              <p className="text-xs leading-relaxed text-muted-foreground">{item}</p>
+              <p className="text-sm leading-relaxed text-muted-foreground">{item}</p>
             </div>
           ))}
         </div>
@@ -1077,9 +1077,9 @@ function BarList({
 }) {
   if (items.length === 0) {
     return (
-      <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
-        <p className="mt-1 text-sm text-muted-foreground">No data in this section.</p>
+      <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+        <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{title}</p>
+        <p className="mt-2 text-base leading-relaxed text-muted-foreground">No data in this section.</p>
       </div>
     );
   }
@@ -1087,21 +1087,21 @@ function BarList({
   const max = items.reduce((acc, item) => Math.max(acc, item.value), 0) || 1;
 
   return (
-    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-3 py-3">
-      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{title}</p>
-      <div className="mt-2 space-y-2">
+    <div className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-4">
+      <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">{title}</p>
+      <div className="mt-3 space-y-3">
         {items.map((item) => {
           const width = Math.max(6, Math.round((item.value / max) * 100));
           return (
-            <div key={`${item.label}-${item.value}`} className="space-y-1">
-              <div className="flex items-start justify-between gap-2 text-xs">
+            <div key={`${item.label}-${item.value}`} className="space-y-1.5">
+              <div className="flex items-start justify-between gap-3 text-sm">
                 <span className="max-w-[70%] text-muted-foreground">{truncateText(item.label, 110)}</span>
                 <span className="font-medium text-foreground">{formatter(item.value)}</span>
               </div>
-              <div className="h-1.5 rounded-sm bg-surface-3/70">
+              <div className="h-2 rounded-sm bg-surface-3/70">
                 <div className="h-full rounded-sm bg-primary/75" style={{ width: `${width}%` }} />
               </div>
-              {item.hint ? <p className="text-[11px] text-muted-foreground">{item.hint}</p> : null}
+              {item.hint ? <p className="text-sm text-muted-foreground">{item.hint}</p> : null}
             </div>
           );
         })}

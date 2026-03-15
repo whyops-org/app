@@ -81,7 +81,7 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
   };
 
   return (
-    <Card className="w-full max-w-md overflow-hidden">
+    <Card className="w-full max-w-lg overflow-hidden border-border/50 bg-card/95 backdrop-blur">
       <div className="relative">
         <div
           className={cn(
@@ -90,12 +90,12 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
           )}
         >
           <CardHeader className="space-y-3">
-            <CardTitle>Create or log in</CardTitle>
-            <p className="text-sm text-muted-foreground">
+            <CardTitle className="text-2xl">Create or log in</CardTitle>
+            <p className="text-base leading-relaxed text-muted-foreground">
               Continue with GitHub or use your work email for a magic link.
             </p>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-7">
             <div className="space-y-3">
               <Button
                 variant="muted"
@@ -110,7 +110,7 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
             </div>
             <div className="flex items-center gap-4">
               <Separator className="flex-1" />
-              <span className="text-xs font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+              <span className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                 Or
               </span>
               <Separator className="flex-1" />
@@ -142,7 +142,7 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
                 </Button>
               </div>
             </div>
-            <div className="flex items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
+            <div className="flex items-center justify-center gap-4 pt-2 text-sm text-muted-foreground">
               <span>SOC 2 compliant</span>
               <span>•</span>
               <span>End-to-end encrypted</span>
@@ -163,7 +163,7 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
           <h3 className="text-2xl font-semibold text-foreground">
             Magic link sent
           </h3>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-3 text-base leading-relaxed text-muted-foreground">
             We sent a secure sign-in link to {email || "your email"}. Use that
             link to finish signing in.
           </p>

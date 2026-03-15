@@ -95,10 +95,10 @@ export function AgentDetailsPage() {
   }
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="space-y-6 p-6 lg:p-8">
       <AgentDetailHeader agent={currentAgent} />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="w-full max-w-lg">
+        <TabsList className="w-full max-w-xl">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="analysis">Analysis</TabsTrigger>
           <TabsTrigger value="evals">Evals</TabsTrigger>

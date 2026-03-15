@@ -22,7 +22,7 @@ export function StatusBadge({ status, className, children }: StatusBadgeProps) {
   return (
     <Badge
       className={cn(
-        "rounded px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase border",
+        "rounded px-2.5 py-1 text-xs font-semibold tracking-[0.14em] uppercase border",
         style,
         className
       )}

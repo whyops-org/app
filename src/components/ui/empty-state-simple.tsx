@@ -19,16 +19,16 @@ export function EmptyStateSimple({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center py-12 text-center",
+        "flex flex-col items-center justify-center py-14 text-center",
         className
       )}
       {...props}
     >
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-sm border border-border/40 bg-surface-2/40">
+      <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-sm border border-border/40 bg-surface-2/40">
         <Icon className="h-5 w-5 text-muted-foreground/60" />
       </div>
-      <h3 className="mb-1 text-sm font-semibold text-foreground">{title}</h3>
-      <p className="mb-6 max-w-sm text-xs text-muted-foreground">
+      <h3 className="mb-2 text-base font-semibold text-foreground">{title}</h3>
+      <p className="mb-7 max-w-md text-sm leading-relaxed text-muted-foreground">
         {description}
       </p>
       {action}

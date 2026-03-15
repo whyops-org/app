@@ -30,8 +30,8 @@ export function StatCard({
       )}
       {...props}
     >
-      <div className="flex-1 space-y-1.5">
-        <p className="text-xs font-medium text-muted-foreground">
+      <div className="flex-1 space-y-2">
+        <p className="text-sm font-medium text-muted-foreground">
           {title}
         </p>
         <div className="flex items-baseline gap-2">
@@ -39,7 +39,7 @@ export function StatCard({
           {trend && (
             <span
               className={cn(
-                "text-[11px] font-medium tabular-nums",
+                "text-sm font-medium tabular-nums",
                 trend.isPositive ? "text-primary" : "text-destructive"
               )}
             >
@@ -48,7 +48,7 @@ export function StatCard({
           )}
         </div>
         {subtitle && (
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
+          <p className="text-sm text-muted-foreground">{subtitle}</p>
         )}
       </div>
       {icon && (
