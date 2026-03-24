@@ -143,13 +143,13 @@ export function TracesPageContent() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-surface-2/50 hover:bg-surface-2/50">
-                    <TableHead className="px-6 py-3">STATUS</TableHead>
-                    <TableHead className="px-6 py-3">AGENT</TableHead>
-                    <TableHead className="px-6 py-3">TRACE ID</TableHead>
-                    <TableHead className="px-6 py-3">TIMESTAMP</TableHead>
-                    <TableHead className="px-6 py-3">DURATION</TableHead>
-                    <TableHead className="px-6 py-3">EVENTS</TableHead>
-                    <TableHead className="px-6 py-3 text-right">ACTIONS</TableHead>
+                    <TableHead className="px-6 py-3">Status</TableHead>
+                    <TableHead className="px-6 py-3">Agent</TableHead>
+                    <TableHead className="px-6 py-3">Trace ID</TableHead>
+                    <TableHead className="px-6 py-3">Timestamp</TableHead>
+                    <TableHead className="px-6 py-3">Duration</TableHead>
+                    <TableHead className="px-6 py-3">Events</TableHead>
+                    <TableHead className="px-6 py-3 text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -161,7 +161,7 @@ export function TracesPageContent() {
                     >
                       <TableCell className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-primary" />
+                          <span className="h-2 w-2 bg-primary" />
                           <span className="capitalize text-sm font-medium text-foreground">
                             Active
                           </span>

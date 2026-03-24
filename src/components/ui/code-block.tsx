@@ -27,7 +27,7 @@ export function CodeBlock({ content, label, className, maxHeight = "h-32" }: Cod
   return (
     <div className={cn("space-y-2", className)}>
       {label && (
-        <div className="flex items-center justify-between text-xs text-muted-foreground uppercase tracking-wider font-semibold">
+        <div className="flex items-center justify-between text-xs font-medium text-muted-foreground">
           <span>{label}</span>
           <button 
             onClick={handleCopy}

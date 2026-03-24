@@ -204,11 +204,11 @@ export function AgentDetailHeader({ agent }: AgentDetailHeaderProps) {
         <div className="space-y-1">
           <div className="flex items-center gap-3">
             <h1 className="text-3xl font-bold text-foreground">{agent.name}</h1>
-            <Badge className="bg-primary/20 text-primary border-primary/20 hover:bg-primary/30 normal-case tracking-normal px-2.5 py-0.5">
-              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary" />
-              {status.toUpperCase()}
+            <Badge className="border-primary/20 bg-primary/10 text-primary normal-case px-2 py-0.5">
+              <span className="mr-1.5 h-1.5 w-1.5 bg-primary" />
+              {status === "active" ? "Active" : "Inactive"}
             </Badge>
-            <Badge className="normal-case tracking-normal px-2.5 py-0.5 border-border/60 bg-secondary/50 text-secondary-foreground hover:bg-secondary/60">
+            <Badge className="border-border/60 bg-secondary/50 px-2 py-0.5 normal-case text-secondary-foreground">
               <Gauge className="mr-1.5 h-3.5 w-3.5" />
               Sampling {currentSamplingPercent}% · {currentSamplingModeLabel}
             </Badge>
@@ -302,7 +302,7 @@ export function AgentDetailHeader({ agent }: AgentDetailHeaderProps) {
               </div>
 
               <div className="rounded-sm border border-border/60 bg-surface-2/25 px-3 py-2.5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Runtime limits</p>
+                <p className="text-xs font-medium text-muted-foreground">Runtime limits</p>
                 <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs">
                   <span className="text-muted-foreground">Default sampling</span>
                   <span className="text-right font-medium text-foreground">{formatPercent(defaultSamplingRate)}</span>

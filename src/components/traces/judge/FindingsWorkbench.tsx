@@ -102,9 +102,9 @@ export function FindingsWorkbench({
           <div className="flex flex-wrap items-center gap-2">
             <CardTitle className="text-lg">Findings</CardTitle>
             {isStreaming ? (
-              <span className="inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                Live
+              <span className="inline-flex items-center gap-1 rounded-sm border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                <span className="h-1.5 w-1.5 bg-primary" />
+                Streaming
               </span>
             ) : null}
           </div>

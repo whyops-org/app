@@ -81,18 +81,18 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
   };
 
   return (
-    <Card className="w-full max-w-lg overflow-hidden border-border/50 bg-card/95 backdrop-blur">
+    <Card className="w-full max-w-[440px] overflow-hidden border-border/50 bg-card">
       <div className="relative">
         <div
           className={cn(
-            "space-y-6 transition-all duration-500",
-            isSent ? "pointer-events-none opacity-0 -translate-y-3" : ""
+            "space-y-6 transition-all duration-300",
+            isSent ? "pointer-events-none opacity-0" : ""
           )}
         >
           <CardHeader className="space-y-3">
-            <CardTitle className="text-2xl">Create or log in</CardTitle>
+            <CardTitle className="text-2xl">Sign in to WhyOps</CardTitle>
             <p className="text-base leading-relaxed text-muted-foreground">
-              Continue with GitHub or use your work email for a magic link.
+              Continue with GitHub or request a sign-in link for your work email.
             </p>
           </CardHeader>
           <CardContent className="space-y-7">
@@ -110,8 +110,8 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
             </div>
             <div className="flex items-center gap-4">
               <Separator className="flex-1" />
-              <span className="text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                Or
+              <span className="text-sm text-muted-foreground">
+                or use email
               </span>
               <Separator className="flex-1" />
             </div>
@@ -126,23 +126,12 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
                   onChange={(event) => setEmail(event.target.value)}
                 />
               </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button size="lg" onClick={handleSubmit} disabled={!canSubmit || isBusy} loading={isLoading}>
-                  Sign Up
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  onClick={handleSubmit}
-                  disabled={!canSubmit || isBusy}
-                  loading={isLoading}
-                >
-                  Log in
-                </Button>
-              </div>
+              <Button size="lg" className="w-full" onClick={handleSubmit} disabled={!canSubmit || isBusy} loading={isLoading}>
+                Email me a sign-in link
+                <ArrowRight className="h-4 w-4" />
+              </Button>
             </div>
-            <div className="flex items-center justify-center gap-4 pt-2 text-sm text-muted-foreground">
+            <div className="flex items-center justify-center gap-4 border-t border-border/50 pt-5 text-sm text-muted-foreground">
               <span>SOC 2 compliant</span>
               <span>•</span>
               <span>End-to-end encrypted</span>
@@ -151,13 +140,13 @@ export function AuthCard({ onGithubClick }: AuthCardProps) {
         </div>
         <div
           className={cn(
-            "absolute inset-0 flex flex-col justify-center px-8 py-10 text-center transition-all duration-500",
+            "absolute inset-0 flex flex-col justify-center px-8 py-10 text-center transition-all duration-300",
             isSent
               ? "opacity-100 translate-y-0"
               : "pointer-events-none opacity-0 translate-y-4"
           )}
         >
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/15 text-primary">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-sm border border-primary/20 bg-primary/10 text-primary">
             <MailCheck className="h-6 w-6" />
           </div>
           <h3 className="text-2xl font-semibold text-foreground">

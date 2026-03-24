@@ -28,7 +28,7 @@ import { Handle, type NodeProps, Position } from "reactflow";
 const NODE_CARD_CLASS =
   "relative rounded-sm border border-border/60 bg-card p-0 shadow-none transition-colors";
 const NODE_HEADER_CLASS = "flex items-center gap-2 border-b border-border/60 px-3 py-2";
-const NODE_TITLE_CLASS = "text-[11px] font-medium tracking-wide text-foreground";
+const NODE_TITLE_CLASS = "text-[11px] font-medium text-foreground";
 const META_BADGE_CLASS = "h-5 rounded-sm border border-border/60 bg-surface-2/40 px-1.5 text-[10px] text-muted-foreground";
 const PREVIEW_TEXT_CLASS =
   "min-h-10 max-h-24 overflow-hidden text-xs leading-5 text-muted-foreground break-words [overflow-wrap:anywhere]";
@@ -258,7 +258,7 @@ export function StartNode() {
   return (
     <div className="flex flex-col items-center">
       <div className="flex h-10 w-24 items-center justify-center rounded-sm border border-border/60 bg-card">
-        <span className="text-[11px] font-medium tracking-wide text-foreground">Start</span>
+        <span className="text-[11px] font-medium text-foreground">Start</span>
       </div>
       <Handle type="source" position={Position.Bottom} className="!h-2.5 !w-2.5 !border !border-border/60 !bg-background" />
     </div>
@@ -506,7 +506,7 @@ export function EndNode() {
       <div className="flex h-11 w-11 items-center justify-center rounded-sm border border-border/60 bg-card">
         <StopCircle className="h-5 w-5 text-muted-foreground" />
       </div>
-      <span className="mt-2 text-[10px] font-medium tracking-wide text-muted-foreground">End</span>
+      <span className="mt-2 text-[10px] font-medium text-muted-foreground">End</span>
     </div>
   );
 }

@@ -28,7 +28,7 @@ export function SiteHeader({ actionLabel, className, ...props }: SiteHeaderProps
       </Link>
       {actionLabel ? (
         <button
-          className="rounded-sm border border-transparent px-2.5 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:border-border/60 hover:bg-surface-2/50 hover:text-foreground"
+          className="rounded-sm border border-border/60 px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-2/50 hover:text-foreground"
           onClick={async () => {
             await signOut();
             router.replace("/");

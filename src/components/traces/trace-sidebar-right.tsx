@@ -198,7 +198,7 @@ export function TraceSidebarRight({ trace, isCollapsed, onToggle }: TraceSidebar
           variant="ghost"
           size="sm"
           onClick={onToggle}
-          className="mb-4 h-8 w-8 p-0 hover:bg-surface-2/60"
+          className="mb-4 h-8 w-8 p-0 hover:bg-surface-2/40"
         >
           <PanelRightOpen className="h-4 w-4 text-muted-foreground" />
         </Button>
@@ -217,7 +217,7 @@ export function TraceSidebarRight({ trace, isCollapsed, onToggle }: TraceSidebar
           variant="ghost"
           size="sm"
           onClick={onToggle}
-          className="h-6 w-6 p-0 hover:bg-surface-2/60"
+          className="h-6 w-6 p-0 hover:bg-surface-2/40"
         >
           <PanelRightClose className="h-3.5 w-3.5 text-muted-foreground" />
         </Button>

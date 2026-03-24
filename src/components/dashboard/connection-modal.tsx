@@ -53,20 +53,20 @@ export function ConnectionModal({ open, onOpenChange }: ConnectionModalProps) {
     if (error) {
       return (
         <Badge className="h-5 shrink-0 border-destructive/30 bg-destructive/10 px-1.5 text-[10px] text-destructive">
-          FAILED
+          Failed
         </Badge>
       );
     }
     if (isConnected) {
       return (
         <Badge className="h-5 shrink-0 border-border/70 bg-surface-2/50 px-1.5 text-[10px] text-foreground">
-          CONNECTED
+          Connected
         </Badge>
       );
     }
     return (
       <Badge className="h-5 shrink-0 border-border/70 bg-surface-2/40 px-1.5 text-[10px] text-muted-foreground">
-        WAITING
+        Waiting
       </Badge>
     );
   };
@@ -127,7 +127,7 @@ export function ConnectionModal({ open, onOpenChange }: ConnectionModalProps) {
           </div>
 
           <div className="overflow-hidden rounded-sm border border-border/60 bg-surface-2/40">
-            <MacOSWindowHeader title="CONNECTION_LOG" />
+            <MacOSWindowHeader title="Connection log" />
             <MacOSWindowContent className="p-4 font-mono text-xs leading-relaxed">
               {logs.length === 0 ? (
                 <div className="flex gap-2">
@@ -167,7 +167,7 @@ export function ConnectionModal({ open, onOpenChange }: ConnectionModalProps) {
 
           <InfoBox variant="info" icon={Info} title="">
             Ensure your agent is running and{" "}
-            <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-xs text-primary">
+            <code className="rounded-sm bg-surface-2 px-1 py-0.5 font-mono text-xs text-foreground">
               /agent/init
             </code>{" "}
             has been called in your application entry point.

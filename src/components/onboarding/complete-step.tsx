@@ -108,7 +108,7 @@ export function CompleteStep({ onFinish, isFinishing }: CompleteStepProps) {
               <span className="text-base font-medium text-muted-foreground">
                 {currentSnippet.filename}
               </span>
-              <Badge className="bg-primary/10 border-primary/30 text-primary">
+              <Badge className="border-primary/25 bg-primary/10 text-primary">
                 {snippetData.apiKeyPrefix}...
               </Badge>
             </div>
@@ -121,7 +121,7 @@ export function CompleteStep({ onFinish, isFinishing }: CompleteStepProps) {
               <InfoBox variant="info" icon={Info} title="">
                 <p className="text-sm">
                   Use the proxy to automatically track all LLM calls. Just add the{" "}
-                  <code className="rounded bg-muted/50 px-1.5 py-0.5 font-mono text-sm">X-Agent-Name</code>{" "}
+                  <code className="rounded-sm bg-muted/50 px-1.5 py-0.5 font-mono text-sm">X-Agent-Name</code>{" "}
                   header to your requests. The proxy automatically sends analytics events.
                 </p>
               </InfoBox>
@@ -129,12 +129,12 @@ export function CompleteStep({ onFinish, isFinishing }: CompleteStepProps) {
               <InfoBox variant="info" icon={Info} title="">
                 <p className="text-sm">
                   Send events manually to WhyOps using the REST API. The{" "}
-                  <code className="rounded bg-muted/50 px-1.5 py-0.5 font-mono text-sm">eventType</code>{" "}
+                  <code className="rounded-sm bg-muted/50 px-1.5 py-0.5 font-mono text-sm">eventType</code>{" "}
                   can be:{" "}
-                  <code className="rounded bg-muted/50 px-1.5 py-0.5 font-mono text-sm">user_message</code>,{" "}
-                  <code className="rounded bg-muted/50 px-1.5 py-0.5 font-mono text-sm">llm_response</code>,{" "}
-                  <code className="rounded bg-muted/50 px-1.5 py-0.5 font-mono text-sm">tool_call</code>, or{" "}
-                  <code className="rounded bg-muted/50 px-1.5 py-0.5 font-mono text-sm">error</code>.
+                  <code className="rounded-sm bg-muted/50 px-1.5 py-0.5 font-mono text-sm">user_message</code>,{" "}
+                  <code className="rounded-sm bg-muted/50 px-1.5 py-0.5 font-mono text-sm">llm_response</code>,{" "}
+                  <code className="rounded-sm bg-muted/50 px-1.5 py-0.5 font-mono text-sm">tool_call</code>, or{" "}
+                  <code className="rounded-sm bg-muted/50 px-1.5 py-0.5 font-mono text-sm">error</code>.
                 </p>
               </InfoBox>
             )}
@@ -143,18 +143,18 @@ export function CompleteStep({ onFinish, isFinishing }: CompleteStepProps) {
       </StepContainer>
 
       {/* Fixed Bottom Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 px-12 py-4 z-50">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background px-6 py-4 lg:px-12">
         <div className="mx-auto max-w-7xl flex items-center justify-between">
           <button
             onClick={() => goToDocumentation()}
-            className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             View Documentation
           </button>
 
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse" />
+              <div className="h-2 w-2 bg-warning" />
               <span className="text-base text-muted-foreground">
                 Waiting for first event...
               </span>

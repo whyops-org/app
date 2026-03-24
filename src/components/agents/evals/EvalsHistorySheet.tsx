@@ -28,10 +28,10 @@ interface EvalsHistorySheetProps {
 }
 
 const STATUS_VARIANTS: Record<string, string> = {
-  completed: "border-green-500/30 bg-green-500/10 text-green-600",
-  failed: "border-red-500/30 bg-red-500/10 text-red-600",
-  running: "border-blue-500/30 bg-blue-500/10 text-blue-600",
-  pending: "border-yellow-500/30 bg-yellow-500/10 text-yellow-600",
+  completed: "border-primary/25 bg-primary/10 text-primary",
+  failed: "border-destructive/25 bg-destructive/10 text-destructive",
+  running: "border-border/60 bg-surface-2/40 text-foreground",
+  pending: "border-warning/25 bg-warning/10 text-warning",
 };
 
 export function EvalsHistorySheet({
@@ -83,7 +83,7 @@ export function EvalsHistorySheet({
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <Badge className={cn("text-[10px] px-1.5 py-0", STATUS_VARIANTS[run.status])}>
+                    <Badge className={cn("px-1.5 py-0 text-[10px] capitalize", STATUS_VARIANTS[run.status])}>
                       {run.status}
                     </Badge>
                     <span className="text-xs text-muted-foreground flex items-center gap-1">

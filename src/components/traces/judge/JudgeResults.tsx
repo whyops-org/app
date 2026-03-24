@@ -110,7 +110,7 @@ export function JudgeResults({
               </span>
               <Badge
                 className={cn(
-                  "h-5 px-1.5 text-[10px] font-semibold uppercase tracking-wide",
+                  "h-5 px-1.5 text-[10px] font-medium capitalize",
                   isRunning
                     ? "border-primary/30 bg-primary/10 text-primary"
                     : "border-border/70 bg-surface-2 text-muted-foreground"
@@ -210,8 +210,8 @@ function DimensionScoreCard({ detail }: DimensionScoreCardProps) {
             Streaming
           </Badge>
         </div>
-        <div className="h-1.5 animate-pulse rounded-full bg-surface-3" />
-        <div className="h-4 w-40 animate-pulse rounded-sm bg-surface-2/70" />
+        <div className="h-1.5 rounded-sm bg-surface-3" />
+        <div className="h-4 w-40 rounded-sm bg-surface-2/70" />
       </section>
     );
   }

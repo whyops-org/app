@@ -310,8 +310,8 @@ export function AgentsTable({
                     <Badge
                       className={cn(
                         "font-medium",
-                        status === "active" && "bg-primary/20 text-primary",
-                        status === "inactive" && "bg-muted/30 text-muted-foreground"
+                        status === "active" && "border-primary/25 bg-primary/10 text-primary",
+                        status === "inactive" && "border-border/60 bg-surface-2/40 text-muted-foreground"
                       )}
                     >
                       {status === "active" ? "Active" : "Inactive"}

@@ -20,12 +20,12 @@ export function CommandBlock({ command, className }: CommandBlockProps) {
   };
 
   return (
-    <div className={cn("group relative rounded-xl border border-border bg-card overflow-hidden", className)}>
+    <div className={cn("group relative overflow-hidden rounded-sm border border-border bg-card", className)}>
       <div className="flex items-center justify-between px-4 py-3 font-mono text-sm">
         <code className="text-primary">{command}</code>
         <button
           onClick={handleCopy}
-          className="rounded-md p-2 hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground min-w-17.5 flex items-center justify-center"
+          className="flex min-w-17.5 items-center justify-center rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
           aria-label="Copy command"
         >
           {copied ? (

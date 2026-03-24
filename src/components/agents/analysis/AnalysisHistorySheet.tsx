@@ -91,7 +91,7 @@ export function AnalysisHistorySheet({
                   <p className="truncate text-base font-semibold text-foreground">
                     Run {run.id.slice(0, 8)}
                   </p>
-                  <span className={`text-sm font-semibold uppercase tracking-[0.12em] ${statusClass(run.status)}`}>
+                  <span className={`text-sm font-medium capitalize ${statusClass(run.status)}`}>
                     {run.status}
                   </span>
                 </div>

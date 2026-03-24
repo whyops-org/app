@@ -34,7 +34,7 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
     setTimeout(() => setIsMounted(true), 100);
   }, []);
 
-  const transitionDuration = isMounted ? "duration-300" : "duration-0";
+  const transitionDuration = isMounted ? "duration-200" : "duration-0";
 
   const toggleSidebar = () => {
     const newState = !isCollapsed;
@@ -81,7 +81,7 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
       className={cn(
         "relative flex h-screen flex-col border-r border-border/50 bg-card transition-all ease-in-out",
         transitionDuration,
-        isCollapsed ? "w-[76px]" : "w-64",
+        isCollapsed ? "w-[72px]" : "w-64",
         className
       )}
       {...props}
@@ -99,7 +99,7 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
             className={cn(
               "origin-left whitespace-nowrap text-base font-semibold text-foreground transition-all",
               transitionDuration,
-              isCollapsed ? "hidden w-0 -translate-x-2 opacity-0" : "w-auto translate-x-0 opacity-100"
+              isCollapsed ? "hidden w-0 opacity-0" : "w-auto opacity-100"
             )}
           >
             WhyOps
@@ -119,15 +119,15 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
       </div>
 
       <div className="flex-1 overflow-hidden px-3 py-6">
-        <div className="mb-3">
+        <div className="mb-3 px-2">
           <p
             className={cn(
-              "px-2 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground transition-all",
+              "text-xs font-medium text-muted-foreground transition-all",
               transitionDuration,
-              isCollapsed ? "h-0 -translate-x-2 overflow-hidden opacity-0" : "h-auto translate-x-0 opacity-100"
+              isCollapsed ? "h-0 overflow-hidden opacity-0" : "h-auto opacity-100"
             )}
           >
-            Platform
+            Workspace
           </p>
         </div>
         <nav className="space-y-1">
@@ -154,9 +154,9 @@ export function Sidebar({ className, defaultCollapsed = false, ...props }: Sideb
             <PanelLeft className="h-4 w-4" />
           </button>
         ) : (
-          <div className="flex items-center justify-between rounded-sm border border-border/50 bg-surface-2/30 px-3 py-2.5 text-sm">
-            <span className="font-medium text-foreground">System online</span>
-            <span className="text-muted-foreground">v{WEB_VERSION}</span>
+          <div className="flex items-center justify-between px-2 py-1 text-sm text-muted-foreground">
+            <span>WhyOps</span>
+            <span>v{WEB_VERSION}</span>
           </div>
         )}
       </div>

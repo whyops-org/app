@@ -97,7 +97,7 @@ export function KnowledgeProfileView({ profile, isLoading, onRebuild }: Knowledg
                 <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{c.description}</p>
                 {c.strengths.length > 0 && (
                   <div className="mt-2">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Strengths</p>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Strengths</p>
                     <ul className="space-y-0.5">
                       {c.strengths.map((s, j) => (
                         <li key={j} className="flex items-start gap-2 text-sm text-foreground">
@@ -110,7 +110,7 @@ export function KnowledgeProfileView({ profile, isLoading, onRebuild }: Knowledg
                 )}
                 {c.weaknesses.length > 0 && (
                   <div className="mt-2">
-                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Weaknesses</p>
+                    <p className="mb-1 text-xs font-medium text-muted-foreground">Weaknesses</p>
                     <ul className="space-y-0.5">
                       {c.weaknesses.map((w, j) => (
                         <li key={j} className="flex items-start gap-2 text-sm text-muted-foreground">
@@ -134,7 +134,7 @@ export function KnowledgeProfileView({ profile, isLoading, onRebuild }: Knowledg
             {profile.failureModes.map((fm, i) => (
               <div key={i} className="rounded-sm border border-border/55 bg-surface-2/20 px-4 py-3">
                 <div className="flex items-center gap-2">
-                  <span className={cn("text-xs font-semibold uppercase tracking-wide", SEVERITY_CLASSES[fm.severity])}>
+                  <span className={cn("text-xs font-medium capitalize", SEVERITY_CLASSES[fm.severity])}>
                     {fm.severity}
                   </span>
                   <span className="text-sm font-medium text-foreground">{fm.code.replace(/_/g, " ")}</span>
@@ -163,7 +163,7 @@ export function KnowledgeProfileView({ profile, isLoading, onRebuild }: Knowledg
             {profile.userExpectations.map((ue, i) => (
               <div key={i} className="flex items-start gap-3 rounded-sm border border-border/55 bg-surface-2/20 px-4 py-3">
                 <span className={cn(
-                  "mt-0.5 flex-none text-xs font-semibold uppercase tracking-wide",
+                  "mt-0.5 flex-none text-xs font-medium capitalize",
                   PRIORITY_ICONS[ue.priority] || "text-muted-foreground"
                 )}>
                   {ue.priority.replace(/_/g, " ")}
@@ -197,7 +197,7 @@ export function KnowledgeProfileView({ profile, isLoading, onRebuild }: Knowledg
           <ul className="space-y-1.5">
             {profile.edgeCasePatterns.map((p, i) => (
               <li key={i} className="flex items-start gap-2 text-sm text-foreground leading-relaxed">
-                <span className="mt-1 h-1.5 w-1.5 rounded-full bg-muted-foreground flex-none" />
+                <span className="mt-1 h-1.5 w-1.5 bg-muted-foreground flex-none" />
                 {p}
               </li>
             ))}
@@ -227,7 +227,7 @@ function Section({ icon, title, children }: { icon: ReactNode; title: string; ch
     <section className="space-y-3">
       <div className="flex items-center gap-2">
         <span className="text-muted-foreground">{icon}</span>
-        <h4 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h4>
+        <h4 className="text-sm font-medium text-muted-foreground">{title}</h4>
       </div>
       {children}
     </section>

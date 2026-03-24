@@ -177,7 +177,7 @@ function SchemaBlock({
   return (
     <div className="space-y-2 rounded-md border border-border/60 bg-background/60 p-3">
       <div className="flex items-center justify-between">
-        <p className="text-[11px] font-medium tracking-wide text-muted-foreground uppercase">{title}</p>
+        <p className="text-[11px] font-medium text-muted-foreground">{title}</p>
         <Badge className="text-[10px]">{schema !== null ? "Available" : "Empty"}</Badge>
       </div>
       <div className="rounded-sm border border-border/60 bg-surface-2/20 p-2">

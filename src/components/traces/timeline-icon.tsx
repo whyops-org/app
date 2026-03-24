@@ -8,11 +8,11 @@ interface TimelineIconProps {
 }
 
 const ICON_BG_MAP: Record<string, string> = {
-  input: "bg-blue-500/10 text-blue-500 border-blue-500/20",
-  llm: "bg-purple-500/10 text-purple-500 border-purple-500/20",
-  logic: "bg-orange-500/10 text-orange-500 border-orange-500/20",
-  tool: "bg-teal-500/10 text-teal-500 border-teal-500/20",
-  output: "bg-green-500/10 text-green-500 border-green-500/20",
+  input: "border-border/60 bg-surface-2/40 text-foreground",
+  llm: "border-primary/25 bg-primary/10 text-primary",
+  logic: "border-warning/25 bg-warning/10 text-warning",
+  tool: "border-primary/25 bg-primary/10 text-primary",
+  output: "border-border/60 bg-surface-2/40 text-foreground",
 };
 
 export function TimelineIcon({ iconName, type, className }: TimelineIconProps) {
@@ -23,7 +23,7 @@ export function TimelineIcon({ iconName, type, className }: TimelineIconProps) {
   return (
     <div
       className={cn(
-        "flex h-10 w-10 shrink-0 items-center justify-center rounded-full border shadow-sm z-10 bg-background",
+        "z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-sm border bg-background",
         style,
         className
       )}

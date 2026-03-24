@@ -33,7 +33,7 @@ export function ProviderCard({ onBack, onContinue }: ProviderCardProps) {
         {/* Existing Providers List */}
         {providers.length > 0 && (
           <div className="mb-6">
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <h3 className="mb-3 text-sm font-medium text-muted-foreground">
               Your Providers
             </h3>
             <ProviderList providers={providers} variant="compact" />
@@ -42,7 +42,7 @@ export function ProviderCard({ onBack, onContinue }: ProviderCardProps) {
 
         {/* Add New Provider Section */}
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <h3 className="text-sm font-medium text-muted-foreground">
             {providers.length > 0
               ? PROVIDER_FORM_COPY.addAnotherTitle
               : PROVIDER_FORM_COPY.sectionTitle}
@@ -53,7 +53,7 @@ export function ProviderCard({ onBack, onContinue }: ProviderCardProps) {
       </StepContainer>
 
       {/* Fixed Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 px-12 py-4 z-50">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background px-6 py-4 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <StepNavigation
             onBack={onBack}

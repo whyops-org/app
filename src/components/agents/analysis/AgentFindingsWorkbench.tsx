@@ -99,9 +99,9 @@ export function AgentFindingsWorkbench({ findings, isStreaming = false }: AgentF
         <div className="flex flex-wrap items-center gap-2">
           <p className="text-xl font-semibold text-foreground">Findings Workbench</p>
           {isStreaming ? (
-            <span className="inline-flex items-center gap-1.5 rounded-sm border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-[0.14em] text-primary">
-              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-              Live
+            <span className="inline-flex items-center gap-1.5 rounded-sm border border-primary/30 bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+              <span className="h-1.5 w-1.5 bg-primary" />
+              Streaming
             </span>
           ) : null}
         </div>

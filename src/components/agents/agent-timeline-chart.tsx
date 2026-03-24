@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo } from "react";
+import { useMemo } from "react";
 
 import { Card } from "@/components/ui/card";
 import { EmptyStateSimple } from "@/components/ui/empty-state-simple";
@@ -71,8 +71,6 @@ export function AgentTimelineChart({
   variant = "bar",
 }: AgentTimelineChartProps) {
   const selectedPeriod = (period ?? DEFAULT_TIMELINE_PERIOD).toString();
-  const gradientId = useId().replace(/:/g, "");
-
   const chartData = useMemo(() => formatTimelineData(data), [data]);
   const hasData = chartData.length > 0 && chartData.some((point) => point.value > 0);
 
@@ -139,12 +137,6 @@ export function AgentTimelineChart({
             data={chartData}
             margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
           >
-            <defs>
-              <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={chartColor} stopOpacity={0.3} />
-                <stop offset="95%" stopColor={chartColor} stopOpacity={0} />
-              </linearGradient>
-            </defs>
             <CartesianGrid
               vertical={false}
               strokeDasharray="3 3"
@@ -172,7 +164,8 @@ export function AgentTimelineChart({
               dataKey="value"
               stroke={chartColor}
               strokeWidth={2}
-              fill={`url(#${gradientId})`}
+              fill={chartColor}
+              fillOpacity={0.14}
               name={legendLabel}
             />
           </AreaChart>

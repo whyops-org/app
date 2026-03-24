@@ -25,7 +25,7 @@ export function FormField({
 }: FormFieldProps) {
   return (
     <div className={cn("space-y-2.5", containerClassName)}>
-      <Label htmlFor={id} className="ml-1 text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+      <Label htmlFor={id} className="ml-1">
         {label}
       </Label>
       <div className="relative group">

@@ -19,19 +19,19 @@ interface EvalCaseCardProps {
 }
 
 const DIFFICULTY_COLORS: Record<string, string> = {
-  basic: "border-green-500/30 bg-green-500/10 text-green-600",
-  intermediate: "border-yellow-500/30 bg-yellow-500/10 text-yellow-600",
-  advanced: "border-red-500/30 bg-red-500/10 text-red-600",
+  basic: "border-border/60 bg-surface-2/40 text-foreground",
+  intermediate: "border-warning/25 bg-warning/10 text-warning",
+  advanced: "border-destructive/25 bg-destructive/10 text-destructive",
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  happy_path: "border-emerald-500/30 bg-emerald-500/10",
-  edge_case: "border-amber-500/30 bg-amber-500/10",
-  multi_step: "border-blue-500/30 bg-blue-500/10",
-  safety: "border-red-500/30 bg-red-500/10",
-  error_handling: "border-orange-500/30 bg-orange-500/10",
-  adversarial: "border-purple-500/30 bg-purple-500/10",
-  feature_specific: "border-cyan-500/30 bg-cyan-500/10",
+  happy_path: "border-border/60 bg-surface-2/40 text-foreground",
+  edge_case: "border-warning/25 bg-warning/10 text-warning",
+  multi_step: "border-primary/25 bg-primary/10 text-primary",
+  safety: "border-destructive/25 bg-destructive/10 text-destructive",
+  error_handling: "border-warning/25 bg-warning/10 text-warning",
+  adversarial: "border-destructive/25 bg-destructive/10 text-destructive",
+  feature_specific: "border-primary/25 bg-primary/10 text-primary",
 };
 
 export function EvalCaseCard({ evalCase }: EvalCaseCardProps) {
@@ -76,14 +76,14 @@ export function EvalCaseCard({ evalCase }: EvalCaseCardProps) {
         <CardContent className="px-4 pb-4 pt-0 space-y-4">
           {evalCase.description && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Description</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">Description</p>
               <p className="text-sm text-muted-foreground">{evalCase.description}</p>
             </div>
           )}
 
           {/* Conversation */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Conversation</p>
+            <p className="mb-2 text-xs font-medium text-muted-foreground">Conversation</p>
             <div className="space-y-2">
               {evalCase.conversation.map((turn, i) => (
                 <div
@@ -95,7 +95,7 @@ export function EvalCaseCard({ evalCase }: EvalCaseCardProps) {
                       : "border-primary/20 bg-primary/5"
                   )}
                 >
-                  <span className="text-xs font-semibold uppercase text-muted-foreground">
+                  <span className="text-xs font-medium capitalize text-muted-foreground">
                     {turn.role}
                   </span>
                   <p className="mt-1 text-foreground whitespace-pre-wrap">{turn.content}</p>
@@ -121,13 +121,13 @@ export function EvalCaseCard({ evalCase }: EvalCaseCardProps) {
           {/* Expected outcome */}
           {outcome && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Expected Outcome</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">Expected outcome</p>
               <div className="space-y-1 text-sm text-muted-foreground">
                 {outcome.tools_called && outcome.tools_called.length > 0 && (
                   <p>Tools: <span className="font-medium text-foreground">{outcome.tools_called.join(", ")}</span></p>
                 )}
                 {outcome.refusal_expected && (
-                  <p className="text-red-500 font-medium">Agent should REFUSE this request</p>
+                  <p className="font-medium text-destructive">Agent should refuse this request</p>
                 )}
                 {outcome.key_assertions?.map((a, i) => (
                   <p key={i}>- {a}</p>
@@ -139,7 +139,7 @@ export function EvalCaseCard({ evalCase }: EvalCaseCardProps) {
           {/* Scoring rubric */}
           {rubric?.dimensions && rubric.dimensions.length > 0 && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">Scoring Rubric</p>
+              <p className="mb-1 text-xs font-medium text-muted-foreground">Scoring rubric</p>
               <div className="space-y-1">
                 {rubric.dimensions.map((dim, i) => (
                   <div key={i} className="text-sm text-muted-foreground">

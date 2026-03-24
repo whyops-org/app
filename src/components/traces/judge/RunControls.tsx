@@ -50,7 +50,7 @@ export function RunControls({
     <section className="rounded-sm border border-border/60 bg-surface-2/20 p-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Scale className="h-3.5 w-3.5" />
             LLM Judge
           </p>
@@ -97,8 +97,8 @@ export function RunControls({
 
               <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
                 <section className="space-y-2.5">
-                  <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                    Analysis Mode
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Analysis mode
                   </p>
                   <div className="inline-flex items-center rounded-sm border border-border/70 bg-surface-2/50 p-0.5">
                     {(Object.keys(MODE_LABELS) as JudgeMode[]).map((modeOption) => {
@@ -109,7 +109,7 @@ export function RunControls({
                           type="button"
                           onClick={() => onModeChange(modeOption)}
                           className={cn(
-                            "h-9 rounded-sm px-4 text-sm font-semibold uppercase tracking-wide transition-colors",
+                            "h-9 rounded-sm px-4 text-sm font-medium transition-colors",
                             isActive
                               ? "bg-card text-foreground"
                               : "text-muted-foreground hover:text-foreground"
@@ -123,8 +123,8 @@ export function RunControls({
                 </section>
 
                 <section className="space-y-2.5">
-                  <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                    Evaluation Dimensions
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Evaluation dimensions
                   </p>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {ALL_DIMENSIONS.map((dimension) => {
@@ -143,7 +143,7 @@ export function RunControls({
                         >
                           <span
                             className={cn(
-                              "h-2 w-2 rounded-full",
+                              "h-2 w-2 rounded-sm",
                               isSelected ? "bg-primary" : "bg-border"
                             )}
                           />

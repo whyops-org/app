@@ -28,18 +28,18 @@ export function SelectableCard({
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
       className={cn(
-        "relative flex flex-col items-center gap-3.5 rounded-xl border px-5 py-5 text-center transition-all duration-200",
+        "relative flex flex-col items-start gap-3 border px-4 py-4 text-left transition-colors",
         isSelected
-          ? "border-primary bg-card shadow-md"
-          : "border-border bg-card hover:bg-card hover:border-border/50",
-        disabled && "opacity-50 cursor-not-allowed",
+          ? "border-primary/30 bg-surface-2/25"
+          : "border-border/60 bg-card hover:bg-surface-2/20",
+        disabled && "cursor-not-allowed opacity-50",
         className
       )}
       type="button"
     >
       <div
         className={cn(
-          "flex h-10 w-10 items-center justify-center rounded-full transition-colors",
+          "flex h-10 w-10 items-center justify-center rounded-sm border border-border/60 bg-background transition-colors",
           isSelected ? "text-primary" : "text-muted-foreground"
         )}
       >
@@ -47,13 +47,12 @@ export function SelectableCard({
       </div>
       <div className="space-y-1">
         <div className={cn(
-          "text-base font-semibold",
-          isSelected ? "text-foreground" : "text-muted-foreground"
+          "text-base font-medium text-foreground"
         )}>
           {title}
         </div>
         {description && (
-          <div className="text-sm leading-relaxed text-muted-foreground/75">
+          <div className="text-sm leading-relaxed text-muted-foreground">
             {description}
           </div>
         )}

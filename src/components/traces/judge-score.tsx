@@ -101,7 +101,7 @@ export function SeverityBadge({ severity, className }: SeverityBadgeProps) {
   return (
     <Badge
       className={cn(
-        "h-5 px-1.5 text-[10px] font-semibold uppercase tracking-wide",
+        "h-5 px-1.5 text-[10px] font-medium capitalize",
         SEVERITY_STYLES[severity] || SEVERITY_STYLES.low,
         className
       )}
@@ -121,7 +121,7 @@ export function DimensionBadge({ dimension, className }: DimensionBadgeProps) {
   return (
     <Badge
       className={cn(
-        "h-5 px-1.5 text-[10px] font-semibold capitalize tracking-wide border-primary/25 bg-primary/10 text-primary",
+        "h-5 px-1.5 text-[10px] font-medium capitalize border-primary/25 bg-primary/10 text-primary",
         className
       )}
     >
@@ -149,7 +149,7 @@ export function PatchDiff({ original, suggested, rationale, location, className 
 
       <div className="grid grid-cols-1 divide-y divide-border/40 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
         <div className="p-3">
-          <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-destructive">
+          <div className="mb-1.5 text-[10px] font-medium text-destructive">
             Original
           </div>
           <pre className="font-mono text-xs leading-relaxed whitespace-pre-wrap text-foreground/80">
@@ -158,7 +158,7 @@ export function PatchDiff({ original, suggested, rationale, location, className 
         </div>
 
         <div className="p-3">
-          <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+          <div className="mb-1.5 text-[10px] font-medium text-primary">
             Suggested
           </div>
           <pre className="font-mono text-xs leading-relaxed whitespace-pre-wrap text-foreground">
@@ -187,10 +187,10 @@ export function ScoreBar({ score, className }: ScoreBarProps) {
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <div className="h-1.5 flex-1 rounded-full bg-border/60">
+      <div className="h-1.5 flex-1 rounded-sm bg-border/60">
         <div
           className={cn(
-            "h-full rounded-full transition-all duration-500 ease-out",
+            "h-full rounded-sm transition-all duration-500 ease-out",
             getScoreTone(score) === "good"
               ? "bg-primary"
               : getScoreTone(score) === "medium"

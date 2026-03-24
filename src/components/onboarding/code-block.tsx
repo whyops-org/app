@@ -35,11 +35,11 @@ export function CodeBlock({ code, language = "python", showCopy = true, classNam
   const hlLanguage = languageMap[language] || language;
 
   return (
-    <div className={cn("group relative rounded-xl border border-border bg-card overflow-hidden", className)}>
+    <div className={cn("group relative overflow-hidden rounded-sm border border-border bg-card", className)}>
       {showCopy && (
         <button
           onClick={handleCopy}
-          className="absolute top-3 right-3 z-10 rounded-md p-2 hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground min-w-18 flex items-center justify-center"
+          className="absolute top-3 right-3 z-10 flex min-w-18 items-center justify-center rounded-sm p-2 text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
           aria-label="Copy code"
         >
           {copied ? (

@@ -22,7 +22,7 @@ export function StepNavigation({
     <div className="flex items-center justify-between">
       {showBack ? (
         <button
-          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+          className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           onClick={onBack}
           type="button"
         >
@@ -32,7 +32,7 @@ export function StepNavigation({
       
       <Button
         size="lg"
-        className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-full px-6 h-12 text-sm"
+        className="h-11 px-5 text-sm"
         onClick={onContinue}
         disabled={disabled}
         type="button"

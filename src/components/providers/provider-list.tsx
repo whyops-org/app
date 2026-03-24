@@ -57,11 +57,11 @@ export function ProviderList({ providers, variant = "compact", className }: Prov
             {variant === "detailed" && (
               <div className="grid gap-3 text-sm text-muted-foreground">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Base URL</p>
+                  <p className="text-xs font-medium text-muted-foreground">Base URL</p>
                   <p className="font-mono text-sm text-foreground/80">{provider.baseUrl}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Last Updated</p>
+                  <p className="text-xs font-medium text-muted-foreground">Last updated</p>
                   <p className="text-foreground/80">{formatShortDate(provider.updatedAt)}</p>
                 </div>
               </div>

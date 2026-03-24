@@ -120,7 +120,7 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
 
         {/* Environment Selection */}
         <div className="space-y-3">
-          <label className="ml-1 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <label className="ml-1 text-sm font-medium text-muted-foreground">
             Environment
           </label>
           <div className="grid grid-cols-3 gap-3">
@@ -143,7 +143,7 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
         {/* Generate API Key Button */}
         {masterKeys.length === 0 && (
           <Button
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold h-14 rounded-xl text-base shadow-lg"
+            className="h-12 w-full text-base"
             size="lg"
             onClick={handleGenerateApiKey}
             disabled={!projectName.trim() || isCreating}
@@ -175,13 +175,13 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
 
             {/* Key for selected environment */}
             <div className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <p className="text-sm font-medium text-muted-foreground">
                 {masterKeys[selectedEnvIndex]?.name}
               </p>
               <div
-                className="flex items-center gap-3 rounded-lg border border-border/40 bg-background px-4 py-3.5"
+                className="flex items-center gap-3 border border-border/50 bg-background px-4 py-3.5"
               >
-                <div className="h-2 w-2 rounded-full bg-primary animate-pulse shrink-0" />
+                <div className="h-2 w-2 shrink-0 bg-primary" />
                 <div className="flex-1 min-w-0">
                   <code className="text-sm font-mono text-foreground/90 truncate block">
                     {masterKeys[selectedEnvIndex]?.prefix}...
@@ -189,7 +189,7 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
                 </div>
                 <button
                   onClick={() => handleCopyKey(masterKeys[selectedEnvIndex])}
-                  className="flex shrink-0 items-center gap-2 rounded-md border border-border/50 px-3 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+                  className="flex shrink-0 items-center gap-2 rounded-sm border border-border/50 px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
                 >
                   {copiedKeyId === masterKeys[selectedEnvIndex]?.id ? (
                     <>
@@ -210,7 +210,7 @@ export function WorkspaceCard({ onBack, onContinue }: WorkspaceCardProps) {
       </StepContainer>
 
       {/* Fixed Navigation */}
-      <div className="fixed bottom-0 left-0 right-0 px-12 py-4 z-50">
+      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background px-6 py-4 lg:px-12">
         <div className="mx-auto max-w-7xl">
           <StepNavigation
             onBack={onBack}

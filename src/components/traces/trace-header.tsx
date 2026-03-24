@@ -63,7 +63,7 @@ export function TraceHeader({ trace, view, onViewChange, agentId }: TraceHeaderP
 
         <Badge
           className={cn(
-            "h-6 px-2 text-xs uppercase tracking-[0.14em]",
+            "h-6 px-2 text-[11px]",
             hasErrors
               ? "border-destructive/30 bg-destructive/10 text-destructive"
               : "border-border/70 bg-surface-2/50 text-foreground"

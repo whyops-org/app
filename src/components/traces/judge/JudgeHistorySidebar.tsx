@@ -132,12 +132,12 @@ export function JudgeHistorySidebar({
                     </div>
 
                     <div className="text-left sm:text-right">
-                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Status</p>
+                      <p className="text-[11px] font-medium text-muted-foreground">Status</p>
                       <p className="text-sm font-medium capitalize text-foreground">{analysis.status}</p>
                     </div>
 
                     <div className="text-left sm:text-right">
-                      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Score</p>
+                      <p className="text-[11px] font-medium text-muted-foreground">Score</p>
                       {overallScore != null && overallScore >= 0 ? (
                         <p className={cn("text-2xl font-semibold tabular-nums", getScoreClass(overallScore))}>
                           {Math.round(overallScore * 100)}

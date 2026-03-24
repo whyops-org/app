@@ -52,7 +52,7 @@ export function StatCard({
         )}
       </div>
       {icon && (
-        <div className="flex h-10 w-10 items-center justify-center border border-border/50 bg-surface-2/40 [&_svg]:text-muted-foreground">
+        <div className="flex h-10 w-10 items-center justify-center border border-border/50 bg-surface-2/30 [&_svg]:text-muted-foreground">
           {icon}
         </div>
       )}

@@ -33,7 +33,7 @@ export function OnboardingSection({
     >
       <div className="flex flex-col gap-6">
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-sm font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <div className="flex items-center justify-between text-sm font-medium text-muted-foreground">
             <span>{step}</span>
             <span>{progressLabel}</span>
           </div>

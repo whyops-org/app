@@ -129,7 +129,7 @@ export function AnalysisRunControls({
     <section className="rounded-sm border border-border/60 bg-surface-2/20 p-5 lg:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-3">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <p className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <CalendarClock className="h-3.5 w-3.5" />
             Agent Analysis
           </p>
@@ -174,7 +174,7 @@ export function AnalysisRunControls({
                 <section className="space-y-4 rounded-sm border border-border/60 bg-surface-2/25 p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Schedule State</p>
+                      <p className="text-sm font-medium text-muted-foreground">Schedule state</p>
                       <p className="mt-1 text-base leading-relaxed text-muted-foreground">Enable or disable scheduled runs.</p>
                     </div>
                     <Button
@@ -242,7 +242,7 @@ export function AnalysisRunControls({
                 </section>
 
                 <section className="rounded-sm border border-border/60 bg-surface-2/25 p-5">
-                  <p className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Config Snapshot</p>
+                  <p className="text-sm font-medium text-muted-foreground">Current config</p>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">This cron config will use your current run settings:</p>
                   <div className="mt-3 rounded-sm border border-border/60 bg-background/80 px-4 py-3 text-sm text-muted-foreground">
                     <p>
@@ -313,7 +313,7 @@ export function AnalysisRunControls({
 
               <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
                 <section className="space-y-3">
-                  <p className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Analysis Mode</p>
+                  <p className="text-sm font-medium text-muted-foreground">Analysis mode</p>
                   <div className="inline-flex items-center rounded-sm border border-border/70 bg-surface-2/50 p-0.5">
                     {(Object.keys(AGENT_ANALYSIS_MODE_LABELS) as AgentAnalysisMode[]).map((modeOption) => {
                       const isActive = modeOption === mode;
@@ -323,7 +323,7 @@ export function AnalysisRunControls({
                           type="button"
                           onClick={() => onModeChange(modeOption)}
                           className={cn(
-                            "h-10 rounded-sm px-4.5 text-sm font-semibold uppercase tracking-[0.14em] transition-colors",
+                            "h-10 rounded-sm px-4.5 text-sm font-medium transition-colors",
                             isActive ? "bg-card text-foreground" : "text-muted-foreground hover:text-foreground"
                           )}
                         >
@@ -335,7 +335,7 @@ export function AnalysisRunControls({
                 </section>
 
                 <section className="space-y-3">
-                  <Label className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Lookback Window</Label>
+                  <Label className="text-sm text-muted-foreground">Lookback window</Label>
                   <Select value={String(lookbackDays)} onValueChange={(value) => onLookbackDaysChange(Number(value))}>
                     <SelectTrigger className="w-full sm:w-72">
                       <SelectValue placeholder="Select lookback window" />
@@ -351,7 +351,7 @@ export function AnalysisRunControls({
                 </section>
 
                 <section className="space-y-3">
-                  <Label className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Judge Model Override</Label>
+                  <Label className="text-sm text-muted-foreground">Judge model override</Label>
                   <Input
                     value={judgeModel}
                     onChange={(event) => onJudgeModelChange(event.target.value)}
@@ -363,7 +363,7 @@ export function AnalysisRunControls({
 
                 <section className="space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <Label className="text-sm font-semibold tracking-[0.14em] text-muted-foreground uppercase">Deep Analysis Dimensions</Label>
+                    <Label className="text-sm text-muted-foreground">Deep analysis dimensions</Label>
                     <span className="text-sm text-muted-foreground">
                       {selectedDimensions.length} / {AGENT_ANALYSIS_ALL_DIMENSIONS.length} selected
                     </span>

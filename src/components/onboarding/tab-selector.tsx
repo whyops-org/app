@@ -15,13 +15,13 @@ interface TabSelectorProps {
 
 export function TabSelector({ tabs, selectedTab, onTabChange, className }: TabSelectorProps) {
   return (
-    <div className={cn("flex items-center gap-2 border-b border-border", className)}>
+    <div className={cn("flex items-center gap-5 border-b border-border/50", className)}>
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={cn(
-            "flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors relative",
+            "relative flex items-center gap-2 py-3 text-sm font-medium transition-colors",
             selectedTab === tab.id
               ? "text-foreground"
               : "text-muted-foreground hover:text-foreground"
@@ -30,7 +30,7 @@ export function TabSelector({ tabs, selectedTab, onTabChange, className }: TabSe
           {tab.icon && <span className="text-base">{tab.icon}</span>}
           {tab.label}
           {selectedTab === tab.id && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-foreground" />
           )}
         </button>
       ))}

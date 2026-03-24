@@ -39,7 +39,7 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.625rem;
   --background: #f6f8f7;
   --foreground: #0b1615;
   --card: #ffffff;
@@ -345,21 +345,15 @@
   }
 
   .bg-grid {
-    background-image:
-      radial-gradient(60vw 60vh at 8% -10%, var(--background), transparent 60%),
-      radial-gradient(50vw 50vh at 100% 10%, var(--background), transparent 55%),
-      linear-gradient(to right, rgba(37, 74, 69, 0.35) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(37, 74, 69, 0.35) 1px, transparent 1px);
-    background-size: auto, auto, 4vw 4vw, 4vw 4vw;
-    background-position: center, center, center, center;
+    background-color: var(--background);
   }
 
   .shadow-panel {
-    box-shadow: 0 2vw 5vw rgba(3, 12, 11, 0.7);
+    box-shadow: 0 10px 24px rgba(3, 12, 11, 0.12);
   }
 
   .json-viewer {
-    background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     padding: 0.75rem;

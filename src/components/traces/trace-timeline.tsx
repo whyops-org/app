@@ -22,10 +22,10 @@ export function TraceTimeline({ trace }: TraceTimelineProps) {
         {trace.events.map((event, index) => (
           <div
             key={event.id}
-            className="flex items-start gap-4 rounded-lg border border-border/30 bg-card p-3"
+            className="flex items-start gap-4 rounded-sm border border-border/30 bg-card p-3"
           >
             <div className="flex flex-col items-center">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+              <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-primary/20 bg-primary/10 text-sm font-medium text-primary">
                 {event.stepId}
               </div>
               {index < trace.events.length - 1 && (

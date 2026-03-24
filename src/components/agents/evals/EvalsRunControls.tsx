@@ -127,7 +127,7 @@ export function EvalsRunControls({
     <section className="rounded-sm border border-border/60 bg-surface-2/20 p-4">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="space-y-2">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          <p className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5" />
             Automated Evals
           </p>
@@ -210,7 +210,7 @@ export function EvalsRunControls({
                 <section className="space-y-3 rounded-sm border border-border/60 bg-surface-2/25 p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Schedule State</p>
+                      <p className="text-sm font-medium text-muted-foreground">Schedule state</p>
                       <p className="mt-1 text-sm text-muted-foreground">Enable or disable scheduled eval generation.</p>
                     </div>
                     <Button
@@ -283,7 +283,7 @@ export function EvalsRunControls({
               <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
                 <section className="space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
-                    <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Eval Categories</Label>
+                    <Label className="text-sm text-muted-foreground">Eval categories</Label>
                     <span className="text-xs text-muted-foreground">{selectedCategories.length} / {EVAL_ALL_CATEGORIES.length} selected</span>
                   </div>
                   <div className="grid gap-2 md:grid-cols-2">
@@ -308,7 +308,7 @@ export function EvalsRunControls({
                 </section>
 
                 <section className="space-y-2.5">
-                  <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Max Evals Per Run</Label>
+                  <Label className="text-sm text-muted-foreground">Max evals per run</Label>
                   <Select value={String(maxEvalsPerRun)} onValueChange={(v) => onMaxEvalsChange(Number(v))}>
                     <SelectTrigger className="w-full sm:w-48">
                       <SelectValue placeholder="Select count" />
@@ -322,8 +322,8 @@ export function EvalsRunControls({
                 </section>
 
                 <section className="space-y-2.5">
-                  <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                    PRD / Feature Prompt (optional)
+                  <Label className="text-sm text-muted-foreground">
+                    PRD / feature prompt (optional)
                   </Label>
                   <textarea
                     value={customPrompt}
@@ -337,7 +337,7 @@ export function EvalsRunControls({
                 </section>
 
                 <section className="space-y-2.5">
-                  <Label className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Judge Model Override</Label>
+                  <Label className="text-sm text-muted-foreground">Judge model override</Label>
                   <Input
                     value={judgeModel}
                     onChange={(e) => onJudgeModelChange(e.target.value)}

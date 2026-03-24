@@ -45,7 +45,7 @@ export function EvalsResults({ run }: EvalsResultsProps) {
       <div className="grid gap-4 md:grid-cols-4">
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
               Total Evals
             </CardTitle>
           </CardHeader>
@@ -56,7 +56,7 @@ export function EvalsResults({ run }: EvalsResultsProps) {
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
               Domain
             </CardTitle>
           </CardHeader>
@@ -67,7 +67,7 @@ export function EvalsResults({ run }: EvalsResultsProps) {
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
               Tool Coverage
             </CardTitle>
           </CardHeader>
@@ -83,7 +83,7 @@ export function EvalsResults({ run }: EvalsResultsProps) {
 
         <Card className="border-border/60">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
               Pipeline
             </CardTitle>
           </CardHeader>

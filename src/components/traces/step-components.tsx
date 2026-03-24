@@ -25,12 +25,12 @@ export function StepHeader({
         </h3>
         <Badge
           className={cn(
-            "rounded px-2 py-1 text-xs font-semibold uppercase tracking-[0.14em] border",
-            step.tag === "INPUT" && "bg-blue-500/10 text-blue-500 border-blue-500/20",
-            step.tag === "LLM" && "bg-purple-500/10 text-purple-500 border-purple-500/20",
-            step.tag === "LOGIC" && "bg-orange-500/10 text-orange-500 border-orange-500/20",
-            step.tag === "TOOL" && "bg-teal-500/10 text-teal-500 border-teal-500/20",
-            step.tag === "OUTPUT" && "bg-green-500/10 text-green-500 border-green-500/20"
+            "rounded-sm px-2 py-1 text-xs font-medium border",
+            step.tag === "INPUT" && "border-border/60 bg-surface-2/60 text-foreground",
+            step.tag === "LLM" && "border-primary/25 bg-primary/10 text-primary",
+            step.tag === "LOGIC" && "border-warning/25 bg-warning/10 text-warning",
+            step.tag === "TOOL" && "border-primary/25 bg-primary/10 text-primary",
+            step.tag === "OUTPUT" && "border-border/60 bg-surface-2/60 text-foreground"
           )}
         >
           {step.tag}
@@ -71,7 +71,7 @@ export function StepContent({ step }: { step: any }) {
   if (step.content.type === "json") {
     return (
       <div className="space-y-3 bg-surface-2/5 p-5">
-        <div className="flex items-center justify-between px-1 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+        <div className="flex items-center justify-between px-1 text-sm font-medium text-muted-foreground">
           <span>{step.content.label || "Payload"}</span>
           <button className="flex items-center gap-1 hover:text-primary transition-colors focus:outline-hidden">
             <Copy className="h-3 w-3" />
@@ -100,18 +100,18 @@ export function StepContent({ step }: { step: any }) {
       <div className="space-y-4 bg-surface-2/5 p-5">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <span className="px-1 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="px-1 text-sm font-medium text-muted-foreground">
               Arguments
             </span>
-            <div className="h-36 overflow-x-auto rounded-md border border-border/40 bg-background p-4 font-mono text-sm text-green-500/90 shadow-sm scrollbar-thin">
+            <div className="h-36 overflow-x-auto rounded-sm border border-border/40 bg-background p-4 font-mono text-sm text-foreground shadow-none scrollbar-thin">
               <pre>{JSON.stringify(step.content.arguments, null, 2)}</pre>
             </div>
           </div>
           <div className="space-y-2">
-            <span className="px-1 text-sm font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="px-1 text-sm font-medium text-muted-foreground">
               Result
             </span>
-            <div className="h-36 overflow-x-auto rounded-md border border-border/40 bg-background p-4 font-mono text-sm text-blue-500/90 shadow-sm scrollbar-thin">
+            <div className="h-36 overflow-x-auto rounded-sm border border-border/40 bg-background p-4 font-mono text-sm text-foreground shadow-none scrollbar-thin">
               <pre>{JSON.stringify(step.content.result, null, 2)}</pre>
             </div>
           </div>
@@ -123,9 +123,9 @@ export function StepContent({ step }: { step: any }) {
               <span>Latency Contribution</span>
               <span className="font-medium text-foreground">{step.content.latencyContribution}% of total</span>
             </div>
-            <div className="h-1.5 w-full bg-surface-2 rounded-full overflow-hidden">
+            <div className="h-1.5 w-full overflow-hidden rounded-sm bg-surface-2">
               <div
-                className="h-full bg-primary/80 rounded-full transition-all duration-500 ease-out"
+                className="h-full rounded-sm bg-primary/80 transition-all duration-500 ease-out"
                 style={{ width: `${step.content.latencyContribution}%` }}
               />
             </div>

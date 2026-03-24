@@ -1,10 +1,9 @@
 "use client";
 
 import { ConnectionModal } from "@/components/dashboard/connection-modal";
-import { Radar } from "@/components/dashboard/radar";
 import { CodeBlock } from "@/components/onboarding/code-block";
 import { Button } from "@/components/ui/button";
-import { MacOSWindow, MacOSWindowContent } from "@/components/ui/macos-window";
+import { Card } from "@/components/ui/card";
 import { goToDocumentation } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/authStore";
@@ -42,23 +41,14 @@ export function EmptyState({ className, ...props }: EmptyStateProps) {
         )}
         {...props}
       >
-        {/* Radar Animation */}
-        <div className="mb-12 w-85">
-          <Radar />
-        </div>
-
-        {/* Heading */}
         <h1 className="mb-3 text-2xl font-semibold text-foreground">
           No agents detected yet
         </h1>
 
-        {/* Description */}
         <p className="mb-8 max-w-md text-center text-sm text-muted-foreground">
-          Waiting for your first agent trace... Connect your LLM provider or send a
-          manual test ping to populate your dashboard.
+          Connect a provider or send a test event to start populating the dashboard with real traces.
         </p>
 
-        {/* Action Buttons */}
         <div className="mb-12 flex items-center gap-3">
           <Button onClick={goToDocumentation} variant="primary" size="md">
             <BookIcon className="h-4 w-4" />
@@ -70,19 +60,18 @@ export function EmptyState({ className, ...props }: EmptyStateProps) {
           </Button>
         </div>
 
-        {/* Code Block */}
         {!isOnboardingComplete ? (
-          <MacOSWindow className="w-full max-w-md">
-            <MacOSWindowContent>
+          <Card className="w-full max-w-md">
+            <div className="px-5 py-5">
               <CodeBlock className="rounded-none border-none" code={onboardingMessage} language="text" />
-            </MacOSWindowContent>
-          </MacOSWindow>
+            </div>
+          </Card>
         ) : (
-          <MacOSWindow className="w-full max-w-md">
-            <MacOSWindowContent>
+          <Card className="w-full max-w-md">
+            <div className="px-5 py-5">
               <CodeBlock code={curlCommand} className="rounded-none border-none" language="bash" />
-            </MacOSWindowContent>
-          </MacOSWindow>
+            </div>
+          </Card>
         )}
       </div>
 

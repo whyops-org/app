@@ -61,9 +61,9 @@ export function AgentDetailStats({ agent }: AgentDetailStatsProps) {
             {successPercentage}%
           </span>
         </div>
-        <div className="h-1.5 w-full bg-surface-2 rounded-full overflow-hidden">
+        <div className="h-1.5 w-full overflow-hidden rounded-sm bg-surface-2">
           <div
-            className="h-full bg-primary rounded-full transition-all duration-500 ease-in-out"
+            className="h-full rounded-sm bg-primary transition-all duration-500 ease-in-out"
             style={{ width: `${successPercentage}%` }}
           />
         </div>

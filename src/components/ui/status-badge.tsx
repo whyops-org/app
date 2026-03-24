@@ -8,11 +8,11 @@ interface StatusBadgeProps {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  success: "bg-primary/20 text-primary border-primary/20 hover:bg-primary/30",
-  active: "bg-primary/20 text-primary border-primary/20 hover:bg-primary/30",
-  warning: "bg-yellow-500/20 text-yellow-500 border-yellow-500/20 hover:bg-yellow-500/30",
-  error: "bg-destructive/20 text-destructive border-destructive/20 hover:bg-destructive/30",
-  inactive: "bg-muted/30 text-muted-foreground border-border/50 hover:bg-muted/50",
+  success: "border-primary/25 bg-primary/10 text-primary",
+  active: "border-primary/25 bg-primary/10 text-primary",
+  warning: "border-warning/30 bg-warning/10 text-warning",
+  error: "border-destructive/25 bg-destructive/10 text-destructive",
+  inactive: "border-border/60 bg-surface-2/40 text-muted-foreground",
 };
 
 export function StatusBadge({ status, className, children }: StatusBadgeProps) {
@@ -22,7 +22,7 @@ export function StatusBadge({ status, className, children }: StatusBadgeProps) {
   return (
     <Badge
       className={cn(
-        "rounded px-2.5 py-1 text-xs font-semibold tracking-[0.14em] uppercase border",
+        "rounded-sm px-2 py-0.5 text-[11px] font-medium border",
         style,
         className
       )}

@@ -167,10 +167,10 @@ export default function AgentsPage() {
       <div className="border-b border-border/40 pb-5">
         <div>
           <h1 className="text-3xl font-semibold text-foreground">
-            Agents Dashboard
+            Agents
           </h1>
           <p className="mt-2 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Monitor performance and activity across deployed agents.
+            Monitor deployed agents, recent throughput, and reliability in one place.
           </p>
         </div>
       </div>

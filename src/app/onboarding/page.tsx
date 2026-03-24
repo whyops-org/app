@@ -174,13 +174,13 @@ export default function OnboardingPage() {
         </>
       ),
       subtitle:
-        "Let's get your AI agents observable in under 3 minutes. We'll guide you through the essentials to get you started.",
+        "Finish the initial setup to connect a provider, create a workspace, and send your first agent trace.",
       content: (
         <div className="space-y-6">
           <ul className="space-y-4">
             {checklist.map((item) => (
               <li key={item.id || item.text} className="flex items-center gap-3 text-muted-foreground/80">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted border border-border/50 text-primary">
+                <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-border/50 bg-muted text-primary">
                   {item.icon && <item.icon className="h-5 w-5" />}
                 </div>
                 <span className="font-medium text-foreground">{item.text}</span>
@@ -190,17 +190,17 @@ export default function OnboardingPage() {
           <div className="flex flex-wrap items-center gap-4 pt-4">
             <Button
               size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8"
+              className="px-6"
               onClick={() => setCurrentStep(1)}
             >
-              Let&apos;s Go
+              Start setup
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
             <button
-              className="text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors px-4"
+              className="px-4 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               onClick={() => setCurrentStep(1)}
             >
-              Skip Tour
+              Skip ahead
             </button>
           </div>
         </div>
@@ -211,7 +211,7 @@ export default function OnboardingPage() {
       id: "provider",
       title: "Connect your LLM Provider",
       subtitle:
-        "Choose the primary LLM used by your agent for decision making. Add secondary providers later.",
+        "Choose the provider your agent uses today. You can add more providers later.",
       textAlign: 'center',
       content: null,
       preview: (
@@ -237,7 +237,7 @@ export default function OnboardingPage() {
     {
       id: "complete",
       title: "Connect your AI Agent",
-      subtitle: "Install the SDK and add the decorator to start observing your agent's decisions.",
+      subtitle: "Install the SDK or send events directly to start recording trace activity.",
       textAlign: 'center',
       content: null,
       preview: (
@@ -255,7 +255,7 @@ export default function OnboardingPage() {
   // Show loading while checking progress
   if (!onboardingProgress) {
     return (
-      <div className="relative h-screen overflow-hidden bg-grid">
+      <div className="min-h-screen bg-grid">
         <div className="flex flex-col h-screen">
           <SiteHeader actionLabel="Log out" />
           <main className="flex-1 flex items-center justify-center">
@@ -267,11 +267,11 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="relative h-screen overflow-hidden bg-grid">
+    <div className="min-h-screen bg-grid">
       <div className="flex flex-col h-screen">
         <SiteHeader actionLabel="Log out" />
 
-        <main className="flex-1 overflow-y-auto px-12">
+        <main className="flex-1 overflow-y-auto px-6 lg:px-12">
           <div className="mx-auto max-w-7xl">
             {/* Step Indicator */}
             <StepIndicator
@@ -283,9 +283,9 @@ export default function OnboardingPage() {
             <div
               ref={contentRef}
               className={cn(
-                "pb-12 h-[calc(100dvh-10dvh-64px)] transition-all duration-200",
-                hasScroll && "pt-[8dvh]",
-                showSplitLayout ? "grid lg:grid-cols-2 items-center gap-[2vw]" : "flex flex-col items-center justify-center"
+                "h-[calc(100dvh-64px)] pb-12 transition-all duration-200",
+                hasScroll && "pt-10",
+                showSplitLayout ? "grid items-start gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(420px,520px)] lg:items-center" : "flex flex-col items-center justify-center py-8"
               )}
             >
               {/* Left Column - Text Content */}
@@ -293,7 +293,7 @@ export default function OnboardingPage() {
                 {(activeStep.title || activeStep.subtitle) && (
                   <div className="space-y-4">
                     {activeStep.title && (
-                      <h2 className={cn("text-4xl font-semibold leading-tight text-foreground sm:text-5xl", activeStep.textAlign === 'center' && 'text-center')}>
+                      <h2 className={cn("text-3xl font-semibold leading-tight text-foreground sm:text-4xl", activeStep.textAlign === 'center' && 'text-center')}>
                         {activeStep.title}
                       </h2>
                     )}
