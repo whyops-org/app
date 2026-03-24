@@ -483,14 +483,6 @@ export function TraceSidebarLeft({ trace, isCollapsed, onToggle }: TraceSidebarL
       mono: true,
       title: trace.threadId,
     },
-    ...(trace.model
-      ? [{
-          key: "model",
-          label: "Model",
-          value: trace.model,
-          mono: true,
-        }]
-      : []),
     {
       key: "started",
       label: "Started",
