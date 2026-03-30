@@ -1,24 +1,19 @@
-# WhyOps Onboarding UI
+# ⚠️ This repository has moved
 
-Prototype Next.js app for the WhyOps onboarding flow and reusable UI system.
+> **This repo is no longer maintained.** The frontend code has been migrated to the WhyOps monorepo.
 
-## Development
+## 👉 New location: [whyops-org/whyops-op](https://github.com/whyops-org/whyops-op)
 
-```bash
-npm install
-npm run dev
-```
-
-## Build
+Please update any bookmarks, clone URLs, or references.
 
 ```bash
-npm run build
-npm run start
+# Old (deprecated)
+git clone https://github.com/whyops-org/app
+
+# New
+git clone https://github.com/whyops-org/whyops-op
 ```
 
-## Notes
+---
 
-- UI screens are defined in `src/app/page.tsx`.
-- Reusable components live in `src/components/ui` and `src/components/onboarding`.
-- Theme tokens and background utilities live in `src/app/globals.css`.
-- Logo is a placeholder and should be replaced later.
+This repository is kept for historical reference only and will not receive further updates.
